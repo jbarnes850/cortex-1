@@ -146,8 +146,10 @@ class SyntheticDataGenerator:
                         # If only one sample, duplicate it with noise
                         sample = group[0].copy()
                         noise = np.random.normal(0, 0.1)
-                        for key in ['txn_growth_pct_7d', 'user_growth_pct_7d', 'tx_volatility_7d']:
-                            if key in sample:
+                        # Only add noise to numeric fields that exist
+                        numeric_fields = ['txn_growth_pct_7d', 'user_growth_pct_7d', 'tx_volatility_7d']
+                        for key in numeric_fields:
+                            if key in sample and isinstance(sample[key], (int, float)):
                                 sample[key] *= (1 + noise)
                         balanced_group.append(sample)
                     else:
@@ -157,10 +159,21 @@ class SyntheticDataGenerator:
                         alpha = np.random.random()
                         
                         interpolated = {}
+                        # First copy non-numeric fields from sample1
                         for key in sample1.keys():
-                            if isinstance(sample1[key], (int, float)):
-                                interpolated[key] = alpha * sample1[key] + (1-alpha) * sample2[key]
-                            else:
+                            if not isinstance(sample1[key], (int, float)):
+                                interpolated[key] = sample1[key]
+                        
+                        # Then interpolate numeric fields that exist in both samples
+                        for key in sample1.keys():
+                            if key in sample2 and isinstance(sample1[key], (int, float)) and isinstance(sample2[key], (int, float)):
+                                try:
+                                    interpolated[key] = alpha * float(sample1[key]) + (1-alpha) * float(sample2[key])
+                                except (ValueError, TypeError):
+                                    # If conversion fails, just copy from sample1
+                                    interpolated[key] = sample1[key]
+                            elif isinstance(sample1[key], (int, float)):
+                                # If key only exists in sample1, copy it
                                 interpolated[key] = sample1[key]
                         
                         balanced_group.append(interpolated)
@@ -185,72 +198,88 @@ class SyntheticDataGenerator:
         }
         
         prompt = f"""<reasoning>
-Given the following market data from {market_data.get('block_timestamp', 'N/A')}, predict and explain the likely market behavior over the next 7 days:
+Given the following market data from {market_data.get('block_timestamp', 'N/A')}, predict and explain the likely market behavior over the next 7 days. Support all analysis with specific data citations and compare with historical patterns.
 
 Current Market State:
-1. Network Activity
+1. Network Activity [cite as 'Network Metrics']
 - Daily Transactions: {market_data.get('num_txs', 'N/A')}
 - Success Rate: {metrics['success_rate']:.2f}%
 - Gas Price: {metrics['avg_gas_price']:.2f} GWEI
 
-2. User Metrics
-- Unique Users: {market_data.get('unique_users', 'N/A')}
+2. User Metrics [cite as 'User Data']
+- Unique Users: {market_data.get('unique_senders', 'N/A')}
 - Transaction Growth: {metrics['txn_growth']:.1f}%
 - User Growth: {metrics['user_growth']:.1f}%
 
-3. Transaction Patterns
+3. Transaction Patterns [cite as 'Transaction Data']
 - Average Value: {metrics['avg_tx_value']:.4f}
 - Volatility: {metrics['tx_volatility']:.2f}
 - Smart Contract Calls: {market_data.get('smart_contract_calls', 'N/A')}
 
-4. Cross-Chain Context
+4. Cross-Chain Context [cite as 'Cross-Chain Data']
 - Network: {market_data.get('network', 'N/A')}
-- Related Chains: {', '.join(market_data.get('related_chains', ['N/A']))}
-- Bridge Activity: {market_data.get('bridge_volume', 'N/A')}
+- Active Contracts: {market_data.get('active_contracts', 'N/A')}
+- Bridge Volume: {market_data.get('bridge_volume', 'N/A')}
+
+Historical Outcome Data (for pattern analysis):
+- Transaction Change: {float(outcome_data.get('txn_growth_pct_7d', 0)):.1f}%
+- User Growth Change: {float(outcome_data.get('user_growth_pct_7d', 0)):.1f}%
+- Volatility Change: {float(outcome_data.get('tx_volatility_7d', 0)):.2f}
 
 Required Analysis:
-1. Specific Predictions (provide exact numbers):
-   a) Transaction Growth: Predict exact percentage change
-   b) Gas Price Range: Specify min-max range in GWEI
-   c) User Growth: Project percentage change
-   d) Cross-Chain Impact: List specific affected chains and expected effects
-   e) Smart Contract Activity: Predict percentage change in contract calls
+1. Data-Driven Predictions (cite specific metrics for each):
+   a) Transaction Growth: Project exact percentage change based on historical patterns
+   b) Gas Price Range: Specify min-max range in GWEI with supporting data
+   c) User Growth: Project percentage change with confidence interval
+   d) Cross-Chain Impact: 
+      - List top 3 affected chains
+      - Quantify expected volume changes
+      - Specify correlation coefficients
+   e) Smart Contract Activity: Project growth with supporting metrics
 
-2. Market Analysis:
-   a) Technical Indicators:
-      - Support/Resistance levels
-      - Volume trends
-      - Volatility projections
-   b) On-Chain Metrics:
-      - Network utilization
-      - Fee market dynamics
-      - User behavior patterns
+2. Technical Analysis (cite data points):
+   a) Support/Resistance:
+      - Calculate levels using transaction volumes
+      - Identify key price points
+      - Project breakout scenarios
+   b) Volume Analysis:
+      - Compare to 7-day average
+      - Identify volume trends
+      - Project future volume ranges
 
-3. Risk Assessment:
-   a) Primary Risks:
-      - Technical risks (specify probability)
-      - Market risks (specify impact)
-      - Cross-chain risks (specify exposure)
-   b) Monitoring Metrics:
-      - Key indicators to watch
-      - Warning thresholds
-      - Time horizons
-   c) Mitigation Strategies:
-      - Specific actions
-      - Implementation timeline
-      - Success criteria
+3. Risk Assessment (quantify each):
+   a) Technical Risks:
+      - Specify probability based on historical data
+      - Quantify potential impact
+      - List leading indicators
+   b) Market Risks:
+      - Calculate exposure metrics
+      - Identify correlation risks
+      - Project potential losses
+   c) Cross-Chain Risks:
+      - Analyze bridge volumes
+      - Calculate contagion probability
+      - Specify monitoring thresholds
 
-4. Opportunity Analysis:
+4. Opportunity Analysis (with data support):
    a) Market Inefficiencies:
-      - Identify specific opportunities
-      - Required conditions
-      - Expected returns
+      - Calculate arbitrage spreads
+      - Identify volume imbalances
+      - Project potential returns
    b) Entry/Exit Points:
-      - Specific trigger conditions
-      - Position sizing recommendations
-      - Risk/reward ratios
+      - Specify exact trigger levels
+      - Calculate position sizes
+      - Define risk/reward ratios
 
-Support all predictions with data and explain your chain of thought. Use exact numbers and percentages where possible.</reasoning>"""
+Requirements:
+1. Cite specific metrics for each prediction using [cite as 'X'] format
+2. Compare all projections with historical outcome data
+3. Provide exact numbers and confidence intervals
+4. Keep analysis concise and data-focused
+5. Include cross-chain correlation analysis
+6. Support all conclusions with quantitative evidence
+
+Format your response in clear sections with minimal prose. Focus on data-driven insights rather than general market commentary.</reasoning>"""
 
         return prompt
     

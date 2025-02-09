@@ -93,24 +93,34 @@ class RewardFunction:
         score = 0.0
         predictions = self._extract_numerical_predictions(response)
         
+        # Check if predictions include confidence intervals
+        confidence_intervals = re.findall(
+            r'(\d+\.?\d*)%\s*\(\s*confidence\s*interval\s*:\s*(\d+\.?\d*)%\s*-\s*(\d+\.?\d*)%\s*\)',
+            response
+        )
+        has_confidence_intervals = len(confidence_intervals) > 0
+        
         for metric, expected_value in expected.items():
             if metric in predictions:
                 if isinstance(expected_value, (int, float)):
                     # Calculate trend direction
                     pred_value = predictions[metric]
                     
-                    # Trend scoring (40% weight)
+                    # Trend scoring (30% weight)
                     pred_trend = np.sign(pred_value - expected_value)
                     actual_trend = np.sign(expected_value - pred_value)
                     trend_score = 1.0 if pred_trend == actual_trend else 0.0
                     
-                    # Magnitude scoring (60% weight)
+                    # Magnitude scoring (50% weight)
                     error = abs(pred_value - expected_value)
                     max_val = max(abs(expected_value), 1e-6)
                     magnitude_score = max(0.0, 1.0 - (error / max_val))
                     
+                    # Confidence interval bonus (20% weight)
+                    confidence_bonus = 0.2 if has_confidence_intervals else 0.0
+                    
                     # Combined score with weights
-                    metric_score = (0.4 * trend_score) + (0.6 * magnitude_score)
+                    metric_score = (0.3 * trend_score) + (0.5 * magnitude_score) + confidence_bonus
                     score += metric_score
                     
                 elif isinstance(expected_value, str):
@@ -202,42 +212,35 @@ class RewardFunction:
         """Evaluate quality of cross-chain analysis with enhanced scoring."""
         score = 0.0
         
-        # Check for cross-chain concepts (40% weight)
-        concept_count = sum(1 for concept in self.cross_chain_concepts 
-                          if concept.lower() in response.lower())
-        score += min(0.08, concept_count * 0.02)
-        
-        # Check for bridge analysis (20% weight)
-        bridge_patterns = [
-            r'bridge\s*volume\s*(?:of|:)?\s*\d+',
-            r'cross-chain\s*liquidity\s*(?:of|:)?\s*\d+',
-            r'interoperability\s*metrics?'
-        ]
-        bridge_matches = sum(1 for pattern in bridge_patterns 
-                           if re.search(pattern, response, re.IGNORECASE))
-        score += min(0.04, bridge_matches * 0.02)
-        
-        # Check for correlation analysis (20% weight)
+        # Check for correlation analysis (40% weight)
         correlation_patterns = [
-            r'correlation\s*(?:of|between|among)',
-            r'spillover\s*effects?',
-            r'contagion\s*risk',
-            r'cross-chain\s*impact'
+            r'correlation\s*coefficient\s*:\s*[-+]?\d+\.?\d*',
+            r'correlation\s*between\s*\w+\s*and\s*\w+\s*:\s*[-+]?\d+\.?\d*%?',
+            r'\w+\s*shows\s*\d+\.?\d*%\s*correlation\s*with\s*\w+'
         ]
         correlation_matches = sum(1 for pattern in correlation_patterns 
                                 if re.search(pattern, response, re.IGNORECASE))
-        score += min(0.04, correlation_matches * 0.02)
+        score += min(0.08, correlation_matches * 0.04)
         
-        # Check for multi-chain strategy (20% weight)
-        strategy_patterns = [
-            r'arbitrage\s*opportunity',
-            r'cross-chain\s*yield',
-            r'multi-chain\s*portfolio',
-            r'bridge\s*strategy'
+        # Check for volume analysis (30% weight)
+        volume_patterns = [
+            r'bridge\s*volume\s*:\s*\d+\.?\d*[KMB]?',
+            r'cross-chain\s*flow\s*:\s*\d+\.?\d*[KMB]?',
+            r'volume\s*change\s*:\s*[-+]?\d+\.?\d*%'
         ]
-        strategy_matches = sum(1 for pattern in strategy_patterns 
-                             if re.search(pattern, response, re.IGNORECASE))
-        score += min(0.04, strategy_matches * 0.02)
+        volume_matches = sum(1 for pattern in volume_patterns 
+                           if re.search(pattern, response, re.IGNORECASE))
+        score += min(0.06, volume_matches * 0.03)
+        
+        # Check for risk analysis (30% weight)
+        risk_patterns = [
+            r'contagion\s*probability\s*:\s*\d+\.?\d*%',
+            r'cross-chain\s*exposure\s*:\s*\d+\.?\d*%',
+            r'bridge\s*risk\s*:\s*\d+\.?\d*'
+        ]
+        risk_matches = sum(1 for pattern in risk_patterns 
+                         if re.search(pattern, response, re.IGNORECASE))
+        score += min(0.06, risk_matches * 0.03)
         
         return min(0.2, score)
     
@@ -303,15 +306,25 @@ class RewardFunction:
         """
         score = 0.0
         
+        # Check for required citation formats
+        citation_patterns = [
+            r'\[cite as \'Network Metrics\'\]',
+            r'\[cite as \'User Data\'\]',
+            r'\[cite as \'Transaction Data\'\]',
+            r'\[cite as \'Cross-Chain Data\'\]'
+        ]
+        
+        citations_found = sum(1 for pattern in citation_patterns 
+                            if re.search(pattern, response, re.IGNORECASE))
+        score += min(0.1, citations_found * 0.025)
+        
         # Convert list to dictionary if needed
         if isinstance(context_data, list):
-            # Handle list of dictionaries
             metrics = {}
             for item in context_data:
                 if isinstance(item, dict):
                     metrics.update(item)
                 else:
-                    # Handle primitive list items
                     metrics[str(item)] = item
         else:
             metrics = context_data
@@ -331,22 +344,22 @@ class RewardFunction:
         # Calculate citation score
         if total_metrics > 0:
             citation_ratio = metrics_cited / total_metrics
-            score += min(0.2, citation_ratio * 0.3)
+            score += min(0.1, citation_ratio * 0.2)
         
         # Check for comparative analysis
         comparisons = len(re.findall(r'increased by|decreased by|grew|declined|compared to', response))
-        score += min(0.1, comparisons * 0.02)
+        score += min(0.05, comparisons * 0.01)
         
-        # Check for data interpretation
-        interpretation_markers = [
-            r'\d+%\s*increase', r'\d+%\s*decrease',
-            r'growth rate of\s*\d+', r'decline of\s*\d+',
-            r'trending\s*upward', r'trending\s*downward'
+        # Check for data interpretation with confidence intervals
+        interpretation_patterns = [
+            r'\d+%\s*\(\s*\d+%\s*confidence\s*interval\s*\)',
+            r'confidence\s*interval\s*:\s*\d+%\s*-\s*\d+%',
+            r'range\s*:\s*\d+\s*-\s*\d+\s*with\s*\d+%\s*confidence'
         ]
         
-        interpretations = sum(1 for marker in interpretation_markers 
-                            if re.search(marker, response.lower()))
-        score += min(0.1, interpretations * 0.02)
+        interpretations = sum(1 for pattern in interpretation_patterns 
+                            if re.search(pattern, response.lower()))
+        score += min(0.05, interpretations * 0.025)
         
         return min(0.3, score)
     
