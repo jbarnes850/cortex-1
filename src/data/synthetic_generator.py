@@ -102,7 +102,7 @@ class SyntheticDataGenerator:
     def _balance_market_conditions(self, 
                                  market_data: List[Dict[str, Any]], 
                                  window_size: int = 7) -> List[Dict[str, Any]]:
-        """Balance dataset across different market conditions.
+        """Balance dataset across different market conditions with metric normalization.
         
         Args:
             market_data: List of market data points
@@ -111,13 +111,44 @@ class SyntheticDataGenerator:
         Returns:
             Balanced list of market data points
         """
+        # Define reasonable bounds for metrics
+        METRIC_BOUNDS = {
+            'avg_tx_value': (0.0, 1000.0),  # Reasonable transaction value range
+            'avg_gas_used': (21000, 1000000),  # Standard gas usage range
+            'avg_gas_price': (1, 500),  # Reasonable gas price range in GWEI
+            'txn_growth_pct_7d': (-100, 100),  # Percent change bounds
+            'user_growth_pct_7d': (-50, 50),  # Percent change bounds
+            'tx_volatility_7d': (0, 100000)  # Reasonable volatility range
+        }
+        
+        def normalize_metrics(data_point: Dict[str, Any]) -> Dict[str, Any]:
+            """Normalize metrics to reasonable ranges."""
+            normalized = data_point.copy()
+            
+            for metric, (min_val, max_val) in METRIC_BOUNDS.items():
+                if metric in normalized:
+                    try:
+                        value = float(normalized[metric])
+                        # Clip to reasonable bounds
+                        normalized[metric] = max(min_val, min(value, max_val))
+                    except (ValueError, TypeError):
+                        # If conversion fails, use median value
+                        normalized[metric] = (min_val + max_val) / 2
+                        
+            return normalized
+        
         # Label market conditions
         labeled_data = []
         for i in range(window_size, len(market_data)):
             current = market_data[i]
             historical = market_data[i-window_size:i]
-            condition = self._label_market_condition(current, historical)
-            labeled_data.append((current, condition))
+            
+            # Normalize metrics before labeling
+            normalized_current = normalize_metrics(current)
+            normalized_historical = [normalize_metrics(h) for h in historical]
+            
+            condition = self._label_market_condition(normalized_current, normalized_historical)
+            labeled_data.append((normalized_current, condition))
         
         # Group by condition
         condition_groups = defaultdict(list)
@@ -139,18 +170,20 @@ class SyntheticDataGenerator:
                 indices = np.linspace(0, len(group)-1, target_size, dtype=int)
                 balanced_group = [group[i] for i in indices]
             else:
-                # Upsample using SMOTE-like approach
+                # Upsample using SMOTE-like approach with normalized interpolation
                 balanced_group = []
                 while len(balanced_group) < target_size:
                     if len(group) == 1:
-                        # If only one sample, duplicate it with noise
+                        # If only one sample, duplicate it with controlled noise
                         sample = group[0].copy()
-                        noise = np.random.normal(0, 0.1)
-                        # Only add noise to numeric fields that exist
-                        numeric_fields = ['txn_growth_pct_7d', 'user_growth_pct_7d', 'tx_volatility_7d']
-                        for key in numeric_fields:
-                            if key in sample and isinstance(sample[key], (int, float)):
-                                sample[key] *= (1 + noise)
+                        for metric in METRIC_BOUNDS.keys():
+                            if metric in sample and isinstance(sample[metric], (int, float)):
+                                min_val, max_val = METRIC_BOUNDS[metric]
+                                current_val = float(sample[metric])
+                                # Add noise within 10% of the valid range
+                                noise_range = (max_val - min_val) * 0.1
+                                noise = np.random.uniform(-noise_range, noise_range)
+                                sample[metric] = max(min_val, min(current_val + noise, max_val))
                         balanced_group.append(sample)
                     else:
                         # Pick two random samples and interpolate
@@ -164,26 +197,35 @@ class SyntheticDataGenerator:
                             if not isinstance(sample1[key], (int, float)):
                                 interpolated[key] = sample1[key]
                         
-                        # Then interpolate numeric fields that exist in both samples
+                        # Then interpolate numeric fields with bounds checking
                         for key in sample1.keys():
                             if key in sample2 and isinstance(sample1[key], (int, float)) and isinstance(sample2[key], (int, float)):
                                 try:
-                                    interpolated[key] = alpha * float(sample1[key]) + (1-alpha) * float(sample2[key])
+                                    val1, val2 = float(sample1[key]), float(sample2[key])
+                                    interpolated_val = alpha * val1 + (1-alpha) * val2
+                                    
+                                    # Apply bounds if metric has defined bounds
+                                    if key in METRIC_BOUNDS:
+                                        min_val, max_val = METRIC_BOUNDS[key]
+                                        interpolated_val = max(min_val, min(interpolated_val, max_val))
+                                    
+                                    interpolated[key] = interpolated_val
                                 except (ValueError, TypeError):
-                                    # If conversion fails, just copy from sample1
                                     interpolated[key] = sample1[key]
                             elif isinstance(sample1[key], (int, float)):
-                                # If key only exists in sample1, copy it
                                 interpolated[key] = sample1[key]
                         
                         balanced_group.append(interpolated)
             
             balanced_data.extend(balanced_group)
         
-        # Shuffle the final dataset
-        np.random.shuffle(balanced_data)
+        # Final normalization pass
+        normalized_data = [normalize_metrics(d) for d in balanced_data]
         
-        return balanced_data
+        # Shuffle the final dataset
+        np.random.shuffle(normalized_data)
+        
+        return normalized_data
 
     def _create_prediction_prompt(self, market_data: Dict[str, Any], outcome_data: Dict[str, Any]) -> str:
         """Create a prompt for market prediction task."""

@@ -25,7 +25,7 @@ class OpenAIClient:
                           prompt: str,
                           system_prompt: str,
                           model: str = "o3-mini",
-                          max_completion_tokens: int = 25000) -> str:
+                          max_completion_tokens: int = 20000) -> str:
         """Generate text completion using OpenAI's API.
         
         Args:

@@ -1,161 +1,222 @@
-# NEAR Cortex-1: Crypto Reasoning AI Model
+# NEAR Cortex-1: Advanced Crypto Market Reasoning AI
 
-A specialized AI model that reasons about and predicts crypto market movements using cross-chain data and advanced machine learning techniques.
+A specialized AI model that combines chain-of-thought reasoning with cross-chain data analysis to understand and predict crypto market dynamics. Built on Llama 3.3 70B and enhanced through GRPO (Group Policy Optimization), Cortex-1 aims to reason about market dynamics the way experienced traders do, but at a massive scale and with perfect recall of historical patterns.
 
-## Overview
+## 💡 Open Source Commitment
 
-NEAR Cortex-1 uses Llama 3.3 70B as its base model, enhanced with GRPO (Group Policy Optimization) fine-tuning and synthetic data generation to create a powerful crypto market analysis system. The model specializes in:
+We believe in the power of open collaboration and are committed to making Cortex-1 fully accessible to the developer community:
 
-- Historical Market Analysis & Q&A
-- Cross-Chain Correlation Analysis
-- DeFi Protocol Performance Prediction
-- Risk Assessment & Opportunity Detection
-- Technical & Fundamental Analysis
+- **Open Source Dataset**: Our synthetic training dataset will be publicly available, providing developers with high-quality, labeled examples of crypto market reasoning
+- **Open Model Weights**: Once trained, the complete model weights will be open-sourced for the community
+- **Transparent Development**: All training code, reward functions, and benchmarking tools are open source
+- **Developer-First**: Built as a tool for developers to integrate advanced market reasoning into their applications
 
-## Requirements
+Our goal is to create a foundation for the community to build upon, whether you're developing trading strategies, market analysis tools, or educational platforms.
+
+## 🌟 Key Features
+
+- **Chain-of-Thought Reasoning**: Detailed step-by-step analysis of market conditions
+- **Cross-Chain Analysis**: Deep understanding of relationships between different blockchain networks
+- **Quantitative Predictions**: Data-driven forecasting with confidence intervals
+- **Risk Assessment**: Comprehensive evaluation of technical, market, and systemic risks
+- **Opportunity Detection**: Identification of market inefficiencies and arbitrage opportunities
+
+## 🎯 Core Capabilities
+
+1. **Market Analysis & Prediction**
+   - Historical pattern recognition
+   - Cross-chain correlation analysis
+   - Transaction volume forecasting
+   - User behavior analysis
+
+2. **Protocol Analysis**
+   - Performance metrics evaluation
+   - Growth trajectory analysis
+   - Risk factor assessment
+   - Optimization recommendations
+
+3. **Risk Management**
+   - Technical risk quantification
+   - Market exposure analysis
+   - Systemic risk assessment
+   - Mitigation strategy development
+
+4. **Opportunity Discovery**
+   - Arbitrage opportunity detection
+   - Yield optimization strategies
+   - Market inefficiency analysis
+   - Entry/exit point identification
+
+## 🛠 Technical Architecture
+
+### Base Model
+
+- **Foundation**: Llama 3.3 70B Instruct
+- **Enhancement**: GRPO (Group Policy Optimization) fine-tuning
+- **Quantization**: 4-bit and 8-bit options for efficient deployment
+
+### Training Pipeline
+
+1. **Synthetic Data Generation**
+   - Market condition balancing
+   - Chain-of-thought reasoning examples
+   - Cross-chain correlation scenarios
+   - Protocol performance analysis cases
+   - Risk assessment simulations
+
+2. **Reward Function Components**
+   - Prediction accuracy scoring
+   - Reasoning depth evaluation
+   - Technical analysis quality
+   - Market understanding assessment
+   - Cross-chain analysis metrics
+   - Group policy optimization
+
+3. **Benchmarking Framework**
+   - Historical prediction accuracy
+   - Reasoning quality metrics
+   - Cross-chain correlation accuracy
+   - Protocol analysis precision
+   - Real-world performance testing
+
+## 🚀 Getting Started
+
+### Prerequisites
 
 - Python 3.10+
-- CUDA-compatible GPU(s) for training
+- CUDA-compatible GPU(s)
 - 192GB+ RAM for data preprocessing
-- Cloud GPU access (A100/H100) for full model training
-- OpenAI API key for synthetic data generation
-- Flipside Crypto API key for market data
+- Cloud GPU access (A100/H100) for training
 
-## Setup
+### Installation
 
-1. Create a virtual environment:
+1. Clone the repository:
+```bash
+git clone https://github.com/near/cortex-1.git
+cd cortex-1
+```
 
+2. Create a virtual environment:
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-2. Install dependencies:
-
+3. Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables:
-
+4. Set up environment variables:
 ```bash
 cp .env.example .env
 # Edit .env with your API keys:
-# - OPENAI_API_KEY
-# - FLIPSIDE_API_KEY
+# - OPENAI_API_KEY (for synthetic data generation)
+# - FLIPSIDE_API_KEY (for market data)
 ```
 
-## Project Structure
+## 📊 Data Pipeline
+
+### Market Data Collection
 
 ```bash
-├── data/                  # Data storage
-│   ├── raw/              # Raw data from Flipside
-│   ├── processed/        # Processed datasets
-│   └── synthetic/        # Generated synthetic data
-├── src/
-│   ├── data/            # Data processing modules
-│   │   ├── flipside_client.py     # Flipside API client
-│   │   └── synthetic_generator.py  # Synthetic data generation
-│   ├── model/           # Model architecture and training
-│   │   ├── openai_client.py       # OpenAI API client
-│   │   └── reward_function.py     # GRPO reward function
-│   └── utils/           # Utility functions
-├── scripts/             # Training and utility scripts
-│   ├── generate_synthetic.py   # Generate training data
-│   └── test_synthetic.py      # Test data generation
-└── configs/             # Configuration files
+python scripts/collect_data.py --days 180 --chains ethereum near
 ```
 
-## Training Pipeline
-
-1. **Data Collection & Generation**:
-
+### Synthetic Data Generation
 ```bash
-# Generate synthetic training data
 python scripts/generate_synthetic.py \
     --days 180 \
     --samples-per-day 10 \
-    --chains ethereum \
+    --chains ethereum near \
     --protocols uniswap \
-    --model o3-mini \
-    --output-dir data/synthetic
+    --model o3-mini
 ```
 
-The synthetic data generator creates:
-
-- Chain-of-thought reasoning examples
-- Market prediction scenarios
-- Cross-chain analysis problems
-- Protocol performance analysis
-- Risk assessment cases
-
-2. **Dataset Features**:
-
-- Balanced market conditions (bullish, bearish, sideways, volatile)
-- Diverse prompt types (prediction, analysis, Q&A)
-- Quality metrics for each example
-- Incremental saving and progress tracking
-- Comprehensive reward scoring
-
-3. **Reward Function Components**:
-
-- Prediction accuracy
-- Reasoning depth
-- Technical analysis quality
-- Market understanding
-- Risk assessment
-- Data usage efficiency
-- Cross-chain analysis
-- Group policy bonus
-
-4. **Model Training**:
-
-- Initial supervised fine-tuning
-- GRPO reinforcement learning
-- Distributed training support
-- Quality-based filtering
-
-## Usage
-
-1. Generate Synthetic Data:
-
-```bash
-python scripts/generate_synthetic.py --days 180 --samples-per-day 10
-```
-
-2. Test Data Generation:
+### Quality Testing
 
 ```bash
 python scripts/test_synthetic.py
 ```
 
-3. Train Model (coming soon):
+## 🔍 Benchmarking
 
-```bash
-python scripts/train.py --config configs/training_config.yaml
-```
+Our comprehensive benchmarking suite evaluates:
 
-## Configuration
+1. **Prediction Accuracy**
+   - Transaction volume forecasting
+   - User growth projections
+   - Price movement predictions
+   - Cross-chain correlation accuracy
 
-The project uses YAML configuration files in the `configs/` directory:
+2. **Reasoning Quality**
+   - Chain-of-thought completeness
+   - Logical consistency
+   - Data citation accuracy
+   - Technical analysis depth
 
-- `training_config.yaml`: Training hyperparameters
-- `model_config.yaml`: Model architecture settings
-- `data_config.yaml`: Data processing parameters
+3. **Real-World Performance**
+   - Strategy backtesting
+   - Market simulation
+   - Live prediction tracking
+   - Cross-chain arbitrage detection
 
-## Contributing
+## 🤝 Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
+We welcome contributions! Here's how you can help:
 
-## License
+1. **Code Contributions**
+   - Fork the repository
+   - Create a feature branch
+   - Submit a pull request
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+2. **Data Contributions**
+   - Historical market data
+   - Protocol performance metrics
+   - Cross-chain correlation data
+   - Benchmark test cases
 
-## Acknowledgments
+3. **Documentation**
+   - Technical documentation
+   - Use case examples
+   - Benchmark results
+   - Tutorial creation
 
+4. **Model Development**
+   - Fine-tuning improvements
+   - Synthetic data generation
+   - Reward function optimization
+   - Benchmarking scenarios
+
+## 🔗 Developer Resources
+
+- **Dataset Access**: Full synthetic dataset available at [HuggingFace Datasets](https://huggingface.co/datasets/near/cortex-1)
+- **Model Weights**: Pre-trained and fine-tuned weights will be published on [HuggingFace Models](https://huggingface.co/near)
+- **Integration Examples**: Check our [examples](./examples) directory for implementation guides
+- **API Documentation**: Comprehensive API docs available in our [Wiki](https://github.com/near/cortex-1/wiki)
+
+## 📜 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- NEAR Foundation for support and guidance
 - Unsloth Team for GRPO implementation
 - Flipside Crypto for market data access
-- NEAR Foundation for support
 - OpenAI for synthetic data generation support
+
+## 📚 Documentation
+
+For detailed documentation, visit our [Wiki](https://github.com/near/cortex-1/wiki).
+
+## 🔗 Links
+
+- [NEAR Foundation](https://near.foundation/)
+- [Project Documentation](https://near-foundation.notion.site/NEAR-Cortex-1-AI-Reasoning-Model)
+- [Training Plan](docs/TRAINING_PLAN.md)
+- [Contribution Guide](CONTRIBUTING.md)
+
+## 📧 Contact
+
+For questions or support, please open an issue or contact the NEAR Foundation team.
