@@ -4,7 +4,13 @@ A specialized AI model that reasons about and predicts crypto market movements u
 
 ## Overview
 
-NEAR Cortex-1 uses Llama 3.3 70B as its base model, enhanced with GRPO (Group Policy Optimization) fine-tuning and synthetic data generation to create a powerful crypto market analysis system.
+NEAR Cortex-1 uses Llama 3.3 70B as its base model, enhanced with GRPO (Group Policy Optimization) fine-tuning and synthetic data generation to create a powerful crypto market analysis system. The model specializes in:
+
+- Historical Market Analysis & Q&A
+- Cross-Chain Correlation Analysis
+- DeFi Protocol Performance Prediction
+- Risk Assessment & Opportunity Detection
+- Technical & Fundamental Analysis
 
 ## Requirements
 
@@ -12,6 +18,8 @@ NEAR Cortex-1 uses Llama 3.3 70B as its base model, enhanced with GRPO (Group Po
 - CUDA-compatible GPU(s) for training
 - 192GB+ RAM for data preprocessing
 - Cloud GPU access (A100/H100) for full model training
+- OpenAI API key for synthetic data generation
+- Flipside Crypto API key for market data
 
 ## Setup
 
@@ -32,7 +40,9 @@ pip install -r requirements.txt
 
 ```bash
 cp .env.example .env
-# Edit .env with your API keys and configurations
+# Edit .env with your API keys:
+# - OPENAI_API_KEY
+# - FLIPSIDE_API_KEY
 ```
 
 ## Project Structure
@@ -44,55 +54,85 @@ cp .env.example .env
 │   └── synthetic/        # Generated synthetic data
 ├── src/
 │   ├── data/            # Data processing modules
+│   │   ├── flipside_client.py     # Flipside API client
+│   │   └── synthetic_generator.py  # Synthetic data generation
 │   ├── model/           # Model architecture and training
-│   ├── utils/           # Utility functions
-│   └── inference/       # Inference and deployment code
-├── configs/             # Configuration files
+│   │   ├── openai_client.py       # OpenAI API client
+│   │   └── reward_function.py     # GRPO reward function
+│   └── utils/           # Utility functions
 ├── scripts/             # Training and utility scripts
-└── notebooks/          # Development notebooks
+│   ├── generate_synthetic.py   # Generate training data
+│   └── test_synthetic.py      # Test data generation
+└── configs/             # Configuration files
 ```
 
 ## Training Pipeline
 
-1. **Data Collection**:
-   - Fetch historical data from Flipside Crypto API
-   - Generate synthetic reasoning data
-   - Preprocess and validate datasets
+1. **Data Collection & Generation**:
 
-2. **Model Training**:
-   - Initial supervised fine-tuning
-   - GRPO reinforcement learning
-   - Distributed training support
+```bash
+# Generate synthetic training data
+python scripts/generate_synthetic.py \
+    --days 180 \
+    --samples-per-day 10 \
+    --chains ethereum \
+    --protocols uniswap \
+    --model o3-mini \
+    --output-dir data/synthetic
+```
 
-3. **Evaluation**:
-   - Prediction accuracy metrics
-   - Reasoning quality assessment
-   - Performance benchmarking
+The synthetic data generator creates:
+
+- Chain-of-thought reasoning examples
+- Market prediction scenarios
+- Cross-chain analysis problems
+- Protocol performance analysis
+- Risk assessment cases
+
+2. **Dataset Features**:
+
+- Balanced market conditions (bullish, bearish, sideways, volatile)
+- Diverse prompt types (prediction, analysis, Q&A)
+- Quality metrics for each example
+- Incremental saving and progress tracking
+- Comprehensive reward scoring
+
+3. **Reward Function Components**:
+
+- Prediction accuracy
+- Reasoning depth
+- Technical analysis quality
+- Market understanding
+- Risk assessment
+- Data usage efficiency
+- Cross-chain analysis
+- Group policy bonus
+
+4. **Model Training**:
+
+- Initial supervised fine-tuning
+- GRPO reinforcement learning
+- Distributed training support
+- Quality-based filtering
 
 ## Usage
 
-1. Data Collection:
+1. Generate Synthetic Data:
 
 ```bash
-python scripts/collect_data.py --days 365
+python scripts/generate_synthetic.py --days 180 --samples-per-day 10
 ```
 
-2. Generate Synthetic Data:
+2. Test Data Generation:
 
 ```bash
-python scripts/generate_synthetic.py --input-file data/raw/market_data.csv
+python scripts/test_synthetic.py
 ```
 
-3. Train Model:
+3. Train Model (coming soon):
 
 ```bash
 python scripts/train.py --config configs/training_config.yaml
-```
-
-4. Inference:
-
-```bash
-python scripts/inference.py --model-path models/latest --input "market analysis query"
 ```
 
 ## Configuration
@@ -118,3 +158,4 @@ This project is licensed under the MIT License. See the LICENSE file for details
 - Unsloth Team for GRPO implementation
 - Flipside Crypto for market data access
 - NEAR Foundation for support
+- OpenAI for synthetic data generation support
