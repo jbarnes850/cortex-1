@@ -12,6 +12,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from collections import defaultdict
+import time
 
 from src.data.flipside_client import FlipsideClient
 from src.model.openai_client import OpenAIClient
@@ -670,6 +671,15 @@ Show all calculations and explain your economic reasoning at each step.</reasoni
         # Balance market conditions
         balanced_data = self._balance_market_conditions(market_data)
         
+        # Create output directory
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        
+        # Initialize progress tracking
+        total_examples = len(balanced_data) * samples_per_prompt
+        examples_generated = 0
+        last_save_time = time.time()
+        save_interval = 300  # Save every 5 minutes
+        
         examples = []
         prompt_types = list(self.prompt_templates.keys())
         
@@ -678,76 +688,95 @@ Show all calculations and explain your economic reasoning at each step.</reasoni
         analytical_prompts = ['analytical', 'financial']
         market_prompts = ['correlation', 'protocol', 'risk', 'opportunity']
         
-        # Generate examples for each market condition
-        for i in range(0, len(balanced_data)-1):
-            current_data = balanced_data[i]
-            outcome_data = balanced_data[i+1]
-            
-            # Select prompt type based on position to ensure balanced representation
-            if i % 3 == 0:
-                # Prediction tasks (with historical validation)
-                prompt_type = prediction_prompts[i // 3 % len(prediction_prompts)]
-            elif i % 3 == 1:
-                # Analytical reasoning tasks
-                prompt_type = analytical_prompts[i // 3 % len(analytical_prompts)]
-            else:
-                # Market analysis tasks
-                prompt_type = market_prompts[i // 3 % len(market_prompts)]
-            
-            prompt_func = self.prompt_templates[prompt_type]
-            
-            # Generate prompt based on type
-            if prompt_type in prediction_prompts:
-                prompt = prompt_func(current_data, outcome_data)
-            elif prompt_type == 'protocol':
-                prompt = prompt_func(protocol_data, current_data)
-            else:
-                prompt = prompt_func(current_data)
-            
-            # Generate multiple responses per prompt
-            responses = []
-            for _ in range(samples_per_prompt):
-                result = self.openai_client.generate_completion(
-                    prompt=prompt,
-                    system_prompt=self._get_system_prompt(prompt_type),
-                    model=self.model
-                )
-                responses.append(result)
-            
-            # Calculate rewards including group comparison
-            for response in responses:
-                reward = self.reward_function.calculate_reward(
-                    response=response,
-                    prompt={
-                        'context_data': current_data,
-                        'outcome_data': outcome_data,
-                        'prompt_type': prompt_type
-                    },
-                    group_responses=responses
-                )
+        try:
+            # Generate examples for each market condition
+            for i in range(0, len(balanced_data)-1):
+                current_data = balanced_data[i]
+                outcome_data = balanced_data[i+1]
                 
-                examples.append({
-                    'type': prompt_type,
-                    'prompt': prompt,
-                    'response': response,
-                    'context_data': current_data,
-                    'outcome_data': outcome_data,
-                    'market_condition': self._label_market_condition(
-                        current_data,
-                        market_data[max(0, i-7):i]
-                    ),
-                    'reward': reward
-                })
-        
-        # Save dataset
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        with open(output_path, 'w') as f:
-            for example in examples:
-                f.write(json.dumps(example) + '\n')
+                # Select prompt type based on position to ensure balanced representation
+                if i % 3 == 0:
+                    prompt_type = prediction_prompts[i // 3 % len(prediction_prompts)]
+                elif i % 3 == 1:
+                    prompt_type = analytical_prompts[i // 3 % len(analytical_prompts)]
+                else:
+                    prompt_type = market_prompts[i // 3 % len(market_prompts)]
                 
-        # Log dataset statistics
-        self._log_dataset_stats(examples)
-    
+                prompt_func = self.prompt_templates[prompt_type]
+                
+                # Generate prompt based on type
+                try:
+                    if prompt_type in prediction_prompts:
+                        prompt = prompt_func(current_data, outcome_data)
+                    elif prompt_type == 'protocol':
+                        prompt = prompt_func(protocol_data, current_data)
+                    else:
+                        prompt = prompt_func(current_data)
+                    
+                    # Generate multiple responses per prompt
+                    for _ in range(samples_per_prompt):
+                        try:
+                            result = self.openai_client.generate_completion(
+                                prompt=prompt,
+                                system_prompt=self._get_system_prompt(prompt_type),
+                                model=self.model
+                            )
+                            
+                            # Calculate rewards including group comparison
+                            reward = self.reward_function.calculate_reward(
+                                response=result,
+                                prompt={
+                                    'context_data': current_data,
+                                    'outcome_data': outcome_data,
+                                    'prompt_type': prompt_type
+                                },
+                                group_responses=[]  # We'll calculate group metrics later
+                            )
+                            
+                            example = {
+                                'type': prompt_type,
+                                'prompt': prompt,
+                                'response': result,
+                                'context_data': current_data,
+                                'outcome_data': outcome_data,
+                                'market_condition': self._label_market_condition(
+                                    current_data,
+                                    market_data[max(0, i-7):i]
+                                ),
+                                'reward': reward
+                            }
+                            
+                            examples.append(example)
+                            examples_generated += 1
+                            
+                            # Save progress periodically
+                            current_time = time.time()
+                            if current_time - last_save_time > save_interval:
+                                self._save_examples(examples, output_path)
+                                last_save_time = current_time
+                            
+                            # Log progress
+                            progress = (examples_generated / total_examples) * 100
+                            logger.info(f"Progress: {progress:.1f}% ({examples_generated}/{total_examples} examples)")
+                            
+                        except Exception as e:
+                            logger.error(f"Error generating example: {str(e)}")
+                            continue
+                        
+                except Exception as e:
+                    logger.error(f"Error creating prompt: {str(e)}")
+                    continue
+                
+        except Exception as e:
+            logger.error(f"Error in dataset generation: {str(e)}")
+        finally:
+            # Save any remaining examples
+            if examples:
+                self._save_examples(examples, output_path)
+            
+            # Log final dataset statistics
+            self._log_dataset_stats(examples)
+
     def _format_chain_metrics(self, chain_data: Union[List[Dict], Dict]) -> str:
         """Format metrics for multiple chains.
         
@@ -784,18 +813,55 @@ Show all calculations and explain your economic reasoning at each step.</reasoni
             
         return "\n\n".join(formatted) if formatted else "No chain metrics available"
     
-    def _format_protocol_metrics(self, protocol_data: Dict) -> str:
-        """Format protocol metrics across chains."""
+    def _format_protocol_metrics(self, protocol_data: Union[List[Dict], Dict]) -> str:
+        """Format protocol metrics across chains.
+        
+        Args:
+            protocol_data: Protocol metrics data (list of dicts or single dict)
+            
+        Returns:
+            Formatted string of protocol metrics
+        """
+        # Convert list to dict by grouping by network
+        if isinstance(protocol_data, list):
+            grouped_data = {}
+            for item in protocol_data:
+                network = item.get('network', 'ethereum')
+                if network not in grouped_data:
+                    grouped_data[network] = {
+                        'volume_usd': 0,
+                        'unique_users': 0,
+                        'volume_growth_pct': 0,
+                        'volume_share': 0,
+                        'success_rate': 0
+                    }
+                # Aggregate metrics
+                grouped_data[network]['volume_usd'] += float(item.get('volume_usd', 0))
+                grouped_data[network]['unique_users'] = max(
+                    grouped_data[network]['unique_users'],
+                    int(item.get('unique_users', 0))
+                )
+                grouped_data[network]['volume_growth_pct'] = float(item.get('volume_growth_pct', 0))
+                grouped_data[network]['volume_share'] = float(item.get('volume_share', 0))
+                grouped_data[network]['success_rate'] = float(item.get('success_rate', 0))
+            
+            protocol_data = grouped_data
+        
         metrics = []
         for chain, data in protocol_data.items():
-            chain_metrics = f"""Chain: {chain}
+            try:
+                chain_metrics = f"""Chain: {chain}
 - Volume: ${data.get('volume_usd', 0):,.2f}
 - Users: {data.get('unique_users', 0):,}
 - Growth: {data.get('volume_growth_pct', 0):.1f}%
-- Market Share: {data.get('volume_share', 0):.1f}%"""
-            metrics.append(chain_metrics)
+- Market Share: {data.get('volume_share', 0):.1f}%
+- Success Rate: {data.get('success_rate', 0) * 100:.1f}%"""
+                metrics.append(chain_metrics)
+            except (TypeError, ValueError) as e:
+                logger.warning(f"Error formatting protocol metrics for {chain}: {str(e)}")
+                continue
             
-        return "\n\n".join(metrics)
+        return "\n\n".join(metrics) if metrics else "No protocol metrics available"
     
     def _format_chain_context(self, chain_data: Dict) -> str:
         """Format chain context data."""
@@ -884,4 +950,18 @@ Show all calculations and explain your economic reasoning at each step.</reasoni
             
         except (TypeError, ValueError) as e:
             logger.warning(f"Error formatting metrics: {str(e)}")
-            return "No market metrics available" 
+            return "No market metrics available"
+
+    def _save_examples(self, examples: List[Dict], output_path: str) -> None:
+        """Save examples to JSONL file with append mode.
+        
+        Args:
+            examples: List of examples to save
+            output_path: Path to save the examples
+        """
+        with open(output_path, 'a') as f:
+            for example in examples:
+                f.write(json.dumps(example) + '\n')
+        
+        # Clear the examples list after saving
+        examples.clear() 
