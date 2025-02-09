@@ -1,0 +1,59 @@
+{
+    "name": "near/cortex-1-market-analysis",
+    "version": "0.1.0",
+    "description": "Preliminary dataset of blockchain market analyses combining real-world data with chain-of-thought reasoning",
+    "citation": "@misc{near2025cortex,\n    title={NEAR Cortex-1 Market Analysis Dataset},\n    author={NEAR Foundation},\n    year={2025},\n    publisher={HuggingFace},\n    url={https://huggingface.co/datasets/near/cortex-1-market-analysis}\n}",
+    "license": "MIT",
+    "splits": {
+        "train": {
+            "name": "train",
+            "num_examples": 4
+        }
+    },
+    "features": {
+        "timestamp": {
+            "dtype": "string",
+            "_type": "Value"
+        },
+        "chain": {
+            "dtype": "string",
+            "_type": "Value"
+        },
+        "date": {
+            "dtype": "string",
+            "_type": "Value"
+        },
+        "market_data": {
+            "_type": "dict",
+            "feature": {
+                "daily_txns": {"dtype": "int64", "_type": "Value"},
+                "unique_users": {"dtype": "int64", "_type": "Value"},
+                "success_rate": {"dtype": "float32", "_type": "Value"},
+                "avg_tx_value": {"dtype": "float32", "_type": "Value"},
+                "total_volume": {"dtype": "float32", "_type": "Value"}
+            }
+        },
+        "reasoning": {
+            "dtype": "string",
+            "_type": "Value"
+        }
+    },
+    "task_templates": [
+        {
+            "task": "text-generation",
+            "text_column": "reasoning"
+        }
+    ],
+    "tags": [
+        "defi",
+        "blockchain",
+        "market-analysis",
+        "chain-of-thought",
+        "near-protocol",
+        "ethereum"
+    ],
+    "size_in_bytes": 66698,
+    "download_size": 66698,
+    "dataset_size": 66698,
+    "config_name": "default"
+} 
