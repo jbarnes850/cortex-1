@@ -8,6 +8,9 @@ import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 import pandas as pd
+import json
+import numpy as np
+from typing import Dict, List
 
 from src.data.flipside_client import FlipsideClient
 from src.data.synthetic_generator import SyntheticDataGenerator
@@ -148,6 +151,48 @@ def collect_protocol_data(
             
     return protocol_data
 
+def analyze_dataset_quality(dataset_path: str) -> Dict:
+    """Analyze the quality of generated dataset.
+    
+    Args:
+        dataset_path: Path to the generated dataset
+        
+    Returns:
+        Dictionary of quality metrics
+    """
+    examples = []
+    with open(dataset_path, 'r') as f:
+        for line in f:
+            examples.append(json.loads(line))
+    
+    # Convert to DataFrame for analysis
+    df = pd.DataFrame(examples)
+    
+    # Analyze prompt type distribution
+    prompt_dist = df['type'].value_counts(normalize=True)
+    
+    # Analyze market conditions
+    market_dist = df['market_condition'].value_counts(normalize=True)
+    
+    # Analyze rewards
+    rewards = pd.DataFrame([ex['reward'] for ex in examples])
+    
+    # Calculate quality metrics
+    quality_metrics = {
+        'total_examples': len(examples),
+        'prompt_type_distribution': prompt_dist.to_dict(),
+        'market_condition_distribution': market_dist.to_dict(),
+        'avg_reward': rewards['final_total'].mean(),
+        'reward_std': rewards['final_total'].std(),
+        'avg_prediction_accuracy': rewards.get('prediction_accuracy', pd.Series([0])).mean(),
+        'avg_reasoning_score': rewards.get('reasoning_score', pd.Series([0])).mean(),
+        'prompt_type_rewards': df.groupby('type')['reward'].apply(
+            lambda x: [r['final_total'] for r in x]
+        ).agg(['mean', 'std']).to_dict()
+    }
+    
+    return quality_metrics
+
 def main():
     args = parse_args()
     
@@ -205,6 +250,19 @@ def main():
         output_path=str(output_path),
         samples_per_prompt=args.samples_per_day
     )
+    
+    # Analyze dataset quality
+    logger.info("Analyzing dataset quality...")
+    quality_metrics = analyze_dataset_quality(str(output_path))
+    
+    # Save quality metrics
+    metrics_path = output_dir / f"quality_metrics_{end_date.strftime('%Y%m%d')}.json"
+    with open(metrics_path, 'w') as f:
+        json.dump(quality_metrics, f, indent=2)
+    
+    logger.info(f"\nDataset Quality Metrics:\n{json.dumps(quality_metrics, indent=2)}")
+    logger.info(f"\nDataset saved to: {output_path}")
+    logger.info(f"Quality metrics saved to: {metrics_path}")
 
 if __name__ == "__main__":
     main() 
