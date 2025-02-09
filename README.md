@@ -21,6 +21,87 @@ Our goal is to create a foundation for the community to build upon, whether you'
 - **Risk Assessment**: Comprehensive evaluation of technical, market, and systemic risks
 - **Opportunity Detection**: Identification of market inefficiencies and arbitrage opportunities
 
+## 🏗 Architecture
+
+```mermaid
+graph TB
+    subgraph Data Collection
+        FC[Flipside Client] --> |Raw Data| DP[Data Processing]
+        MC[Market Conditions] --> DP
+        PC[Protocol Collection] --> DP
+    end
+
+    subgraph Synthetic Generation
+        DP --> |Processed Data| SG[Synthetic Generator]
+        CF[Config Files] --> |Parameters| SG
+        SG --> |Examples| DS[Dataset]
+        RF[Reward Function] --> |Quality Metrics| SG
+    end
+
+    subgraph Model Training
+        DS --> |Training Data| MT[Model Training]
+        MT --> |Fine-tuned Model| MD[Model Deployment]
+    end
+
+    subgraph Inference Pipeline
+        MD --> |Deployed Model| API[REST API]
+        API --> |Predictions| CL[Client Applications]
+    end
+
+    subgraph Configuration
+        DC[Data Config] --> CF
+        MC[Model Config] --> CF
+        TC[Training Config] --> MT
+    end
+
+    style Data Collection fill:#f9f,stroke:#333,stroke-width:2px
+    style Synthetic Generation fill:#bbf,stroke:#333,stroke-width:2px
+    style Model Training fill:#bfb,stroke:#333,stroke-width:2px
+    style Inference Pipeline fill:#fbb,stroke:#333,stroke-width:2px
+    style Configuration fill:#fff,stroke:#333,stroke-width:2px
+```
+
+### Component Details
+
+1. **Data Collection Layer**
+   - Flipside Client: Fetches raw blockchain data
+   - Market Conditions: Analyzes and labels market states
+   - Protocol Collection: Gathers DeFi protocol metrics
+
+2. **Synthetic Generation Layer**
+   - Config-driven generation pipeline
+   - Reward function for quality assessment
+   - Multi-chain data integration
+   - Template-based prompt generation
+
+3. **Model Training Layer**
+   - GRPO (Group Policy Optimization)
+   - Distributed training support
+   - Quantization options (4-bit/8-bit)
+   - Checkpoint management
+
+4. **Inference Pipeline**
+   - REST API for predictions
+   - Batch and streaming inference
+   - Load balancing and scaling
+   - Monitoring and logging
+
+### Data Flow
+
+1. Raw data is collected from multiple chains via Flipside
+2. Data is processed and enriched with market conditions
+3. Synthetic generator creates training examples
+4. Quality metrics are calculated for each example
+5. Training pipeline fine-tunes the model
+6. Deployed model serves predictions via API
+
+### Configuration System
+
+- **Data Config**: Controls data collection and processing
+- **Model Config**: Defines model architecture and parameters
+- **Training Config**: Manages training hyperparameters
+- **DeepSpeed Config**: Optimizes distributed training
+
 ## 🎯 Core Capabilities
 
 1. **Market Analysis & Prediction**

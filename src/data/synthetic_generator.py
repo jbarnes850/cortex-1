@@ -13,6 +13,7 @@ import numpy as np
 from tqdm import tqdm
 from collections import defaultdict
 import time
+import yaml
 
 from src.data.flipside_client import FlipsideClient
 from src.model.openai_client import OpenAIClient
@@ -20,6 +21,11 @@ from src.model.reward_function import RewardFunction
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+def load_config(config_path: str) -> Dict:
+    """Load configuration from YAML file."""
+    with open(config_path, 'r') as f:
+        return yaml.safe_load(f)
 
 class MarketCondition:
     """Enum-like class for market conditions."""
@@ -33,27 +39,46 @@ class MarketCondition:
 class SyntheticDataGenerator:
     """Generate synthetic chain-of-thought reasoning data using o3-mini."""
     
-    def __init__(self, api_key: Optional[str] = None, model: str = "o3-mini"):
+    def __init__(self, 
+                 api_key: Optional[str] = None, 
+                 model: str = "o3-mini",
+                 data_config_path: str = "configs/data_config.yaml",
+                 model_config_path: str = "configs/model_config.yaml"):
         """Initialize the synthetic data generator.
         
         Args:
             api_key: OpenAI API key. If not provided, will look for OPENAI_API_KEY in environment.
             model: OpenAI model to use for generation. Defaults to o3-mini for structured reasoning.
+            data_config_path: Path to data configuration YAML
+            model_config_path: Path to model configuration YAML
         """
         self.openai_client = OpenAIClient(api_key)
         self.reward_function = RewardFunction()
         self.model = model
         
+        # Load configurations
+        self.data_config = load_config(data_config_path)
+        self.model_config = load_config(model_config_path)
+        
+        # Extract key configuration values
+        self.synthetic_config = self.data_config.get('synthetic', {})
+        self.min_quality_score = self.synthetic_config.get('min_quality_score', 0.8)
+        self.max_attempts = self.synthetic_config.get('max_attempts_per_sample', 2)
+        self.temperature_range = self.synthetic_config.get('temperature_range', [0.5, 0.8])
+        self.batch_size = self.synthetic_config.get('batch_size', 10)
+        
+        # Configure model settings
+        self.inference_config = self.model_config.get('inference', {})
+        self.max_length = self.model_config.get('tokenizer', {}).get('max_length', 2048)
+        
         # Define prompt templates for diverse reasoning tasks
         self.prompt_templates = {
             'prediction': self._create_prediction_prompt,
-            'correlation': self._create_correlation_prompt,
-            'protocol': self._create_protocol_prompt,
-            'risk': self._create_risk_prompt,
-            'opportunity': self._create_opportunity_prompt,
-            'market_qa': self._create_market_qa_prompt,
             'analytical': self._create_analytical_prompt,
-            'financial': self._create_financial_prompt
+            'correlation': self._create_correlation_prompt,
+            'market_qa': self._create_market_qa_prompt,
+            'financial': self._create_financial_prompt,
+            'protocol': self._create_protocol_prompt
         }
         
     def _label_market_condition(self, 
