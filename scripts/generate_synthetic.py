@@ -163,7 +163,22 @@ def analyze_dataset_quality(dataset_path: str) -> Dict:
     examples = []
     with open(dataset_path, 'r') as f:
         for line in f:
-            examples.append(json.loads(line))
+            try:
+                examples.append(json.loads(line))
+            except json.JSONDecodeError:
+                continue
+    
+    if not examples:
+        return {
+            'total_examples': 0,
+            'prompt_type_distribution': {},
+            'market_condition_distribution': {},
+            'avg_reward': 0.0,
+            'reward_std': 0.0,
+            'avg_prediction_accuracy': 0.0,
+            'avg_reasoning_score': 0.0,
+            'prompt_type_rewards': {}
+        }
     
     # Convert to DataFrame for analysis
     df = pd.DataFrame(examples)
@@ -175,29 +190,41 @@ def analyze_dataset_quality(dataset_path: str) -> Dict:
     market_dist = df['market_condition'].value_counts(normalize=True)
     
     # Calculate quality metrics
+    rewards = [ex['reward']['final_total'] for ex in examples if isinstance(ex.get('reward', {}), dict)]
+    prediction_accuracies = [
+        ex['reward'].get('prediction_accuracy', 0) 
+        for ex in examples 
+        if isinstance(ex.get('reward', {}), dict)
+    ]
+    reasoning_scores = [
+        ex['reward'].get('reasoning_depth', 0) 
+        for ex in examples
+        if isinstance(ex.get('reward', {}), dict)
+    ]
+    
+    # Group by prompt type and calculate rewards
+    prompt_rewards = {}
+    for prompt_type in df['type'].unique():
+        type_examples = [
+            ex for ex in examples 
+            if ex['type'] == prompt_type and isinstance(ex.get('reward', {}), dict)
+        ]
+        if type_examples:
+            rewards = [ex['reward']['final_total'] for ex in type_examples]
+            prompt_rewards[prompt_type] = {
+                'mean': float(np.mean(rewards)),
+                'std': float(np.std(rewards))
+            }
+    
     quality_metrics = {
         'total_examples': len(examples),
         'prompt_type_distribution': prompt_dist.to_dict(),
         'market_condition_distribution': market_dist.to_dict(),
-        'avg_reward': np.mean([ex['reward']['final_total'] for ex in examples]),
-        'reward_std': np.std([ex['reward']['final_total'] for ex in examples]),
-        'avg_prediction_accuracy': np.mean([
-            ex['reward'].get('prediction_accuracy', 0) 
-            for ex in examples 
-            if 'prediction_accuracy' in ex['reward']
-        ]),
-        'avg_reasoning_score': np.mean([
-            ex['reward'].get('reasoning_depth', 0) 
-            for ex in examples
-            if 'reasoning_depth' in ex['reward']
-        ]),
-        'prompt_type_rewards': {
-            prompt_type: {
-                'mean': np.mean([ex['reward']['final_total'] for ex in group]),
-                'std': np.std([ex['reward']['final_total'] for ex in group])
-            }
-            for prompt_type, group in df.groupby('type')
-        }
+        'avg_reward': float(np.mean(rewards)) if rewards else 0.0,
+        'reward_std': float(np.std(rewards)) if rewards else 0.0,
+        'avg_prediction_accuracy': float(np.mean(prediction_accuracies)) if prediction_accuracies else 0.0,
+        'avg_reasoning_score': float(np.mean(reasoning_scores)) if reasoning_scores else 0.0,
+        'prompt_type_rewards': prompt_rewards
     }
     
     return quality_metrics

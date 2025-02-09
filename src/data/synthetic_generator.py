@@ -68,35 +68,47 @@ class SyntheticDataGenerator:
         Returns:
             String label of market condition
         """
-        # Calculate key indicators
-        txn_growth = float(current_data.get('txn_growth_pct_7d', 0))
-        user_growth = float(current_data.get('user_growth_pct_7d', 0))
-        volatility = float(current_data.get('tx_volatility_7d', 0))
-        
-        # Get historical averages
-        if historical_data:
-            hist_volatility = np.mean([float(d.get('tx_volatility_7d', 0)) 
-                                     for d in historical_data])
-            hist_txn_growth = np.mean([float(d.get('txn_growth_pct_7d', 0)) 
-                                     for d in historical_data])
-        else:
-            hist_volatility = volatility
-            hist_txn_growth = txn_growth
-        
-        # Label conditions (check volatility first)
-        if volatility > 150.0:  # Absolute threshold for high volatility
-            return MarketCondition.VOLATILE
-        elif txn_growth > 10 and user_growth > 5:
-            return MarketCondition.BULLISH
-        elif txn_growth < -10 and user_growth < -5:
-            return MarketCondition.BEARISH
-        elif abs(txn_growth) <= 5 and abs(user_growth) <= 3:
-            return MarketCondition.SIDEWAYS
-        elif txn_growth > hist_txn_growth + 5:
-            return MarketCondition.RECOVERY
-        elif txn_growth < hist_txn_growth - 5:
-            return MarketCondition.CORRECTION
-        else:
+        # Calculate key indicators with proper error handling
+        try:
+            txn_growth = float(current_data.get('txn_growth_pct_7d', 0))
+            user_growth = float(current_data.get('user_growth_pct_7d', 0))
+            volume_growth = float(current_data.get('volume_growth_pct_7d', 0))
+            volatility = float(current_data.get('tx_volatility_7d', 0))
+            success_rate = float(current_data.get('success_rate', 0))
+            
+            # Get historical averages
+            if historical_data:
+                hist_volatility = np.mean([float(d.get('tx_volatility_7d', 0)) 
+                                         for d in historical_data])
+                hist_volume_growth = np.mean([float(d.get('volume_growth_pct_7d', 0)) 
+                                            for d in historical_data])
+                hist_success_rate = np.mean([float(d.get('success_rate', 0)) 
+                                           for d in historical_data])
+            else:
+                hist_volatility = volatility
+                hist_volume_growth = volume_growth
+                hist_success_rate = success_rate
+            
+            # Label conditions with comprehensive criteria
+            if volatility > hist_volatility * 1.5 and abs(volume_growth) > 20:
+                return MarketCondition.VOLATILE
+            elif (txn_growth > 10 and user_growth > 5 and volume_growth > 0 and 
+                  success_rate >= hist_success_rate):
+                return MarketCondition.BULLISH
+            elif (txn_growth < -10 or user_growth < -5 or volume_growth < -10 or 
+                  success_rate < hist_success_rate * 0.9):
+                return MarketCondition.BEARISH
+            elif abs(txn_growth) <= 5 and abs(user_growth) <= 3 and abs(volume_growth) <= 7:
+                return MarketCondition.SIDEWAYS
+            elif volume_growth > hist_volume_growth + 10 and success_rate >= hist_success_rate:
+                return MarketCondition.RECOVERY
+            elif volume_growth < hist_volume_growth - 10 or success_rate < hist_success_rate * 0.95:
+                return MarketCondition.CORRECTION
+            else:
+                return MarketCondition.SIDEWAYS
+                
+        except (TypeError, ValueError) as e:
+            logger.warning(f"Error calculating market condition: {str(e)}")
             return MarketCondition.SIDEWAYS
 
     def _balance_market_conditions(self, 
@@ -150,17 +162,31 @@ class SyntheticDataGenerator:
             condition = self._label_market_condition(normalized_current, normalized_historical)
             labeled_data.append((normalized_current, condition))
         
+        # If no data was labeled, return normalized input data
+        if not labeled_data:
+            return [normalize_metrics(d) for d in market_data]
+        
         # Group by condition
         condition_groups = defaultdict(list)
         for data, condition in labeled_data:
             condition_groups[condition].append(data)
         
-        # Calculate target size (use mean of non-outlier sizes)
+        # If no groups were created, return normalized input data
+        if not condition_groups:
+            return [normalize_metrics(d) for d in market_data]
+        
+        # Calculate target size (use mean size if only one group)
         sizes = [len(group) for group in condition_groups.values()]
-        q1, q3 = np.percentile(sizes, [25, 75])
-        iqr = q3 - q1
-        valid_sizes = [s for s in sizes if q1 - 1.5*iqr <= s <= q3 + 1.5*iqr]
-        target_size = int(np.mean(valid_sizes)) if valid_sizes else int(np.mean(sizes))
+        if len(sizes) == 1:
+            target_size = sizes[0]
+        else:
+            q1, q3 = np.percentile(sizes, [25, 75])
+            iqr = q3 - q1
+            valid_sizes = [s for s in sizes if q1 - 1.5*iqr <= s <= q3 + 1.5*iqr]
+            target_size = int(np.mean(valid_sizes)) if valid_sizes else int(np.mean(sizes))
+        
+        # Ensure minimum target size
+        target_size = max(3, target_size)  # At least 3 examples per condition
         
         # Balance each group to the target size
         balanced_data = []
@@ -240,7 +266,11 @@ class SyntheticDataGenerator:
         }
         
         prompt = f"""<reasoning>
-Given the following market data from {market_data.get('block_timestamp', 'N/A')}, predict and explain the likely market behavior over the next 7 days. Support all analysis with specific data citations and compare with historical patterns.
+Given the following market data from {market_data.get('block_timestamp', 'N/A')}, provide a comprehensive market analysis with exact predictions. Each prediction must include:
+1. A specific numerical value
+2. A confidence interval
+3. Supporting data citations
+4. Cross-chain correlation analysis
 
 Current Market State:
 1. Network Activity [cite as 'Network Metrics']
@@ -263,65 +293,86 @@ Current Market State:
 - Active Contracts: {market_data.get('active_contracts', 'N/A')}
 - Bridge Volume: {market_data.get('bridge_volume', 'N/A')}
 
-Historical Outcome Data (for pattern analysis):
-- Transaction Change: {float(outcome_data.get('txn_growth_pct_7d', 0)):.1f}%
-- User Growth Change: {float(outcome_data.get('user_growth_pct_7d', 0)):.1f}%
-- Volatility Change: {float(outcome_data.get('tx_volatility_7d', 0)):.2f}
+Historical Context:
+- Previous Transaction Growth: {float(outcome_data.get('txn_growth_pct_7d', 0)):.1f}%
+- Previous User Growth: {float(outcome_data.get('user_growth_pct_7d', 0)):.1f}%
+- Previous Volatility: {float(outcome_data.get('tx_volatility_7d', 0)):.2f}
 
-Required Analysis:
-1. Data-Driven Predictions (cite specific metrics for each):
-   a) Transaction Growth: Project exact percentage change based on historical patterns
-   b) Gas Price Range: Specify min-max range in GWEI with supporting data
-   c) User Growth: Project percentage change with confidence interval
-   d) Cross-Chain Impact: 
-      - List top 3 affected chains
-      - Quantify expected volume changes
-      - Specify correlation coefficients
-   e) Smart Contract Activity: Project growth with supporting metrics
+Required Analysis Sections:
 
-2. Technical Analysis (cite data points):
-   a) Support/Resistance:
-      - Calculate levels using transaction volumes
-      - Identify key price points
-      - Project breakout scenarios
-   b) Volume Analysis:
-      - Compare to 7-day average
-      - Identify volume trends
-      - Project future volume ranges
+1. Initial Market Assessment (20% of response)
+   - Current market condition classification with evidence
+   - Key trend identification with specific metrics
+   - Cross-chain correlation coefficients
+   - Volume analysis across chains
 
-3. Risk Assessment (quantify each):
-   a) Technical Risks:
-      - Specify probability based on historical data
-      - Quantify potential impact
-      - List leading indicators
-   b) Market Risks:
-      - Calculate exposure metrics
-      - Identify correlation risks
-      - Project potential losses
-   c) Cross-Chain Risks:
-      - Analyze bridge volumes
-      - Calculate contagion probability
-      - Specify monitoring thresholds
+2. Quantitative Predictions (30% of response)
+   - Transaction Growth: [Exact % with 95% confidence interval]
+   - User Growth: [Exact % with 95% confidence interval]
+   - Volatility Change: [Exact value with 95% confidence interval]
+   - Gas Price Range: [Min-Max with 90% confidence interval]
+   Each prediction must cite specific metrics and include:
+   - Point estimate
+   - Confidence interval
+   - Supporting calculations
+   - Historical comparison
 
-4. Opportunity Analysis (with data support):
-   a) Market Inefficiencies:
-      - Calculate arbitrage spreads
-      - Identify volume imbalances
-      - Project potential returns
-   b) Entry/Exit Points:
-      - Specify exact trigger levels
-      - Calculate position sizes
-      - Define risk/reward ratios
+3. Technical Analysis (25% of response)
+   - Volume Profile Analysis
+   - Support/Resistance Levels
+   - Trend Strength Indicators
+   - Volatility Patterns
+   Each analysis must include:
+   - Specific calculations
+   - Data citations
+   - Confidence metrics
 
-Requirements:
-1. Cite specific metrics for each prediction using [cite as 'X'] format
-2. Compare all projections with historical outcome data
-3. Provide exact numbers and confidence intervals
-4. Keep analysis concise and data-focused
-5. Include cross-chain correlation analysis
-6. Support all conclusions with quantitative evidence
+4. Risk Assessment (25% of response)
+   - Technical Risks (quantified probabilities)
+   - Market Risks (exposure metrics)
+   - Cross-Chain Risks (contagion coefficients)
+   - Mitigation Strategies
+   Each risk must include:
+   - Probability estimate
+   - Impact quantification
+   - Historical precedent
+   - Monitoring thresholds
 
-Format your response in clear sections with minimal prose. Focus on data-driven insights rather than general market commentary.</reasoning>"""
+Required Elements:
+1. Every prediction must include confidence intervals
+2. All analyses must cite specific metrics using [cite as 'X'] format
+3. Include at least 3 cross-chain correlations with coefficients
+4. Provide exact numerical values for all predictions
+5. Include probability estimates for all risk factors
+6. Compare all projections with historical data
+7. Show calculations for derived metrics
+
+Response Quality Criteria:
+1. Prediction Accuracy:
+   - Exact numerical predictions
+   - Well-defined confidence intervals
+   - Clear methodology
+   - Historical validation
+
+2. Technical Quality:
+   - Rigorous calculations
+   - Multiple indicator analysis
+   - Clear methodology
+   - Error bounds
+
+3. Cross-Chain Analysis:
+   - Correlation coefficients
+   - Volume relationships
+   - Risk propagation
+   - Arbitrage analysis
+
+4. Risk Assessment:
+   - Quantified probabilities
+   - Impact metrics
+   - Historical comparisons
+   - Mitigation strategies
+
+Format your response in clear sections with minimal prose. Focus on quantitative analysis and data-driven insights.</reasoning>"""
 
         return prompt
     
@@ -796,12 +847,8 @@ Show all calculations and explain your economic reasoning at each step.</reasoni
                             # Calculate rewards including group comparison
                             reward = self.reward_function.calculate_reward(
                                 response=result,
-                                prompt={
-                                    'context_data': current_data,
-                                    'outcome_data': outcome_data,
-                                    'prompt_type': prompt_type
-                                },
-                                group_responses=[]  # We'll calculate group metrics later
+                                context_data=current_data,
+                                outcome_data=outcome_data
                             )
                             
                             example = {

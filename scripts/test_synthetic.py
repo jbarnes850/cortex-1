@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from datetime import datetime, timedelta
 import numpy as np
+from typing import List, Dict
 
 from src.data.flipside_client import FlipsideClient
 from src.data.synthetic_generator import SyntheticDataGenerator, MarketCondition
@@ -217,6 +218,76 @@ def test_prompt_diversity():
             logger.error(f"Error testing {prompt_type} prompt: {str(e)}")
             raise
 
+def generate_mock_data(num_days: int = 7) -> List[Dict]:
+    """Generate mock market data for testing."""
+    mock_data = []
+    base_date = datetime.now() - timedelta(days=num_days)
+    
+    for i in range(num_days):
+        current_date = base_date + timedelta(days=i)
+        
+        # Create mock data point with realistic values
+        data_point = {
+            'block_timestamp': current_date.isoformat(),
+            'network': 'ethereum',
+            'num_txs': 1000000 + np.random.randint(-50000, 50000),
+            'unique_senders': 50000 + np.random.randint(-5000, 5000),
+            'success_rate': 0.98 + np.random.uniform(-0.02, 0.02),
+            'avg_tx_value': 1.5 + np.random.uniform(-0.5, 0.5),
+            'avg_gas_used': 50000 + np.random.randint(-10000, 10000),
+            'avg_gas_price': 30 + np.random.randint(-5, 5),
+            'smart_contract_calls': 800000 + np.random.randint(-40000, 40000),
+            'txn_growth_pct_7d': 5.0 + np.random.uniform(-10, 10),
+            'user_growth_pct_7d': 3.0 + np.random.uniform(-5, 5),
+            'tx_volatility_7d': 100.0 + np.random.uniform(-20, 20)
+        }
+        mock_data.append(data_point)
+    
+    return mock_data
+
+def test_synthetic_generation():
+    """Test synthetic data generation with mock data."""
+    generator = SyntheticDataGenerator()
+    
+    # Generate mock data
+    market_data = generate_mock_data(7)
+    protocol_data = [{
+        'protocol': 'uniswap',
+        'blockchain': 'ethereum',
+        'volume_usd': 1000000,
+        'unique_users': 50000,
+        'volume_growth_pct': 5.0,
+        'volume_share': 15.0
+    }]
+    
+    # Create test output directory
+    output_dir = Path('data/test')
+    output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate synthetic data
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_path = output_dir / f"reasoning_data_{timestamp}.jsonl"
+    
+    logger.info("Generating synthetic data with mock inputs...")
+    generator.generate_dataset(
+        market_data=market_data,
+        protocol_data=protocol_data,
+        output_path=str(output_path),
+        samples_per_prompt=3
+    )
+    
+    # Analyze results
+    if output_path.exists():
+        with open(output_path, 'r') as f:
+            examples = [json.loads(line) for line in f]
+            
+        logger.info(f"\nGenerated {len(examples)} examples")
+        logger.info("Sample rewards:")
+        for i, ex in enumerate(examples[:3]):
+            logger.info(f"Example {i+1} reward scores:")
+            for k, v in ex['reward'].items():
+                logger.info(f"  {k}: {v:.3f}")
+
 def main():
     """Run all tests."""
     logger.info("Testing market condition labeling...")
@@ -230,6 +301,10 @@ def main():
     logger.info("Testing prompt diversity...")
     test_prompt_diversity()
     logger.info("✓ Prompt diversity tests passed\n")
+    
+    logger.info("Testing synthetic generation with mock data...")
+    test_synthetic_generation()
+    logger.info("✓ Synthetic generation tests completed\n")
 
 if __name__ == "__main__":
     main() 
