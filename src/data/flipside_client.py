@@ -84,18 +84,13 @@ class FlipsideClient:
                     -- Success Rate
                     COUNT(CASE WHEN tx_succeeded = TRUE THEN 1 END)::float / NULLIF(COUNT(*), 0) as success_rate,
                     -- Value Metrics
-                    SUM(deposit_value) as total_value,
-                    AVG(deposit_value) as avg_tx_value,
+                    AVG(COALESCE(transaction_fee, 0)) as avg_tx_value,
                     -- Gas Metrics
                     AVG(gas_used) as avg_gas_used,
-                    AVG(gas_price) as avg_gas_price,
-                    SUM(gas_used * gas_price) as total_gas_cost,
-                    -- Action Types
-                    COUNT(CASE WHEN action_name = 'FUNCTION_CALL' THEN 1 END) as smart_contract_calls,
-                    COUNT(CASE WHEN action_name = 'TRANSFER' THEN 1 END) as transfers,
-                    COUNT(CASE WHEN action_name = 'STAKE' THEN 1 END) as stakes,
-                    -- Active Contracts
-                    COUNT(DISTINCT CASE WHEN action_name = 'FUNCTION_CALL' THEN tx_receiver END) as active_contracts
+                    AVG(attached_gas) as avg_gas_limit,
+                    SUM(transaction_fee) as total_gas_cost,
+                    -- Contract Activity
+                    COUNT(DISTINCT tx_receiver) as active_contracts
                 FROM near.core.fact_transactions
                 WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
                 GROUP BY 1
@@ -108,8 +103,6 @@ class FlipsideClient:
                     LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
                     unique_senders,
                     LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
-                    total_value,
-                    LAG(total_value, 7) OVER (ORDER BY block_timestamp) as total_value_7d_ago,
                     STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d
                 FROM daily_metrics
             )
@@ -117,10 +110,8 @@ class FlipsideClient:
                 d.*,
                 'NEAR' as network,
                 'NEAR' as blockchain,
-                -- Growth Metrics
                 COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
                 COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
-                COALESCE((w.total_value - w.total_value_7d_ago) / NULLIF(w.total_value_7d_ago, 0) * 100, 0) as value_growth_pct_7d,
                 w.tx_volatility_7d
             FROM daily_metrics d
             LEFT JOIN weekly_metrics w USING (block_timestamp)

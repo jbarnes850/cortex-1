@@ -36,12 +36,12 @@ class RewardFunction:
         ]
 
         self.required_sections = [
-            "Market Overview",
-            "Technical Analysis", 
-            "On-Chain Metrics",
-            "Risk Factors",
-            "Trading Opportunities",
-            "Final Recommendation"
+            "Initial Observations",
+            "Analysis",
+            "Technical Assessment",
+            "Risk Evaluation",
+            "Opportunities",
+            "Conclusion"
         ]
 
     def _calculate_similarity(self, str1: str, str2: str) -> float:
@@ -385,10 +385,10 @@ class RewardFunction:
             return {'final_total': 0.0, 'error': 'Insufficient section coverage'}
         
         # 2. Prediction Accuracy (0.0 - 1.0)
-        if 'expected_outcome' in prompt:
+        if 'expected_outcome' in prompt or 'outcome_data' in prompt:
             rewards['prediction_accuracy'] = self._calculate_prediction_accuracy(
                 response,
-                prompt['expected_outcome']
+                prompt.get('expected_outcome', prompt.get('outcome_data', {}))
             )
         
         # 3. Chain-of-Thought Depth (0.0 - 0.5)

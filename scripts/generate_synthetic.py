@@ -174,21 +174,30 @@ def analyze_dataset_quality(dataset_path: str) -> Dict:
     # Analyze market conditions
     market_dist = df['market_condition'].value_counts(normalize=True)
     
-    # Analyze rewards
-    rewards = pd.DataFrame([ex['reward'] for ex in examples])
-    
     # Calculate quality metrics
     quality_metrics = {
         'total_examples': len(examples),
         'prompt_type_distribution': prompt_dist.to_dict(),
         'market_condition_distribution': market_dist.to_dict(),
-        'avg_reward': rewards['final_total'].mean(),
-        'reward_std': rewards['final_total'].std(),
-        'avg_prediction_accuracy': rewards.get('prediction_accuracy', pd.Series([0])).mean(),
-        'avg_reasoning_score': rewards.get('reasoning_score', pd.Series([0])).mean(),
-        'prompt_type_rewards': df.groupby('type')['reward'].apply(
-            lambda x: [r['final_total'] for r in x]
-        ).agg(['mean', 'std']).to_dict()
+        'avg_reward': np.mean([ex['reward']['final_total'] for ex in examples]),
+        'reward_std': np.std([ex['reward']['final_total'] for ex in examples]),
+        'avg_prediction_accuracy': np.mean([
+            ex['reward'].get('prediction_accuracy', 0) 
+            for ex in examples 
+            if 'prediction_accuracy' in ex['reward']
+        ]),
+        'avg_reasoning_score': np.mean([
+            ex['reward'].get('reasoning_depth', 0) 
+            for ex in examples
+            if 'reasoning_depth' in ex['reward']
+        ]),
+        'prompt_type_rewards': {
+            prompt_type: {
+                'mean': np.mean([ex['reward']['final_total'] for ex in group]),
+                'std': np.std([ex['reward']['final_total'] for ex in group])
+            }
+            for prompt_type, group in df.groupby('type')
+        }
     }
     
     return quality_metrics
@@ -207,6 +216,10 @@ def main():
     # Create output directory
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Generate unique timestamp for the output file
+    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+    output_path = output_dir / f"reasoning_data_{timestamp}.jsonl"
     
     # Collect data
     logger.info(f"Collecting {args.days} days of historical data...")
@@ -242,8 +255,6 @@ def main():
     
     # Generate synthetic data
     logger.info("Generating synthetic training data...")
-    output_path = output_dir / f"reasoning_data_{end_date.strftime('%Y%m%d')}.jsonl"
-    
     synthetic_generator.generate_dataset(
         market_data=market_data,
         protocol_data=protocol_data,
@@ -256,7 +267,7 @@ def main():
     quality_metrics = analyze_dataset_quality(str(output_path))
     
     # Save quality metrics
-    metrics_path = output_dir / f"quality_metrics_{end_date.strftime('%Y%m%d')}.json"
+    metrics_path = output_dir / f"quality_metrics_{timestamp}.json"
     with open(metrics_path, 'w') as f:
         json.dump(quality_metrics, f, indent=2)
     
