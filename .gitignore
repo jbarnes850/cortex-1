@@ -1,7 +1,7 @@
 venv/
 .env
 data/test
-plan.md
+docs/plan.md
 __pycache__/
 
 # Python

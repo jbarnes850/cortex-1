@@ -5,1127 +5,168 @@ Synthetic data generator for creating chain-of-thought reasoning examples.
 import os
 import json
 import logging
-from datetime import datetime, timedelta
-from pathlib import Path
-from typing import Dict, List, Optional, Any, Tuple, Union
-import pandas as pd
+from datetime import datetime
+from typing import Dict, List, Optional, Any, Tuple
 import numpy as np
-from tqdm import tqdm
 from collections import defaultdict
-import time
 import yaml
 
 from src.data.flipside_client import FlipsideClient
 from src.model.openai_client import OpenAIClient
-from src.model.reward_function import RewardFunction
+from src.data.market_conditions import MarketConditions
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-def load_config(config_path: str) -> Dict:
-    """Load configuration from YAML file."""
-    with open(config_path, 'r') as f:
-        return yaml.safe_load(f)
-
-class MarketCondition:
-    """Enum-like class for market conditions."""
-    BULLISH = "bullish"
-    BEARISH = "bearish"
-    SIDEWAYS = "sideways"
-    VOLATILE = "volatile"
-    RECOVERY = "recovery"
-    CORRECTION = "correction"
-
 class SyntheticDataGenerator:
-    """Generate synthetic chain-of-thought reasoning data using o3-mini."""
+    """Generate synthetic chain-of-thought reasoning data using market data."""
     
-    def __init__(self, 
-                 api_key: Optional[str] = None, 
-                 model: str = "o3-mini",
-                 data_config_path: str = "configs/data_config.yaml",
-                 model_config_path: str = "configs/model_config.yaml"):
-        """Initialize the synthetic data generator.
+    def __init__(self, config_path: str = "configs/data_config.yaml"):
+        """Initialize the synthetic data generator."""
+        self.openai_client = OpenAIClient()
+        self.market_conditions = MarketConditions()
+        self.config = self._load_config(config_path)
         
-        Args:
-            api_key: OpenAI API key. If not provided, will look for OPENAI_API_KEY in environment.
-            model: OpenAI model to use for generation. Defaults to o3-mini for structured reasoning.
-            data_config_path: Path to data configuration YAML
-            model_config_path: Path to model configuration YAML
-        """
-        self.openai_client = OpenAIClient(api_key)
-        self.reward_function = RewardFunction()
-        self.model = model
-        
-        # Load configurations
-        self.data_config = load_config(data_config_path)
-        self.model_config = load_config(model_config_path)
-        
-        # Extract key configuration values
-        self.synthetic_config = self.data_config.get('synthetic', {})
-        self.min_quality_score = self.synthetic_config.get('min_quality_score', 0.8)
-        self.max_attempts = self.synthetic_config.get('max_attempts_per_sample', 2)
-        self.temperature_range = self.synthetic_config.get('temperature_range', [0.5, 0.8])
-        self.batch_size = self.synthetic_config.get('batch_size', 10)
-        
-        # Configure model settings
-        self.inference_config = self.model_config.get('inference', {})
-        self.max_length = self.model_config.get('tokenizer', {}).get('max_length', 2048)
-        
-        # Define prompt templates for diverse reasoning tasks
-        self.prompt_templates = {
-            'prediction': self._create_prediction_prompt,
-            'analytical': self._create_analytical_prompt,
-            'correlation': self._create_correlation_prompt,
-            'market_qa': self._create_market_qa_prompt,
-            'financial': self._create_financial_prompt,
-            'protocol': self._create_protocol_prompt
-        }
-        
-    def _label_market_condition(self, 
-                              current_data: Dict[str, Any], 
-                              historical_data: List[Dict[str, Any]]) -> str:
-        """Label market condition based on comprehensive metrics analysis."""
-        try:
-            # Extract core metrics with proper error handling
-            metrics = {
-                'txn_growth': float(current_data.get('txn_growth_pct_7d', 0)),
-                'user_growth': float(current_data.get('user_growth_pct_7d', 0)),
-                'volume_growth': float(current_data.get('volume_growth_pct_7d', 0)),
-                'volatility': float(current_data.get('tx_volatility_7d', 0)),
-                'success_rate': float(current_data.get('success_rate', 0)),
-                'smart_contract_calls': float(current_data.get('smart_contract_calls', 0)),
-                'bridge_volume': float(current_data.get('bridge_volume', 0))
-            }
-            
-            # Calculate historical averages and volatility
-            if historical_data:
-                hist_metrics = {
-                    'volatility': np.mean([float(d.get('tx_volatility_7d', 0)) for d in historical_data]),
-                    'volume_growth': np.mean([float(d.get('volume_growth_pct_7d', 0)) for d in historical_data]),
-                    'success_rate': np.mean([float(d.get('success_rate', 0)) for d in historical_data]),
-                    'volatility_std': np.std([float(d.get('tx_volatility_7d', 0)) for d in historical_data])
-                }
-            else:
-                hist_metrics = {k: v for k, v in metrics.items()}
-                hist_metrics['volatility_std'] = metrics['volatility'] * 0.1
-            
-            # Enhanced condition classification with multiple indicators
-            conditions = []
-            
-            # Volatility Check (Primary)
-            if metrics['volatility'] > hist_metrics['volatility'] + 2 * hist_metrics['volatility_std']:
-                conditions.append(MarketCondition.VOLATILE)
-            
-            # Trend Analysis (Secondary)
-            if metrics['txn_growth'] > 15 and metrics['user_growth'] > 8:
-                conditions.append(MarketCondition.BULLISH)
-            elif metrics['txn_growth'] < -15 or metrics['user_growth'] < -8:
-                conditions.append(MarketCondition.BEARISH)
-            
-            # Recovery/Correction Analysis (Tertiary)
-            if metrics['volume_growth'] > hist_metrics['volume_growth'] + 15:
-                conditions.append(MarketCondition.RECOVERY)
-            elif metrics['volume_growth'] < hist_metrics['volume_growth'] - 15:
-                conditions.append(MarketCondition.CORRECTION)
-            
-            # Smart Contract & Bridge Activity (Quaternary)
-            if metrics['smart_contract_calls'] > 0 and metrics['bridge_volume'] > 0:
-                if metrics['success_rate'] >= hist_metrics['success_rate']:
-                    conditions.append(MarketCondition.BULLISH)
-                else:
-                    conditions.append(MarketCondition.BEARISH)
-            
-            # Final condition determination
-            if not conditions:
-                return MarketCondition.SIDEWAYS
-            
-            # Prioritize conditions based on strength of signals
-            if MarketCondition.VOLATILE in conditions:
-                return MarketCondition.VOLATILE
-            elif MarketCondition.BULLISH in conditions and metrics['success_rate'] > hist_metrics['success_rate']:
-                return MarketCondition.BULLISH
-            elif MarketCondition.BEARISH in conditions:
-                return MarketCondition.BEARISH
-            elif MarketCondition.RECOVERY in conditions:
-                return MarketCondition.RECOVERY
-            elif MarketCondition.CORRECTION in conditions:
-                return MarketCondition.CORRECTION
-            else:
-                return conditions[0]
-                
-        except (TypeError, ValueError) as e:
-            logger.warning(f"Error calculating market condition: {str(e)}")
-            return MarketCondition.SIDEWAYS
-
-    def _balance_market_conditions(self, 
-                                 market_data: List[Dict[str, Any]], 
-                                 window_size: int = 7) -> List[Dict[str, Any]]:
-        """Balance dataset across different market conditions with metric normalization.
-        
-        Args:
-            market_data: List of market data points
-            window_size: Historical window size for condition labeling
-            
-        Returns:
-            Balanced list of market data points
-        """
-        # Define reasonable bounds for metrics
-        METRIC_BOUNDS = {
-            'avg_tx_value': (0.0, 1000.0),  # Reasonable transaction value range
-            'avg_gas_used': (21000, 1000000),  # Standard gas usage range
-            'avg_gas_price': (1, 500),  # Reasonable gas price range in GWEI
-            'txn_growth_pct_7d': (-100, 100),  # Percent change bounds
-            'user_growth_pct_7d': (-50, 50),  # Percent change bounds
-            'tx_volatility_7d': (0, 100000)  # Reasonable volatility range
-        }
-        
-        def normalize_metrics(data_point: Dict[str, Any]) -> Dict[str, Any]:
-            """Normalize metrics to reasonable ranges."""
-            normalized = data_point.copy()
-            
-            for metric, (min_val, max_val) in METRIC_BOUNDS.items():
-                if metric in normalized:
-                    try:
-                        value = float(normalized[metric])
-                        # Clip to reasonable bounds
-                        normalized[metric] = max(min_val, min(value, max_val))
-                    except (ValueError, TypeError):
-                        # If conversion fails, use median value
-                        normalized[metric] = (min_val + max_val) / 2
-                        
-            return normalized
-        
-        # Label market conditions
-        labeled_data = []
-        for i in range(window_size, len(market_data)):
-            current = market_data[i]
-            historical = market_data[i-window_size:i]
-            
-            # Normalize metrics before labeling
-            normalized_current = normalize_metrics(current)
-            normalized_historical = [normalize_metrics(h) for h in historical]
-            
-            condition = self._label_market_condition(normalized_current, normalized_historical)
-            labeled_data.append((normalized_current, condition))
-        
-        # If no data was labeled, return normalized input data
-        if not labeled_data:
-            return [normalize_metrics(d) for d in market_data]
-        
-        # Group by condition
-        condition_groups = defaultdict(list)
-        for data, condition in labeled_data:
-            condition_groups[condition].append(data)
-        
-        # If no groups were created, return normalized input data
-        if not condition_groups:
-            return [normalize_metrics(d) for d in market_data]
-        
-        # Calculate target size (use mean size if only one group)
-        sizes = [len(group) for group in condition_groups.values()]
-        if len(sizes) == 1:
-            target_size = sizes[0]
-        else:
-            q1, q3 = np.percentile(sizes, [25, 75])
-            iqr = q3 - q1
-            valid_sizes = [s for s in sizes if q1 - 1.5*iqr <= s <= q3 + 1.5*iqr]
-            target_size = int(np.mean(valid_sizes)) if valid_sizes else int(np.mean(sizes))
-        
-        # Ensure minimum target size
-        target_size = max(3, target_size)  # At least 3 examples per condition
-        
-        # Balance each group to the target size
-        balanced_data = []
-        for condition, group in condition_groups.items():
-            if len(group) > target_size:
-                # Downsample using systematic sampling
-                indices = np.linspace(0, len(group)-1, target_size, dtype=int)
-                balanced_group = [group[i] for i in indices]
-            else:
-                # Upsample using SMOTE-like approach with normalized interpolation
-                balanced_group = []
-                while len(balanced_group) < target_size:
-                    if len(group) == 1:
-                        # If only one sample, duplicate it with controlled noise
-                        sample = group[0].copy()
-                        for metric in METRIC_BOUNDS.keys():
-                            if metric in sample and isinstance(sample[metric], (int, float)):
-                                min_val, max_val = METRIC_BOUNDS[metric]
-                                current_val = float(sample[metric])
-                                # Add noise within 10% of the valid range
-                                noise_range = (max_val - min_val) * 0.1
-                                noise = np.random.uniform(-noise_range, noise_range)
-                                sample[metric] = max(min_val, min(current_val + noise, max_val))
-                        balanced_group.append(sample)
-                    else:
-                        # Pick two random samples and interpolate
-                        idx1, idx2 = np.random.choice(len(group), 2, replace=False)
-                        sample1, sample2 = group[idx1], group[idx2]
-                        alpha = np.random.random()
-                        
-                        interpolated = {}
-                        # First copy non-numeric fields from sample1
-                        for key in sample1.keys():
-                            if not isinstance(sample1[key], (int, float)):
-                                interpolated[key] = sample1[key]
-                        
-                        # Then interpolate numeric fields with bounds checking
-                        for key in sample1.keys():
-                            if key in sample2 and isinstance(sample1[key], (int, float)) and isinstance(sample2[key], (int, float)):
-                                try:
-                                    val1, val2 = float(sample1[key]), float(sample2[key])
-                                    interpolated_val = alpha * val1 + (1-alpha) * val2
-                                    
-                                    # Apply bounds if metric has defined bounds
-                                    if key in METRIC_BOUNDS:
-                                        min_val, max_val = METRIC_BOUNDS[key]
-                                        interpolated_val = max(min_val, min(interpolated_val, max_val))
-                                    
-                                    interpolated[key] = interpolated_val
-                                except (ValueError, TypeError):
-                                    interpolated[key] = sample1[key]
-                            elif isinstance(sample1[key], (int, float)):
-                                interpolated[key] = sample1[key]
-                        
-                        balanced_group.append(interpolated)
-            
-            balanced_data.extend(balanced_group)
-        
-        # Final normalization pass
-        normalized_data = [normalize_metrics(d) for d in balanced_data]
-        
-        # Shuffle the final dataset
-        np.random.shuffle(normalized_data)
-        
-        return normalized_data
-
-    def _create_prediction_prompt(self, market_data: Dict[str, Any], outcome_data: Dict[str, Any]) -> str:
-        """Create a prompt for market prediction task."""
-        # Format metrics with proper error handling
+    def _load_config(self, config_path: str) -> dict:
+        """Load configuration from YAML file."""
+        with open(config_path, 'r') as f:
+            return yaml.safe_load(f)
+    
+    def _create_reasoning_prompt(self, market_data: Dict[str, Any]) -> str:
+        """Create a focused prompt for market reasoning."""
+        # Extract and format metrics
         metrics = {
-            'success_rate': float(market_data.get('success_rate', 0)) * 100,
+            'network': market_data.get('network', 'Unknown'),
+            'daily_txns': market_data.get('num_txs', 0),
+            'total_volume': float(market_data.get('total_volume', 0)),
+            'unique_users': int(market_data.get('unique_users', 0)),
+            'avg_tx_value': float(market_data.get('avg_tx_value', 0)),
             'txn_growth': float(market_data.get('txn_growth_pct_7d', 0)),
             'user_growth': float(market_data.get('user_growth_pct_7d', 0)),
-            'tx_volatility': float(market_data.get('tx_volatility_7d', 0)),
-            'avg_tx_value': float(market_data.get('avg_tx_value', 0)),
-            'avg_gas_price': float(market_data.get('avg_gas_price', 0))
+            'volatility': float(market_data.get('tx_volatility_7d', 0)),
+            'gas_used': float(market_data.get('gas_used', 0)),
+            'success_rate': float(market_data.get('success_rate', 0))
         }
         
-        prompt = f"""<reasoning>
-Given the following market data from {market_data.get('block_timestamp', 'N/A')}, provide a comprehensive market analysis with exact predictions. Each prediction must include:
-1. A specific numerical value
-2. A confidence interval
-3. Supporting data citations
-4. Cross-chain correlation analysis
+        market_conditions = market_data.get('market_conditions', {})
+        
+        return f"""Analyze this {metrics['network']} blockchain data with detailed calculations:
 
-Current Market State:
-1. Network Activity [cite as 'Network Metrics']
-- Daily Transactions: {market_data.get('num_txs', 'N/A')}
-- Success Rate: {metrics['success_rate']:.2f}%
-- Gas Price: {metrics['avg_gas_price']:.2f} GWEI
+Key Metrics (cite as [metric_name]):
+1. Activity Metrics:
+   - Daily Transactions: {metrics['daily_txns']:,} [daily_txns]
+   - Unique Users: {metrics['unique_users']:,} [unique_users]
+   - Success Rate: {metrics['success_rate']:.1f}% [success_rate]
 
-2. User Metrics [cite as 'User Data']
-- Unique Users: {market_data.get('unique_senders', 'N/A')}
-- Transaction Growth: {metrics['txn_growth']:.1f}%
-- User Growth: {metrics['user_growth']:.1f}%
+2. Volume & Value:
+   - Total Volume: {metrics['total_volume']:,.2f} [total_volume]
+   - Avg Transaction: {metrics['avg_tx_value']:,.2f} [avg_tx_value]
+   - Gas Used: {metrics['gas_used']:,.0f} [gas_used]
 
-3. Transaction Patterns [cite as 'Transaction Data']
-- Average Value: {metrics['avg_tx_value']:.4f}
-- Volatility: {metrics['tx_volatility']:.2f}
-- Smart Contract Calls: {market_data.get('smart_contract_calls', 'N/A')}
+3. Growth & Volatility:
+   - Transaction Growth (7d): {metrics['txn_growth']:.1f}% [txn_growth]
+   - User Growth (7d): {metrics['user_growth']:.1f}% [user_growth]
+   - Volatility (7d): {metrics['volatility']:.2f} [volatility]
 
-4. Cross-Chain Context [cite as 'Cross-Chain Data']
-- Network: {market_data.get('network', 'N/A')}
-- Active Contracts: {market_data.get('active_contracts', 'N/A')}
-- Bridge Volume: {market_data.get('bridge_volume', 'N/A')}
-
-Historical Context:
-- Previous Transaction Growth: {float(outcome_data.get('txn_growth_pct_7d', 0)):.1f}%
-- Previous User Growth: {float(outcome_data.get('user_growth_pct_7d', 0)):.1f}%
-- Previous Volatility: {float(outcome_data.get('tx_volatility_7d', 0)):.2f}
-
-Required Analysis Sections:
-
-1. Initial Market Assessment (20% of response)
-   - Current market condition classification with evidence
-   - Key trend identification with specific metrics
-   - Cross-chain correlation coefficients
-   - Volume analysis across chains
-
-2. Quantitative Predictions (30% of response)
-   - Transaction Growth: [Exact % with 95% confidence interval]
-   - User Growth: [Exact % with 95% confidence interval]
-   - Volatility Change: [Exact value with 95% confidence interval]
-   - Gas Price Range: [Min-Max with 90% confidence interval]
-   Each prediction must cite specific metrics and include:
-   - Point estimate
-   - Confidence interval
-   - Supporting calculations
-   - Historical comparison
-
-3. Technical Analysis (25% of response)
-   - Volume Profile Analysis
-   - Support/Resistance Levels
-   - Trend Strength Indicators
-   - Volatility Patterns
-   Each analysis must include:
-   - Specific calculations
-   - Data citations
-   - Confidence metrics
-
-4. Risk Assessment (25% of response)
-   - Technical Risks (quantified probabilities)
-   - Market Risks (exposure metrics)
-   - Cross-Chain Risks (contagion coefficients)
-   - Mitigation Strategies
-   Each risk must include:
-   - Probability estimate
-   - Impact quantification
-   - Historical precedent
-   - Monitoring thresholds
-
-Required Elements:
-1. Every prediction must include confidence intervals
-2. All analyses must cite specific metrics using [cite as 'X'] format
-3. Include at least 3 cross-chain correlations with coefficients
-4. Provide exact numerical values for all predictions
-5. Include probability estimates for all risk factors
-6. Compare all projections with historical data
-7. Show calculations for derived metrics
-
-Response Quality Criteria:
-1. Prediction Accuracy:
-   - Exact numerical predictions
-   - Well-defined confidence intervals
-   - Clear methodology
-   - Historical validation
-
-2. Technical Quality:
-   - Rigorous calculations
-   - Multiple indicator analysis
-   - Clear methodology
-   - Error bounds
-
-3. Cross-Chain Analysis:
-   - Correlation coefficients
-   - Volume relationships
-   - Risk propagation
-   - Arbitrage analysis
-
-4. Risk Assessment:
-   - Quantified probabilities
-   - Impact metrics
-   - Historical comparisons
-   - Mitigation strategies
-
-Format your response in clear sections with minimal prose. Focus on quantitative analysis and data-driven insights.</reasoning>"""
-
-        return prompt
-    
-    def _create_correlation_prompt(self, chain_data: List[Dict]) -> str:
-        """Create a prompt for cross-chain correlation analysis."""
-        prompt = f"""<reasoning>
-Analyze the correlations and relationships between the following blockchain networks:
-
-{self._format_chain_metrics(chain_data)}
+Market Conditions:
+{market_conditions}
 
 Required Analysis:
-1. Correlation Analysis (provide specific metrics):
-   a) Metric Correlations:
-      - Transaction volume correlation coefficients
-      - User growth correlation coefficients
-      - Fee market correlation coefficients
-   b) Temporal Patterns:
-      - Lead/lag relationships (hours)
-      - Seasonal patterns
-      - Trend synchronization
-   c) Divergence Analysis:
-      - Key divergence points
-      - Magnitude of divergences
-      - Duration of divergences
 
-2. Network Effects:
-   a) Volume Impact:
-      - Cross-chain volume elasticity
-      - Volume spillover coefficients
-      - Time to impact (minutes/hours)
-   b) Fee Market Impact:
-      - Gas price correlations
-      - Fee market efficiency ratios
-      - Arbitrage thresholds
-   c) User Behavior:
-      - Cross-chain user overlap (%)
-      - Migration patterns
-      - Activity synchronization
+1. Network Activity Analysis:
+   - Calculate user engagement ratio: [daily_txns] / [unique_users]
+   - Analyze success rate impact on volume
+   - Project 30-day transaction growth with confidence interval
 
-3. Market Implications:
-   a) Arbitrage Opportunities:
-      - Minimum profitable spreads
-      - Required execution speed
-      - Capital efficiency ratios
-   b) Risk Factors:
-      - Contagion risk coefficients
-      - Systemic risk exposure
-      - Correlation breakdown scenarios
-   c) Trading Strategies:
-      - Entry/exit spread levels
-      - Volume requirements
-      - Risk/reward ratios
+2. Value Flow Analysis:
+   - Calculate value density: [total_volume] / [daily_txns]
+   - Analyze gas efficiency: [gas_used] / [daily_txns]
+   - Compare with network averages
 
-4. Predictive Value:
-   a) Leading Indicators:
-      - Identify predictive metrics
-      - Confidence intervals
-      - Time horizons
-   b) Signal Strength:
-      - Statistical significance
-      - False positive rates
-      - Signal persistence
-   c) Implementation:
-      - Monitoring thresholds
-      - Action triggers
-      - Position sizing rules
+3. Growth Patterns:
+   - Calculate growth correlation: [txn_growth] vs [user_growth]
+   - Project user acquisition rate
+   - Estimate volatility impact on growth
 
-Provide specific numbers, coefficients, and thresholds in your analysis. Support all conclusions with quantitative evidence.</reasoning>"""
-
-        return prompt
-    
-    def _create_protocol_prompt(self, protocol_data: Dict, chain_data: Dict) -> str:
-        """Create a prompt for protocol analysis across chains."""
-        prompt = f"""<reasoning>
-Analyze the following protocol's performance across different chains:
-
-Protocol Metrics:
-{self._format_protocol_metrics(protocol_data)}
-
-Chain Context:
-{self._format_chain_context(chain_data)}
-
-Required Analysis:
-1. Performance Analysis (provide specific metrics):
-   a) Volume Metrics:
-      - Daily volume (USD)
-      - Market share (%)
-      - Volume growth rate (%)
-   b) User Metrics:
-      - Daily active users
-      - User retention rate (%)
-      - Average user value (USD)
-   c) Efficiency Metrics:
-      - Transaction success rate (%)
-      - Average gas cost (GWEI)
-      - Cost per transaction (USD)
-
-2. Cross-Chain Comparison:
-   a) Relative Performance:
-      - Volume rank by chain
-      - Market share by chain
-      - Growth rate differentials
-   b) Chain-Specific Factors:
-      - Gas efficiency ratio
-      - User acquisition cost
-      - Competition intensity
-   c) Integration Quality:
-      - Bridge efficiency (%)
-      - Cross-chain latency (seconds)
-      - Message success rate (%)
-
-3. Growth Analysis:
-   a) Growth Drivers:
-      - User growth contribution (%)
-      - Volume growth contribution (%)
-      - Feature adoption rates (%)
-   b) Growth Sustainability:
-      - User economics (LTV/CAC)
-      - Protocol revenue growth
-      - Market penetration rate
-   c) Growth Projections:
-      - Short-term forecast (7d)
-      - Medium-term forecast (30d)
-      - Long-term forecast (90d)
-
-4. Risk Assessment:
-   a) Technical Risks:
-      - Smart contract exposure
-      - Oracle dependency
-      - Integration complexity
-   b) Economic Risks:
-      - TVL concentration (%)
-      - User concentration (%)
-      - Revenue source diversity
-   c) Competitive Risks:
-      - Market share trends
-      - Feature gap analysis
-      - Cost competitiveness
-
-5. Optimization Opportunities:
-   a) Technical Optimization:
-      - Gas optimization potential
-      - Latency reduction targets
-      - Integration improvements
-   b) Economic Optimization:
-      - Fee structure efficiency
-      - Liquidity utilization
-      - Yield optimization
-   c) Strategic Optimization:
-      - Cross-chain expansion
-      - Feature prioritization
-      - Partnership leverage
-
-Provide specific numbers, percentages, and ratios in your analysis. Support all conclusions with quantitative evidence.</reasoning>"""
-
-        return prompt
-
-    def _create_risk_prompt(self, market_data: Dict[str, Any]) -> str:
-        """Create a prompt focused on risk analysis."""
-        prompt = f"""<reasoning>
-Analyze the risk factors and potential vulnerabilities in the current market conditions:
-
-Market Context:
-{self._format_metrics(market_data)}
-
-Required Analysis:
-1. Risk Identification (provide specific metrics for each):
-   a) Technical Risks:
-      - Smart contract vulnerabilities (probability %)
-      - Network congestion thresholds
-      - Oracle failure scenarios
-   b) Market Risks:
-      - Volatility exposure (quantify)
-      - Liquidity risks (measure)
-      - Correlation risks (coefficients)
-   c) Systemic Risks:
-      - Cross-chain contagion paths
-      - Protocol dependencies
-      - Market concentration metrics
-
-2. Impact Assessment:
-   a) Quantitative Measures:
-      - Value at Risk (VaR)
-      - Expected shortfall
-      - Maximum drawdown
-   b) Probability Estimates:
-      - Event likelihood (%)
-      - Time horizon
-      - Confidence intervals
-   c) Scenario Analysis:
-      - Best case metrics
-      - Base case projections
-      - Worst case thresholds
-
-3. Mitigation Strategies:
-   a) Risk Controls:
-      - Specific thresholds
-      - Monitoring frequency
-      - Action triggers
-   b) Hedging Strategies:
-      - Instrument selection
-      - Position sizing
-      - Rebalancing rules
-   c) Monitoring Framework:
-      - Key risk indicators
-      - Reporting frequency
-      - Escalation criteria
-
-Provide specific numbers, percentages, and thresholds in your analysis.</reasoning>"""
-
-        return prompt
-
-    def _create_opportunity_prompt(self, market_data: Dict[str, Any]) -> str:
-        """Create a prompt focused on opportunity analysis."""
-        prompt = f"""<reasoning>
-Identify and analyze potential opportunities in the current market conditions:
-
-Market Context:
-{self._format_metrics(market_data)}
-
-Required Analysis:
-1. Opportunity Identification (quantify each):
-   a) Market Inefficiencies:
-      - Price discrepancies (%)
-      - Volume imbalances
-      - Timing advantages
-   b) Yield Opportunities:
-      - APY projections
-      - Risk-adjusted returns
-      - Lock-up requirements
-   c) Arbitrage Potential:
-      - Cross-chain spreads
-      - Protocol differentials
-      - Execution costs
-
-2. Strategy Development:
-   a) Entry/Exit Rules:
-      - Specific price levels
-      - Volume thresholds
-      - Timing conditions
-   b) Position Sizing:
-      - Initial allocation (%)
-      - Scaling rules
-      - Maximum exposure
-   c) Execution Requirements:
-      - Technical requirements
-      - Capital requirements
-      - Operational needs
-
-3. Risk/Reward Analysis:
-   a) Return Projections:
-      - Expected return (%)
-      - Time horizon
-      - Success probability
-   b) Risk Assessment:
-      - Maximum drawdown
-      - Volatility exposure
-      - Correlation factors
-   c) Position Management:
-      - Stop-loss levels
-      - Take-profit targets
-      - Rebalancing rules
-
-Provide specific numbers, ratios, and thresholds in your analysis.</reasoning>"""
-
-        return prompt
-
-    def _create_market_qa_prompt(self, market_data: Dict[str, Any], outcome_data: Dict[str, Any]) -> str:
-        """Create a historical market Q&A prompt."""
-        metrics = self._format_metrics(market_data)
-        outcome_metrics = self._format_metrics(outcome_data)
-        
-        prompt = f"""<reasoning>
-Given the following historical market situation from {market_data.get('block_timestamp', 'N/A')}, analyze the conditions and predict the outcome. Support your prediction with detailed reasoning.
-
-Market Context:
-{metrics}
-
-Question:
-Based on these market conditions, what will be the likely trend in transaction volume and user growth over the next 7 days? Consider network effects, market sentiment, and cross-chain dynamics in your analysis.
-
-Required Response Format:
-1. Initial Observations
-   - Key metrics analysis
-   - Notable patterns
-   - Market sentiment indicators
-
-2. Chain of Reasoning
-   - Step 1: [Your first logical step]
-   - Step 2: [Your second logical step]
-   - Step 3: [Your third logical step]
-   ...
-
-3. Prediction
-   - Transaction volume trend (exact % change)
-   - User growth projection (exact % change)
-   - Confidence level (%)
-
-4. Supporting Evidence
-   - Technical indicators
-   - On-chain metrics
-   - Cross-chain factors
-
-5. Risk Factors
-   - Potential challenges
-   - Market uncertainties
-   - External influences
-
-Historical Outcome (for training):
-{outcome_metrics}
-
-Explain your reasoning step by step, and support your conclusions with specific metrics from the data.</reasoning>"""
-        
-        return prompt
-        
-    def _create_analytical_prompt(self, market_data: Dict[str, Any]) -> str:
-        """Create an analytical reasoning prompt."""
-        metrics = self._format_metrics(market_data)
-        
-        prompt = f"""<reasoning>
-Analyze the following complex market scenario and explain the implications through step-by-step reasoning:
-
-Market Context:
-{metrics}
-
-Analytical Problem:
-Given that the network shows increasing transaction volume (+{market_data.get('txn_growth_pct_7d', 0):.1f}%) 
-but declining average transaction value (-{abs(float(market_data.get('avg_tx_value_change_pct', 0))):.1f}%), 
-what does this imply about:
-a) User behavior changes
-b) Market microstructure
-c) Potential arbitrage opportunities
-
-Required Analysis Structure:
-1. Data Pattern Recognition
-   - Identify key metrics
-   - Note correlations
-   - Spot anomalies
-
-2. Behavioral Analysis
-   - User segments
-   - Activity patterns
-   - Motivation factors
-
-3. Market Structure Implications
-   - Liquidity dynamics
-   - Price formation
-   - Market efficiency
-
-4. Opportunity Assessment
-   - Arbitrage potential
-   - Risk factors
-   - Implementation considerations
-
-Support each step with quantitative evidence and logical reasoning.</reasoning>"""
-        
-        return prompt
-        
-    def _create_financial_prompt(self, market_data: Dict[str, Any]) -> str:
-        """Create a general financial reasoning prompt."""
-        metrics = self._format_metrics(market_data)
-        
-        prompt = f"""<reasoning>
-Apply fundamental financial reasoning to analyze the following market scenario:
-
-Market Context:
-{metrics}
-
-Financial Analysis Problem:
-The market shows the following characteristics:
-- Gas prices: {market_data.get('avg_gas_price', 0):.2f} GWEI
-- Success rate: {float(market_data.get('success_rate', 0)) * 100:.1f}%
-- Smart contract calls: {market_data.get('smart_contract_calls', 'N/A')}
-
-Calculate and analyze:
-1. Transaction cost efficiency
-2. Market depth implications
-3. Yield optimization strategies
-
-Required Analysis Framework:
-1. Quantitative Analysis
-   - Cost calculations
-   - Efficiency metrics
-   - Risk-adjusted returns
-
-2. Economic Reasoning
-   - Supply/demand dynamics
-   - Price discovery process
-   - Market equilibrium
-
-3. Strategic Implications
-   - Optimal transaction sizing
-   - Timing considerations
-   - Risk management
-
-4. Recommendations
-   - Action items
-   - Implementation steps
-   - Monitoring metrics
-
-Show all calculations and explain your economic reasoning at each step.</reasoning>"""
-        
-        return prompt
+Requirements:
+1. Show ALL calculations step-by-step
+2. Use [metric_name] format for EVERY metric citation
+3. Include confidence intervals (90% CI) for projections
+4. Explain the significance of each calculation
+5. Consider market conditions in your analysis"""
 
     def generate_dataset(self,
                         market_data: List[Dict],
-                        protocol_data: List[Dict],
                         output_path: str,
-                        samples_per_prompt: int = 3) -> None:
-        """Generate a synthetic dataset of reasoning examples.
-        
-        Args:
-            market_data: Historical market data
-            protocol_data: Protocol performance data
-            output_path: Path to save generated data
-            samples_per_prompt: Number of responses to generate per prompt
-        """
-        # Balance market conditions
-        balanced_data = self._balance_market_conditions(market_data)
-        
-        # Create output directory
-        os.makedirs(os.path.dirname(output_path), exist_ok=True)
-        
-        # Initialize progress tracking
-        total_examples = len(balanced_data) * samples_per_prompt
-        examples_generated = 0
-        last_save_time = time.time()
-        save_interval = 300  # Save every 5 minutes
-        
+                        samples_per_day: int = 5) -> None:
+        """Generate synthetic examples from market data."""
         examples = []
-        prompt_types = list(self.prompt_templates.keys())
+        batch_size = self.config['generation']['batch_size']
+        max_retries = self.config['generation']['max_retries']
         
-        # Group prompt types by category
-        prediction_prompts = ['prediction', 'market_qa']
-        analytical_prompts = ['analytical', 'financial']
-        market_prompts = ['correlation', 'protocol', 'risk', 'opportunity']
-        
-        try:
-            # Generate examples for each market condition
-            for i in range(0, len(balanced_data)-1):
-                current_data = balanced_data[i]
-                outcome_data = balanced_data[i+1]
-                
-                # Select prompt type based on position to ensure balanced representation
-                if i % 3 == 0:
-                    prompt_type = prediction_prompts[i // 3 % len(prediction_prompts)]
-                elif i % 3 == 1:
-                    prompt_type = analytical_prompts[i // 3 % len(analytical_prompts)]
-                else:
-                    prompt_type = market_prompts[i // 3 % len(market_prompts)]
-                
-                prompt_func = self.prompt_templates[prompt_type]
-                
-                # Generate prompt based on type
+        for data_point in market_data:
+            successful_samples = 0
+            retries = 0
+            
+            while successful_samples < samples_per_day and retries < max_retries:
                 try:
-                    if prompt_type in prediction_prompts:
-                        prompt = prompt_func(current_data, outcome_data)
-                    elif prompt_type == 'protocol':
-                        prompt = prompt_func(protocol_data, current_data)
-                    else:
-                        prompt = prompt_func(current_data)
+                    # Generate reasoning
+                    prompt = self._create_reasoning_prompt(data_point)
+                    response = self.openai_client.generate_completion(
+                        prompt=prompt,
+                        system_prompt="""You are a quantitative analyst specializing in blockchain data.
+Your task is to analyze market data with precise calculations and clear reasoning.
+Always show your work and cite data sources using [metric_name] format.""",
+                        model="o3-mini",
+                        temperature=self.config['generation']['temperature'],
+                        max_tokens=self.config['generation']['max_tokens']
+                    )
                     
-                    # Generate multiple responses per prompt
-                    for _ in range(samples_per_prompt):
-                        try:
-                            result = self.openai_client.generate_completion(
-                                prompt=prompt,
-                                system_prompt=self._get_system_prompt(prompt_type),
-                                model=self.model
-                            )
-                            
-                            # Calculate rewards including group comparison
-                            reward = self.reward_function.calculate_reward(
-                                response=result,
-                                context_data=current_data,
-                                outcome_data=outcome_data
-                            )
-                            
-                            example = {
-                                'type': prompt_type,
-                                'prompt': prompt,
-                                'response': result,
-                                'context_data': current_data,
-                                'outcome_data': outcome_data,
-                                'market_condition': self._label_market_condition(
-                                    current_data,
-                                    market_data[max(0, i-7):i]
-                                ),
-                                'reward': reward
+                    # Verify quality
+                    passes_quality, quality_score = self.openai_client.verify_quality(
+                        response,
+                        required_components=self.config['quality']['required_components']
+                    )
+                    
+                    if passes_quality and quality_score >= self.config['quality']['min_score']:
+                        example = {
+                            'timestamp': data_point['block_timestamp'],
+                            'network': data_point['network'],
+                            'market_data': data_point,
+                            'reasoning': response,
+                            'quality_score': quality_score,
+                            'generation_metadata': {
+                                'timestamp': datetime.now().isoformat(),
+                                'model': "o3-mini",
+                                'temperature': self.config['generation']['temperature']
                             }
-                            
-                            examples.append(example)
-                            examples_generated += 1
-                            
-                            # Save progress periodically
-                            current_time = time.time()
-                            if current_time - last_save_time > save_interval:
-                                self._save_examples(examples, output_path)
-                                last_save_time = current_time
-                            
-                            # Log progress
-                            progress = (examples_generated / total_examples) * 100
-                            logger.info(f"Progress: {progress:.1f}% ({examples_generated}/{total_examples} examples)")
-                            
-                        except Exception as e:
-                            logger.error(f"Error generating example: {str(e)}")
-                            continue
+                        }
+                        examples.append(example)
+                        successful_samples += 1
+                        logger.info(f"Generated quality example (score: {quality_score:.2f})")
+                    else:
+                        logger.warning(f"Example failed quality check (score: {quality_score:.2f})")
+                        retries += 1
+                    
+                    # Save progress periodically
+                    if len(examples) % batch_size == 0:
+                        self._save_examples(examples, output_path)
                         
                 except Exception as e:
-                    logger.error(f"Error creating prompt: {str(e)}")
+                    logger.error(f"Error generating example: {str(e)}")
+                    retries += 1
                     continue
-                
-        except Exception as e:
-            logger.error(f"Error in dataset generation: {str(e)}")
-        finally:
-            # Save any remaining examples
-            if examples:
-                self._save_examples(examples, output_path)
             
-            # Log final dataset statistics
-            self._log_dataset_stats(examples)
-
-    def _format_chain_metrics(self, chain_data: Union[List[Dict], Dict]) -> str:
-        """Format metrics for multiple chains.
+            if successful_samples < samples_per_day:
+                logger.warning(f"Could not generate {samples_per_day} quality samples after {max_retries} retries")
         
-        Args:
-            chain_data: Chain metrics data (list of dicts or single dict)
-            
-        Returns:
-            Formatted string of chain metrics
-        """
-        # Convert single dict to list
-        if isinstance(chain_data, dict):
-            chain_data = [chain_data]
-            
-        formatted = []
-        for data in chain_data:
-            try:
-                metrics = {
-                    'success_rate': float(data.get('success_rate', 0)) * 100,
-                    'txn_growth': float(data.get('txn_growth_pct_7d', 0)),
-                    'user_growth': float(data.get('user_growth_pct_7d', 0))
-                }
-                
-                chain_str = f"""Chain: {data.get('network', 'N/A')}
-- Daily Transactions: {data.get('num_txs', 'N/A')}
-- Success Rate: {metrics['success_rate']:.2f}%
-- Transaction Growth: {metrics['txn_growth']:.1f}%
-- User Growth: {metrics['user_growth']:.1f}%
-- Bridge Volume: {data.get('bridge_volume', 'N/A')}"""
-                
-                formatted.append(chain_str)
-            except (TypeError, ValueError) as e:
-                logger.warning(f"Error formatting chain metrics: {str(e)}")
-                continue
-            
-        return "\n\n".join(formatted) if formatted else "No chain metrics available"
-    
-    def _format_protocol_metrics(self, protocol_data: Union[List[Dict], Dict]) -> str:
-        """Format protocol metrics across chains.
-        
-        Args:
-            protocol_data: Protocol metrics data (list of dicts or single dict)
-            
-        Returns:
-            Formatted string of protocol metrics
-        """
-        # Convert list to dict by grouping by network
-        if isinstance(protocol_data, list):
-            grouped_data = {}
-            for item in protocol_data:
-                network = item.get('network', 'ethereum')
-                if network not in grouped_data:
-                    grouped_data[network] = {
-                        'volume_usd': 0,
-                        'unique_users': 0,
-                        'volume_growth_pct': 0,
-                        'volume_share': 0,
-                        'success_rate': 0
-                    }
-                # Aggregate metrics
-                grouped_data[network]['volume_usd'] += float(item.get('volume_usd', 0))
-                grouped_data[network]['unique_users'] = max(
-                    grouped_data[network]['unique_users'],
-                    int(item.get('unique_users', 0))
-                )
-                grouped_data[network]['volume_growth_pct'] = float(item.get('volume_growth_pct', 0))
-                grouped_data[network]['volume_share'] = float(item.get('volume_share', 0))
-                grouped_data[network]['success_rate'] = float(item.get('success_rate', 0))
-            
-            protocol_data = grouped_data
-        
-        metrics = []
-        for chain, data in protocol_data.items():
-            try:
-                chain_metrics = f"""Chain: {chain}
-- Volume: ${data.get('volume_usd', 0):,.2f}
-- Users: {data.get('unique_users', 0):,}
-- Growth: {data.get('volume_growth_pct', 0):.1f}%
-- Market Share: {data.get('volume_share', 0):.1f}%
-- Success Rate: {data.get('success_rate', 0) * 100:.1f}%"""
-                metrics.append(chain_metrics)
-            except (TypeError, ValueError) as e:
-                logger.warning(f"Error formatting protocol metrics for {chain}: {str(e)}")
-                continue
-            
-        return "\n\n".join(metrics) if metrics else "No protocol metrics available"
-    
-    def _format_chain_context(self, chain_data: Dict) -> str:
-        """Format chain context data."""
-        metrics = {
-            'success_rate': float(chain_data.get('success_rate', 0)) * 100,
-            'txn_growth': float(chain_data.get('txn_growth_pct_7d', 0)),
-            'user_growth': float(chain_data.get('user_growth_pct_7d', 0))
-        }
-        
-        return f"""Network: {chain_data.get('network', 'N/A')}
-- Daily Transactions: {chain_data.get('num_txs', 'N/A')}
-- Success Rate: {metrics['success_rate']:.2f}%
-- Transaction Growth: {metrics['txn_growth']:.1f}%
-- User Growth: {metrics['user_growth']:.1f}%
-- Smart Contract Activity: {chain_data.get('smart_contract_calls', 'N/A')}"""
-    
-    def _log_dataset_stats(self, examples: List[Dict]) -> None:
-        """Log statistics about the generated dataset."""
-        stats = {
-            'total_examples': len(examples),
-            'avg_reward': np.mean([ex['reward']['final_total'] for ex in examples]),
-            'market_conditions': defaultdict(int),
-            'prompt_types': defaultdict(int),
-            'avg_prediction_accuracy': np.mean([
-                ex['reward'].get('prediction_accuracy', 0) 
-                for ex in examples
-            ])
-        }
-        
-        for ex in examples:
-            stats['market_conditions'][ex['market_condition']] += 1
-            stats['prompt_types'][ex['type']] += 1
-        
-        logger.info(f"Dataset Statistics:\n{json.dumps(stats, indent=2)}")
-    
-    def _get_system_prompt(self, prompt_type: str) -> str:
-        """Get appropriate system prompt based on task type."""
-        prompts = {
-            'prediction': "You are an expert crypto analyst focused on prediction and cross-chain analysis.",
-            'correlation': "You are an expert in cross-chain analysis and market correlations.",
-            'protocol': "You are an expert in DeFi protocol analysis and optimization.",
-            'risk': "You are an expert risk analyst specializing in crypto markets.",
-            'opportunity': "You are an expert in identifying and analyzing market opportunities.",
-            'market_qa': "You are a financial analyst with expertise in market analysis and forecasting.",
-            'analytical': "You are a skilled analyst with expertise in complex market scenarios.",
-            'financial': "You are a financial analyst with expertise in economic analysis and investment strategies."
-        }
-        return prompts.get(prompt_type, prompts['prediction'])
-
-    def _format_metrics(self, market_data: Dict[str, Any]) -> str:
-        """Format market metrics for prompts.
-        
-        Args:
-            market_data: Dictionary of market metrics
-            
-        Returns:
-            Formatted string of metrics
-        """
-        try:
-            metrics = {
-                'success_rate': float(market_data.get('success_rate', 0)) * 100,
-                'txn_growth': float(market_data.get('txn_growth_pct_7d', 0)),
-                'user_growth': float(market_data.get('user_growth_pct_7d', 0)),
-                'volatility': float(market_data.get('tx_volatility_7d', 0)),
-                'avg_value': float(market_data.get('avg_tx_value', 0)),
-                'gas_price': float(market_data.get('avg_gas_price', 0))
-            }
-            
-            return f"""Network: {market_data.get('network', 'N/A')}
-
-1. Transaction Metrics
-- Daily Volume: {market_data.get('num_txs', 'N/A')}
-- Success Rate: {metrics['success_rate']:.2f}%
-- Average Value: {metrics['avg_value']:.4f}
-- Gas Price: {metrics['gas_price']:.2f} GWEI
-
-2. Growth Metrics
-- Transaction Growth: {metrics['txn_growth']:.1f}%
-- User Growth: {metrics['user_growth']:.1f}%
-- Volatility: {metrics['volatility']:.2f}
-
-3. Activity Metrics
-- Smart Contract Calls: {market_data.get('smart_contract_calls', 'N/A')}
-- Bridge Volume: {market_data.get('bridge_volume', 'N/A')}
-- Unique Users: {market_data.get('unique_users', 'N/A')}"""
-            
-        except (TypeError, ValueError) as e:
-            logger.warning(f"Error formatting metrics: {str(e)}")
-            return "No market metrics available"
+        # Save final results
+        self._save_examples(examples, output_path)
+        logger.info(f"Generated {len(examples)} total examples")
 
     def _save_examples(self, examples: List[Dict], output_path: str) -> None:
-        """Save examples to JSONL file with append mode.
-        
-        Args:
-            examples: List of examples to save
-            output_path: Path to save the examples
-        """
-        with open(output_path, 'a') as f:
+        """Save examples to JSONL file with proper formatting."""
+        os.makedirs(os.path.dirname(output_path), exist_ok=True)
+        with open(output_path, 'w') as f:
             for example in examples:
-                f.write(json.dumps(example) + '\n')
-        
-        # Clear the examples list after saving
-        examples.clear() 
+                f.write(json.dumps(example, indent=None, ensure_ascii=False) + '\n') 

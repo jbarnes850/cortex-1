@@ -4,10 +4,15 @@ Flipside Crypto API client for collecting market data and on-chain metrics.
 
 import os
 import time
-from typing import Dict, List, Optional, Union
+from typing import Dict, List, Optional, Union, Any
 import pandas as pd
 from dotenv import load_dotenv
 from flipside import Flipside
+import logging
+import requests
+from datetime import datetime
+
+logger = logging.getLogger(__name__)
 
 class FlipsideClient:
     """Client for interacting with Flipside Crypto's API."""
@@ -25,6 +30,12 @@ class FlipsideClient:
         
         # Initialize Flipside SDK client
         self.client = Flipside(self.api_key)
+        
+        self.base_url = "https://api.flipsidecrypto.com/api/v2"
+        self.headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {self.api_key}"
+        }
     
     def test_connection(self) -> bool:
         """Test the Flipside API connection with a simple query.
@@ -38,7 +49,7 @@ class FlipsideClient:
             result = self.execute_query(sql)
             return True
         except Exception as e:
-            print(f"Connection test failed: {str(e)}")
+            logger.error(f"Connection test failed: {str(e)}")
             return False
     
     def execute_query(self, sql: str) -> pd.DataFrame:
@@ -132,8 +143,8 @@ class FlipsideClient:
                     ELSE 'low'
                 END as volatility_level
             FROM daily_metrics d
-            LEFT JOIN weekly_metrics w USING (block_timestamp)
-            ORDER BY block_timestamp DESC
+            LEFT JOIN weekly_metrics w ON d.block_timestamp = w.block_timestamp
+            ORDER BY d.block_timestamp DESC
             """
         else:
             query = f"""
@@ -409,4 +420,35 @@ class FlipsideClient:
         LEFT JOIN daily_stats d ON DATE_TRUNC('day', t.block_timestamp) = d.date
         ORDER BY t.block_timestamp DESC
         """
-        return self.execute_query(sql) 
+        return self.execute_query(sql)
+
+    def get_market_metrics(self,
+                          chain: str,
+                          start_date: datetime,
+                          end_date: datetime,
+                          metrics: List[str]) -> List[Dict[str, Any]]:
+        """Fetch market metrics for a specific chain.
+        
+        Args:
+            chain: Blockchain network (e.g., 'ethereum', 'near')
+            start_date: Start date for data collection
+            end_date: End date for data collection
+            metrics: List of metrics to collect
+            
+        Returns:
+            List of dictionaries containing market data
+        """
+        try:
+            # Convert dates to string format
+            start_str = start_date.strftime("%Y-%m-%d")
+            end_str = end_date.strftime("%Y-%m-%d")
+            
+            # Get market data using the existing method
+            market_data = self.get_market_data(chain, start_str, end_str)
+            
+            # Convert DataFrame to list of dictionaries
+            return market_data.to_dict('records')
+            
+        except Exception as e:
+            logger.error(f"Error fetching market metrics for {chain}: {str(e)}")
+            return [] 

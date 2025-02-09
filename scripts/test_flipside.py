@@ -1,116 +1,64 @@
 #!/usr/bin/env python
-"""Test script for Flipside API connection."""
+"""Test Flipside API connection."""
+
+import os
+import sys
+import logging
+from pathlib import Path
+
+# Add the project root directory to the Python path
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+sys.path.insert(0, project_root)
 
 from src.data.flipside_client import FlipsideClient
-import logging
+from dotenv import load_dotenv
 
-logging.basicConfig(level=logging.INFO)
+# Set up logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 logger = logging.getLogger(__name__)
 
 def main():
-    print("Testing Flipside API connection...")
-    client = FlipsideClient()
-    
-    # Test basic connection
-    if client.test_connection():
-        print("✅ Basic connection test passed")
-    else:
-        print("❌ Basic connection test failed")
-        return
-    
-    # Check Ethereum transaction schema
     try:
-        logger.info("\nTesting Ethereum transaction schema...")
-        sql = "DESCRIBE TABLE ethereum.core.fact_transactions;"
-        result = client.execute_query(sql)
-        print("\nAvailable columns in ethereum.core.fact_transactions:")
-        for row in result.to_dict('records'):
-            print(f"- {row}")
-    except Exception as e:
-        logger.error(f"❌ Failed to get Ethereum transaction schema: {str(e)}")
+        # Load environment variables
+        env_path = Path(project_root) / '.env'
+        logger.info(f"Loading environment from: {env_path}")
+        load_dotenv(env_path)
         
-    # Check NEAR transaction schema
-    try:
-        logger.info("\nTesting NEAR transaction schema...")
-        sql = "DESCRIBE TABLE near.core.fact_transactions;"
-        result = client.execute_query(sql)
-        print("\nAvailable columns in near.core.fact_transactions:")
-        for row in result.to_dict('records'):
-            print(f"- {row}")
-    except Exception as e:
-        logger.error(f"❌ Failed to get NEAR transaction schema: {str(e)}")
-        
-    # Check DeFi tables and labels
-    try:
-        logger.info("\nChecking Ethereum DeFi tables...")
-        
-        # Check DEX events
-        sql = """
-        SELECT DISTINCT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'ethereum'
-        AND table_name LIKE '%dex%events%';
-        """
-        result = client.execute_query(sql)
-        print("\nEthereum DEX Event tables:")
-        for row in result.to_dict('records'):
-            print(f"- {row['table_name']}")
+        # Print API key (first 8 chars)
+        api_key = os.getenv("FLIPSIDE_API_KEY")
+        if api_key:
+            logger.info(f"Found API key (first 8 chars): {api_key[:8]}...")
+        else:
+            logger.error("No API key found in environment!")
+            return
             
-        # Check DeFi labels
-        sql = """
-        SELECT DISTINCT label_type, label_subtype, label, address
-        FROM ethereum.core.dim_labels
-        WHERE label_type = 'dex'
-        OR label_type = 'lending'
-        LIMIT 5;
-        """
-        result = client.execute_query(sql)
-        print("\nSample DeFi labels:")
-        for row in result.to_dict('records'):
-            print(f"- {row}")
+        logger.info("Initializing Flipside client...")
+        client = FlipsideClient()
+        
+        logger.info("Testing connection with simple query...")
+        result = client.test_connection()
+        
+        if result:
+            logger.info("✅ Connection successful!")
             
-        # Check Uniswap specific tables
-        logger.info("\nChecking Uniswap tables...")
-        sql = """
-        SELECT DISTINCT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'ethereum'
-        AND LOWER(table_name) LIKE '%uniswap%';
-        """
-        result = client.execute_query(sql)
-        print("\nUniswap-related tables:")
-        for row in result.to_dict('records'):
-            print(f"- {row['table_name']}")
+            # Try a simple market data query
+            logger.info("Testing market data query...")
+            market_data = client.get_market_data(
+                blockchain='ethereum',
+                start_date='2025-02-01',
+                end_date='2025-02-09'
+            )
+            logger.info(f"Retrieved {len(market_data)} rows of market data")
+            
+        else:
+            logger.error("❌ Connection failed!")
             
     except Exception as e:
-        logger.error(f"❌ Failed to check DeFi tables: {str(e)}")
-        logger.error(f"Error details: {str(e)}")
-
-    # Test DeFi metric query
-    print("Testing DeFi metric query...")
-    try:
-        query = """
-        WITH dex_labels AS (
-            SELECT address 
-            FROM ethereum.core.dim_labels 
-            WHERE label_type = 'dex'
-            AND label = 'uniswap'
-        )
-        SELECT 
-            DATE_TRUNC('day', block_timestamp) as date,
-            COUNT(DISTINCT tx_hash) as swap_count,
-            COUNT(DISTINCT from_address) as unique_traders
-        FROM ethereum.core.fact_transactions
-        WHERE to_address IN (SELECT address FROM dex_labels)
-        AND block_timestamp >= DATEADD('day', -1, CURRENT_TIMESTAMP())
-        GROUP BY 1
-        ORDER BY 1 DESC
-        LIMIT 1
-        """
-        result = client.execute_query(query)
-        print(f"\nLast day's DeFi activity:\n{result}")
-    except Exception as e:
-        print(f"❌ Failed to execute DeFi metric query: {e}")
+        logger.error(f"Error testing connection: {str(e)}")
+        raise
 
 if __name__ == "__main__":
     main() 

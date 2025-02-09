@@ -62,4 +62,32 @@ storage:
   format: "jsonl"
   backup: true
   version_control: true
-  max_versions: 5 
+  max_versions: 5
+
+# Market metrics to collect from Flipside
+metrics:
+  - num_txs                  # Daily transaction count
+  - total_volume            # Total transaction volume
+  - unique_users            # Daily active users
+  - avg_tx_value            # Average transaction value
+  - tx_volatility_7d        # 7-day transaction volatility
+  - txn_growth_pct_7d       # 7-day transaction growth
+  - user_growth_pct_7d      # 7-day user growth
+  - gas_used                # Total gas used
+  - success_rate            # Transaction success rate
+
+# Quality thresholds for synthetic data
+quality:
+  min_score: 0.7            # Minimum quality score (0-1)
+  required_components:
+    - data_citations        # Must include proper data citations
+    - calculations          # Must show calculation steps
+    - confidence_intervals  # Must include confidence intervals
+    - market_analysis       # Must provide market analysis
+
+# Generation parameters
+generation:
+  max_retries: 3            # Maximum retries per example
+  batch_size: 10            # Number of examples to generate in parallel
+  temperature: 0.7          # Temperature for text generation
+  max_tokens: 1000          # Maximum tokens per response 
