@@ -1,0 +1,63 @@
+# Base Model Configuration
+model:
+  name: "meta-llama/Llama-2-70b-instruct-v2"
+  tokenizer_name: "meta-llama/Llama-2-70b-instruct-v2"
+  max_length: 2048
+  load_in_4bit: true  # For memory efficiency
+  use_flash_attention: true
+
+# Training Configuration
+training:
+  # General
+  seed: 42
+  mixed_precision: "bf16"
+  gradient_accumulation_steps: 4
+  num_train_epochs: 3
+  logging_steps: 10
+  save_steps: 100
+  eval_steps: 50
+
+  # Supervised Fine-tuning
+  sft:
+    learning_rate: 1e-5
+    weight_decay: 0.01
+    warmup_steps: 100
+    batch_size: 4  # Per GPU
+    max_grad_norm: 1.0
+
+  # GRPO Configuration
+  grpo:
+    learning_rate: 5e-6
+    weight_decay: 0.01
+    warmup_steps: 50
+    batch_size: 2  # Per GPU
+    num_candidates: 4  # Number of responses per prompt
+    max_grad_norm: 1.0
+    kl_penalty: 0.1
+    reward_scale: 1.0
+
+# Distributed Training
+distributed:
+  strategy: "deepspeed_stage_3"
+  gradient_checkpointing: true
+  zero3_init_flag: true
+  offload_optimizer: true
+  offload_param: true
+
+# Data Configuration
+data:
+  train_path: "data/processed/train.jsonl"
+  eval_path: "data/processed/eval.jsonl"
+  synthetic_path: "data/synthetic/reasoning_data.jsonl"
+  num_workers: 4
+  prefetch_factor: 2
+
+# Logging & Checkpointing
+output:
+  base_dir: "outputs"
+  checkpoint_dir: "checkpoints"
+  log_dir: "logs"
+  wandb:
+    project: "cortex-1"
+    entity: "near"
+    tags: ["crypto", "llm", "grpo"] 

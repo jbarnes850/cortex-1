@@ -1,0 +1,65 @@
+# Data Collection
+collection:
+  historical_days: 90
+  samples_per_day: 5
+  max_retries: 3
+  batch_size: 1000
+
+# Chains to Monitor
+chains:
+  - name: "ethereum"
+    min_block: 0
+    include_mempool: true
+  - name: "near"
+    min_block: 0
+    include_mempool: true
+  - name: "solana"
+    min_block: 0
+    include_mempool: true
+  - name: "avalanche"
+    min_block: 0
+    include_mempool: true
+
+# DeFi Protocols
+protocols:
+  - name: "uniswap"
+    version: "v3"
+    min_tvl: 1000000  # $1M minimum TVL
+  - name: "aave"
+    version: "v3"
+    min_tvl: 1000000
+  - name: "curve"
+    version: "v2"
+    min_tvl: 1000000
+
+# Data Processing
+processing:
+  min_transaction_value: 100  # $100 minimum transaction value
+  exclude_contracts: true     # Exclude contract-to-contract transactions
+  group_by: "1h"             # Aggregate data hourly
+  clean_outliers: true       # Remove statistical outliers
+  fill_missing: "ffill"      # Forward fill missing values
+
+# Synthetic Data Generation
+synthetic:
+  min_quality_score: 0.8
+  max_attempts_per_sample: 2
+  temperature_range: [0.5, 0.8]
+  batch_size: 10
+  max_concurrent_requests: 5
+  retry_delay_seconds: 1
+
+# Dataset Split
+split:
+  train: 0.8
+  validation: 0.1
+  test: 0.1
+  random_seed: 42
+
+# Storage
+storage:
+  compression: "gzip"
+  format: "jsonl"
+  backup: true
+  version_control: true
+  max_versions: 5 

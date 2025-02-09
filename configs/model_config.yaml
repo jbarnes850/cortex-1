@@ -1,0 +1,55 @@
+# Model Architecture
+architecture:
+  name: "meta-llama/Llama-3.3-70B-Instruct"
+  revision: "main"
+  trust_remote_code: true
+  use_auth_token: true  # For HuggingFace token
+
+# Tokenizer Configuration
+tokenizer:
+  padding_side: "left"
+  truncation_side: "right"
+  pad_token: "<pad>"
+  max_length: 2048
+
+# Quantization
+quantization:
+  load_in_4bit: true  # For memory efficiency
+  bnb_4bit_compute_dtype: "bfloat16"  # Changed to bfloat16 for Llama 3.3
+  bnb_4bit_quant_type: "nf4"
+  bnb_4bit_use_double_quant: true
+
+# LoRA Configuration
+lora:
+  r: 16
+  alpha: 32
+  dropout: 0.05
+  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
+  bias: "none"
+  task_type: "CAUSAL_LM"
+
+# Inference Settings
+inference:
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 50
+  num_beams: 1
+  max_new_tokens: 2000  # Increased for longer responses
+  repetition_penalty: 1.1
+  do_sample: true
+
+# vLLM Configuration
+vllm:
+  tensor_parallel_size: 4
+  gpu_memory_utilization: 0.9
+  max_num_batched_tokens: 8192
+  max_num_seqs: 256
+  trust_remote_code: true
+  dtype: "bfloat16"  # Changed to bfloat16 for Llama 3.3
+
+# Optimization
+optimization:
+  gradient_checkpointing: true
+  flash_attention: true
+  sequence_parallel: true
+  activation_checkpointing: true 
