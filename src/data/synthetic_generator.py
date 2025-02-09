@@ -59,53 +59,74 @@ class SyntheticDataGenerator:
     def _label_market_condition(self, 
                               current_data: Dict[str, Any], 
                               historical_data: List[Dict[str, Any]]) -> str:
-        """Label market condition based on metrics.
-        
-        Args:
-            current_data: Current market metrics
-            historical_data: Previous market data points
-            
-        Returns:
-            String label of market condition
-        """
-        # Calculate key indicators with proper error handling
+        """Label market condition based on comprehensive metrics analysis."""
         try:
-            txn_growth = float(current_data.get('txn_growth_pct_7d', 0))
-            user_growth = float(current_data.get('user_growth_pct_7d', 0))
-            volume_growth = float(current_data.get('volume_growth_pct_7d', 0))
-            volatility = float(current_data.get('tx_volatility_7d', 0))
-            success_rate = float(current_data.get('success_rate', 0))
+            # Extract core metrics with proper error handling
+            metrics = {
+                'txn_growth': float(current_data.get('txn_growth_pct_7d', 0)),
+                'user_growth': float(current_data.get('user_growth_pct_7d', 0)),
+                'volume_growth': float(current_data.get('volume_growth_pct_7d', 0)),
+                'volatility': float(current_data.get('tx_volatility_7d', 0)),
+                'success_rate': float(current_data.get('success_rate', 0)),
+                'smart_contract_calls': float(current_data.get('smart_contract_calls', 0)),
+                'bridge_volume': float(current_data.get('bridge_volume', 0))
+            }
             
-            # Get historical averages
+            # Calculate historical averages and volatility
             if historical_data:
-                hist_volatility = np.mean([float(d.get('tx_volatility_7d', 0)) 
-                                         for d in historical_data])
-                hist_volume_growth = np.mean([float(d.get('volume_growth_pct_7d', 0)) 
-                                            for d in historical_data])
-                hist_success_rate = np.mean([float(d.get('success_rate', 0)) 
-                                           for d in historical_data])
+                hist_metrics = {
+                    'volatility': np.mean([float(d.get('tx_volatility_7d', 0)) for d in historical_data]),
+                    'volume_growth': np.mean([float(d.get('volume_growth_pct_7d', 0)) for d in historical_data]),
+                    'success_rate': np.mean([float(d.get('success_rate', 0)) for d in historical_data]),
+                    'volatility_std': np.std([float(d.get('tx_volatility_7d', 0)) for d in historical_data])
+                }
             else:
-                hist_volatility = volatility
-                hist_volume_growth = volume_growth
-                hist_success_rate = success_rate
+                hist_metrics = {k: v for k, v in metrics.items()}
+                hist_metrics['volatility_std'] = metrics['volatility'] * 0.1
             
-            # Label conditions with comprehensive criteria
-            if volatility > hist_volatility * 1.5 and abs(volume_growth) > 20:
-                return MarketCondition.VOLATILE
-            elif (txn_growth > 10 and user_growth > 5 and volume_growth > 0 and 
-                  success_rate >= hist_success_rate):
-                return MarketCondition.BULLISH
-            elif (txn_growth < -10 or user_growth < -5 or volume_growth < -10 or 
-                  success_rate < hist_success_rate * 0.9):
-                return MarketCondition.BEARISH
-            elif abs(txn_growth) <= 5 and abs(user_growth) <= 3 and abs(volume_growth) <= 7:
+            # Enhanced condition classification with multiple indicators
+            conditions = []
+            
+            # Volatility Check (Primary)
+            if metrics['volatility'] > hist_metrics['volatility'] + 2 * hist_metrics['volatility_std']:
+                conditions.append(MarketCondition.VOLATILE)
+            
+            # Trend Analysis (Secondary)
+            if metrics['txn_growth'] > 15 and metrics['user_growth'] > 8:
+                conditions.append(MarketCondition.BULLISH)
+            elif metrics['txn_growth'] < -15 or metrics['user_growth'] < -8:
+                conditions.append(MarketCondition.BEARISH)
+            
+            # Recovery/Correction Analysis (Tertiary)
+            if metrics['volume_growth'] > hist_metrics['volume_growth'] + 15:
+                conditions.append(MarketCondition.RECOVERY)
+            elif metrics['volume_growth'] < hist_metrics['volume_growth'] - 15:
+                conditions.append(MarketCondition.CORRECTION)
+            
+            # Smart Contract & Bridge Activity (Quaternary)
+            if metrics['smart_contract_calls'] > 0 and metrics['bridge_volume'] > 0:
+                if metrics['success_rate'] >= hist_metrics['success_rate']:
+                    conditions.append(MarketCondition.BULLISH)
+                else:
+                    conditions.append(MarketCondition.BEARISH)
+            
+            # Final condition determination
+            if not conditions:
                 return MarketCondition.SIDEWAYS
-            elif volume_growth > hist_volume_growth + 10 and success_rate >= hist_success_rate:
+            
+            # Prioritize conditions based on strength of signals
+            if MarketCondition.VOLATILE in conditions:
+                return MarketCondition.VOLATILE
+            elif MarketCondition.BULLISH in conditions and metrics['success_rate'] > hist_metrics['success_rate']:
+                return MarketCondition.BULLISH
+            elif MarketCondition.BEARISH in conditions:
+                return MarketCondition.BEARISH
+            elif MarketCondition.RECOVERY in conditions:
                 return MarketCondition.RECOVERY
-            elif volume_growth < hist_volume_growth - 10 or success_rate < hist_success_rate * 0.95:
+            elif MarketCondition.CORRECTION in conditions:
                 return MarketCondition.CORRECTION
             else:
-                return MarketCondition.SIDEWAYS
+                return conditions[0]
                 
         except (TypeError, ValueError) as e:
             logger.warning(f"Error calculating market condition: {str(e)}")
