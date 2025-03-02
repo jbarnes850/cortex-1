@@ -3,24 +3,24 @@
 
 # Model Configuration
 model:
-  name: "meta-llama/Llama-3.3-70B-Instruct"
-  tokenizer_name: "meta-llama/Llama-3.3-70B-Instruct"
-  max_length: 2048
-  load_in_4bit: true  # For memory efficiency
+  name: "microsoft/phi-4"
+  tokenizer_name: "microsoft/phi-4"
+  max_length: 16384
+  load_in_4bit: false  # Using full precision model
   use_flash_attention: true
 
 # GRPO Training Parameters
 training:
   # Core GRPO parameters
   generations_per_prompt: 8   # Can be increased to 16 for better results
-  max_seq_length: 2048        # Maximum sequence length
+  max_seq_length: 16384       # Maximum sequence length for Phi-4
   max_tokens_per_batch: 16384 # Maximum tokens per batch
   
   # Optimization parameters
   learning_rate: 2e-6
   weight_decay: 0.01
   warmup_steps: 100
-  gradient_accumulation_steps: 4
+  gradient_accumulation_steps: 8  # Increased for full precision model
   max_grad_norm: 1.0
   
   # Training duration
