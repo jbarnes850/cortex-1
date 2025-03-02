@@ -31,11 +31,19 @@ NEAR Cortex-1 is a specialized AI model that can reason, understand, and predict
 - Use **Llama 3.3 70B Instruct** for its excellent reasoning capability and flexibility
 - This model size is expected to capture complex patterns (especially crucial for DeFi market predictions) while being compatible with Unsloth's GRPO fine-tuning
 
-### Synthetic Data Strategy for Labeling
+### Synthetic Data Strategy with DeepSeek R1
 
-- Combine high-fidelity historical data from Flipside with synthetic chain-of-thought (CoT) data
-- Use an LLM to create CoT explanations when manual annotation is prohibitive
-- For example, for each training sample fetched from Flipside, prompt an LLM to generate a detailed reasoning trace that the 70B model can learn from
+- Leverage **DeepSeek R1** (671B parameters) to generate high-quality synthetic reasoning traces
+- Use the exposed reasoning field from DeepSeek R1 to capture detailed step-by-step analysis
+- Follow Unsloth's R1 reasoning approach to create a synthetic dataset with explicit reasoning steps
+- Combine real Flipside market data with DeepSeek R1's reasoning capabilities to create a comprehensive training dataset
+
+### DeepSeek R1 Integration Approach
+
+- **Pipeline Design**: Use OpenRouter API to access DeepSeek R1's reasoning capabilities
+- **Reasoning Access**: Extract the special `reasoning` field from the API response that contains detailed thought processes
+- **Dataset Format**: Structure the synthetic data as conversational turns with clear input-reasoning-output patterns
+- **Quality Control**: Apply automated verification to ensure synthetic data meets quality thresholds
 
 ## 3. Reward Function Design
 
@@ -62,15 +70,18 @@ NEAR Cortex-1 is a specialized AI model that can reason, understand, and predict
 ### Dataset Preparation
 
 - **Historical Data:** Collect and clean high-quality DeFi and crypto data via Flipside
-- **Synthetic Data Integration:**
-  - Use an LLM to generate chain-of-thought reasoning traces for each sample
-  - Validate synthetic labels with automated checks or a human review loop
+- **DeepSeek R1 Synthetic Data Generation:**
+  - Use DeepSeek R1 to generate detailed chain-of-thought reasoning for each market data sample
+  - Extract the reasoning field that shows step-by-step analytical thinking
+  - Format the synthetic data into conversational turns: system instruction → user query → assistant response
+  - Apply quality filters to ensure high standards in the synthetic dataset
 
 ### Training Phases
 
 1. **Supervised Fine-Tuning (SFT)**
-   - Initially fine-tune Llama 3.3 70B Instruct on the combined real & synthetic dataset
+   - Initially fine-tune Llama 3.3 70B Instruct on the combined real & DeepSeek R1 synthetic dataset
    - Use a very low learning rate (e.g., 1e-5) and monitor validation loss closely
+   - Leverage the explicit reasoning patterns from DeepSeek R1 to train improved reasoning capabilities
 
 2. **GRPO Reinforcement Fine-Tuning**
    - Load the SFT checkpoint into Unsloth's GRPO pipeline

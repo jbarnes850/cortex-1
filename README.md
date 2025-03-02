@@ -1,6 +1,6 @@
 # NEAR Cortex-1: Advanced Crypto Market Reasoning AI
 
-A specialized AI model that combines chain-of-thought reasoning with cross-chain data analysis to understand and predict crypto market dynamics. Built on Llama 3.3 70B and enhanced through GRPO (Group Policy Optimization), Cortex-1 aims to reason about market dynamics the way experienced traders do, but at a massive scale and with perfect recall of historical patterns.
+A specialized AI model that combines chain-of-thought reasoning with cross-chain data analysis to understand and predict crypto market dynamics. Built on Microsoft's Phi-4 (14B) and enhanced through GRPO (Group Policy Optimization), Cortex-1 aims to reason about market dynamics the way experienced traders do, but at a massive scale and with perfect recall of historical patterns.
 
 ## 💡 Open Source Commitment
 
@@ -33,32 +33,27 @@ graph TB
 
     subgraph Synthetic Generation
         DP --> |Processed Data| SG[Synthetic Generator]
-        CF[Config Files] --> |Parameters| SG
+        DR1[DeepSeek R1] --> |Reasoning| SG
         SG --> |Examples| DS[Dataset]
-        RF[Reward Function] --> |Quality Metrics| SG
+        RF[Reward Functions] --> |Quality Metrics| SG
     end
 
     subgraph Model Training
         DS --> |Training Data| MT[Model Training]
+        PHI4[Phi-4 14B] --> |Base Model| MT
         MT --> |Fine-tuned Model| MD[Model Deployment]
     end
 
-    subgraph Inference Pipeline
-        MD --> |Deployed Model| API[REST API]
-        API --> |Predictions| CL[Client Applications]
-    end
-
-    subgraph Configuration
-        DC[Data Config] --> CF
-        MC[Model Config] --> CF
-        TC[Training Config] --> MT
+    subgraph Testing & Evaluation
+        TRF[Test Reward Functions] --> |Validation Results| RF
+        MT --> |Checkpoints| EV[Evaluation Pipeline]
+        EV --> |Metrics| MT
     end
 
     style Data Collection fill:#f9f,stroke:#333,stroke-width:2px
     style Synthetic Generation fill:#bbf,stroke:#333,stroke-width:2px
     style Model Training fill:#bfb,stroke:#333,stroke-width:2px
-    style Inference Pipeline fill:#fbb,stroke:#333,stroke-width:2px
-    style Configuration fill:#fff,stroke:#333,stroke-width:2px
+    style Testing & Evaluation fill:#fbb,stroke:#333,stroke-width:2px
 ```
 
 ### Component Details
@@ -69,38 +64,38 @@ graph TB
    - Protocol Collection: Gathers DeFi protocol metrics
 
 2. **Synthetic Generation Layer**
-   - Config-driven generation pipeline
-   - Reward function for quality assessment
-   - Multi-chain data integration
-   - Template-based prompt generation
+   - DeepSeek R1 Integration: Uses R1's reasoning capabilities to generate high-quality examples
+   - Quality-Focused: Applies reward functions to verify example quality
+   - Multi-chain Data: Integrates data from various blockchain sources
+   - Template-based Prompts: Uses structured prompts to elicit detailed reasoning
 
-3. **Model Training Layer**
-   - GRPO (Group Policy Optimization)
-   - Distributed training support
-   - Quantization options (4-bit/8-bit)
-   - Checkpoint management
+3. **Reward System**
+   - Modular Design: Separate reward components for different aspects of quality
+   - Finance-Specific: Rewards for calculation accuracy, confidence intervals, and investment insights
+   - Format Quality: Rewards for citation format, structure, and completeness
+   - Composite Framework: Weighted combination of individual rewards
 
-4. **Inference Pipeline**
-   - REST API for predictions
-   - Batch and streaming inference
-   - Load balancing and scaling
-   - Monitoring and logging
+4. **Model Training Layer**
+   - Phi-4 Base Model: 14B parameters, 16K context window, strong reasoning capabilities
+   - GRPO (Group Policy Optimization): Optimizes for reward maximization
+   - 4-bit Quantization: Enables deployment on consumer hardware
+   - Local Training Capability: Can be fine-tuned on consumer GPUs (16GB+ VRAM)
 
-### Data Flow
+### Data Pipeline
 
-1. Raw data is collected from multiple chains via Flipside
-2. Data is processed and enriched with market conditions
-3. Synthetic generator creates training examples
-4. Quality metrics are calculated for each example
-5. Training pipeline fine-tunes the model
-6. Deployed model serves predictions via API
+Our data pipeline is designed with a clear separation between the main generation system and the testing components. For detailed information, see [Data Pipeline Documentation](docs/DATA_PIPELINE.md).
 
-### Configuration System
+1. **Main Pipeline:**
+   - Fetches real market data from Flipside
+   - Generates detailed reasoning using DeepSeek R1
+   - Applies validated reward functions for quality verification
+   - Creates standardized training examples with reasoning traces
 
-- **Data Config**: Controls data collection and processing
-- **Model Config**: Defines model architecture and parameters
-- **Training Config**: Manages training hyperparameters
-- **DeepSpeed Config**: Optimizes distributed training
+2. **Testing System:**
+   - Uses mock examples to validate reward functions
+   - Provides controlled test cases of varying quality
+   - Ensures reward functions correctly differentiate quality levels
+   - Operates independently from the main pipeline
 
 ## 🎯 Core Capabilities
 
@@ -130,28 +125,32 @@ graph TB
 
 ## 🛠 Technical Architecture
 
-### Base Model
+### Base Model: Microsoft Phi-4
 
-- **Foundation**: Llama 3.3 70B Instruct
-- **Enhancement**: GRPO (Group Policy Optimization) fine-tuning
-- **Quantization**: 4-bit and 8-bit options for efficient deployment
+We chose Microsoft's Phi-4 (14B) as our base model for several key reasons:
+
+- **Accessibility**: 14B parameters can run on consumer hardware (32GB+ RAM, 16GB+ VRAM)
+- **Reasoning Capabilities**: Strong performance on mathematics and logical reasoning tasks
+- **Context Window**: 16K tokens is sufficient for financial analysis scenarios
+- **Quantization-Friendly**: Works efficiently with 4-bit quantization for memory optimization
+- **Developer-First**: Enables more contributors to run and fine-tune locally
+
+This choice reinforces our commitment to creating a truly accessible, open-source model that developers can run on their own hardware.
 
 ### Training Pipeline
 
 1. **Synthetic Data Generation**
+   - DeepSeek R1 reasoning integration
    - Market condition balancing
-   - Chain-of-thought reasoning examples
    - Cross-chain correlation scenarios
    - Protocol performance analysis cases
    - Risk assessment simulations
 
 2. **Reward Function Components**
-   - Prediction accuracy scoring
-   - Reasoning depth evaluation
-   - Technical analysis quality
-   - Market understanding assessment
-   - Cross-chain analysis metrics
-   - Group policy optimization
+   - Finance-specific metrics (calculation accuracy, confidence intervals)
+   - Format quality (structure, completeness)
+   - Citation quality (metric citations, historical references)
+   - Composite reward framework with flexible weighting
 
 3. **Benchmarking Framework**
    - Historical prediction accuracy
@@ -165,9 +164,9 @@ graph TB
 ### Prerequisites
 
 - Python 3.10+
-- CUDA-compatible GPU(s)
-- 192GB+ RAM for data preprocessing
-- Cloud GPU access (A100/H100) for training
+- CUDA-compatible GPU (16GB+ VRAM recommended)
+- 32GB+ RAM for data preprocessing and training
+- 100GB disk space for datasets and model weights
 
 ### Installation
 
@@ -192,8 +191,10 @@ pip install -r requirements.txt
 ```bash
 cp .env.example .env
 # Edit .env with your API keys:
-# - OPENAI_API_KEY (for synthetic data generation)
+# - OPENROUTER_API_KEY (for DeepSeek R1 access)
 # - FLIPSIDE_API_KEY (for market data)
+# - WANDB_API_KEY (for experiment tracking)
+# - HUGGINGFACE_TOKEN (for model downloading)
 ```
 
 ## 📊 Data Pipeline
@@ -201,24 +202,43 @@ cp .env.example .env
 ### Market Data Collection
 
 ```bash
-python scripts/collect_data.py --days 180 --chains ethereum near
+python scripts/test_flipside.py --days 30 --chains ethereum near
 ```
 
 ### Synthetic Data Generation
 ```bash
 python scripts/generate_synthetic.py \
-    --days 180 \
-    --samples-per-day 10 \
-    --chains ethereum near \
-    --protocols uniswap \
-    --model o3-mini
+    --dataset-size medium \
+    --chains market \
+    --verify-all
 ```
 
-### Quality Testing
+### Reward Function Testing
 
 ```bash
-python scripts/test_synthetic.py
+python scripts/test_rewards.py --verbose
 ```
+
+### Model Training with Phi-4 and GRPO
+
+```bash
+python scripts/train_grpo.py \
+    --config configs/grpo/financial_reasoning.json \
+    --verbose
+```
+
+## 🔍 Hardware Requirements
+
+Cortex-1 is designed to run on accessible hardware:
+
+| Component | Minimum | Recommended | Notes |
+|-----------|---------|-------------|-------|
+| RAM | 32GB | 64GB | Required for data preprocessing |
+| GPU | 16GB VRAM | 24GB+ VRAM | A single NVIDIA RTX 3090/4090 or A6000 is sufficient |
+| CPU | 8 cores | 16+ cores | For data preparation tasks |
+| Storage | 100GB SSD | 250GB+ SSD | For datasets and model weights |
+
+With 4-bit quantization, the Phi-4 model requires ~8GB of VRAM for inference and ~16GB for training with small batch sizes, making it feasible to run on a single consumer GPU.
 
 ## 🔍 Benchmarking
 
@@ -269,12 +289,33 @@ We welcome contributions! Here's how you can help:
    - Reward function optimization
    - Benchmarking scenarios
 
-## 🔗 Developer Resources
+## Project Structure
 
-- **Dataset Access**: Full synthetic dataset available at [HuggingFace Datasets](https://huggingface.co/datasets/near/cortex-1)
-- **Model Weights**: Pre-trained and fine-tuned weights will be published on [HuggingFace Models](https://huggingface.co/near)
-- **Integration Examples**: Check our [examples](./examples) directory for implementation guides
-- **API Documentation**: Comprehensive API docs available in our [Wiki](https://github.com/near/cortex-1/wiki)
+```
+cortex-1/
+├── configs/                  # Configuration files
+│   ├── grpo/                 # GRPO configurations
+│   ├── data_config.yaml      # Data configuration
+│   └── model_config.yaml     # Model configuration
+├── data/                     # Data directories
+│   ├── raw/                  # Raw examples with reasoning
+│   ├── training/             # Processed training examples
+│   └── splits/               # Train/eval splits
+├── docs/                     # Documentation
+│   ├── DATA_PIPELINE.md      # Data pipeline documentation
+│   └── TRAINING_PLAN.md      # Training strategy documentation
+├── models/                   # Saved model weights
+│   └── phi4_financial_reasoning/ # Trained Phi-4 model
+├── scripts/                  # Execution scripts
+│   ├── generate_synthetic.py # Data generation script
+│   ├── test_rewards.py       # Reward testing script
+│   └── train_grpo.py         # GRPO training script
+├── src/                      # Source code
+│   ├── data/                 # Data processing modules
+│   ├── model/                # Model-related code
+│   └── rewards/              # Reward function modules
+└── README.md                 # This file
+```
 
 ## 📜 License
 
@@ -285,7 +326,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - NEAR Foundation for support and guidance
 - Unsloth Team for GRPO implementation
 - Flipside Crypto for market data access
-- OpenAI for synthetic data generation support
+- OpenRouter for DeepSeek R1 API access
+- Microsoft for the Phi-4 model
 
 ## 📚 Documentation
 
@@ -295,7 +337,10 @@ For detailed documentation, visit our [Wiki](https://github.com/near/cortex-1/wi
 
 - [NEAR Foundation](https://near.foundation/)
 - [Project Documentation](https://near-foundation.notion.site/NEAR-Cortex-1-AI-Reasoning-Model)
+- [Microsoft Phi-4](https://huggingface.co/microsoft/phi-4)
+- [Unsloth GRPO](https://github.com/unslothai/unsloth)
 - [Training Plan](docs/TRAINING_PLAN.md)
+- [Data Pipeline](docs/DATA_PIPELINE.md)
 - [Contribution Guide](CONTRIBUTING.md)
 
 ## 📧 Contact

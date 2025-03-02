@@ -1,0 +1,88 @@
+# GRPO Training Configuration for NEAR Cortex-1
+# Following Unsloth's recommended parameters for optimal reasoning performance
+
+# Model Configuration
+model:
+  name: "meta-llama/Llama-3.3-70B-Instruct"
+  tokenizer_name: "meta-llama/Llama-3.3-70B-Instruct"
+  max_length: 2048
+  load_in_4bit: true  # For memory efficiency
+  use_flash_attention: true
+
+# GRPO Training Parameters
+training:
+  # Core GRPO parameters
+  generations_per_prompt: 8   # Can be increased to 16 for better results
+  max_seq_length: 2048        # Maximum sequence length
+  max_tokens_per_batch: 16384 # Maximum tokens per batch
+  
+  # Optimization parameters
+  learning_rate: 2e-6
+  weight_decay: 0.01
+  warmup_steps: 100
+  gradient_accumulation_steps: 4
+  max_grad_norm: 1.0
+  
+  # Training duration
+  num_epochs: 3
+  min_training_steps: 300      # Minimum steps for observable improvements
+  target_training_time_hours: 12  # Recommended training time
+  early_stopping_patience: 5   # Epochs without improvement before stopping
+  
+  # Batch sizing
+  per_device_train_batch_size: 1  # Actual batch size will be this × generations_per_prompt
+  per_device_eval_batch_size: 1
+  
+  # Optimization strategy
+  optimizer: "adamw_torch"
+  lr_scheduler_type: "cosine"
+
+# Reward Function Configuration
+reward:
+  # Reward scaling
+  baseline_subtract: true      # Subtract baseline reward from all rewards
+  normalize_rewards: true      # Normalize rewards to have mean 0 and std 1
+  clip_rewards: 1.0            # Clip rewards to [-1, 1]
+  
+  # Reward function weights
+  weights:
+    calculation_accuracy: 1.0
+    confidence_interval: 0.8
+    investment_insight: 1.0
+    citation_format: 0.7
+    structure: 0.6
+    completeness: 0.8
+    metric_citation: 0.9
+    historical_reference: 0.7
+  
+  # PPO/GRPO specific
+  kl_penalty: 0.05             # KL divergence penalty
+  entropy_bonus: 0.0           # Entropy bonus coefficient
+
+# Distributed Training Configuration
+distributed:
+  strategy: "deepspeed_stage_3"
+  gradient_checkpointing: true
+  zero3_init_flag: true
+  offload_optimizer: true
+  offload_param: false         # Use sparingly, can slow down training
+
+# Data Configuration
+data:
+  train_sizes: [500, 1000, 2000] # Different dataset sizes for experimentation
+  train_path: "data/synthetic/training/reasoning_training_{size}.jsonl"
+  eval_path: "data/synthetic/eval/reasoning_eval_{size}.jsonl"
+  verify_quality: true          # Whether to verify the quality of examples
+
+# Logging & Evaluation
+logging:
+  log_interval_steps: 10
+  eval_interval_steps: 100
+  checkpoint_interval_hours: 1
+  log_reward_components: true   # Log individual reward components
+  
+  # WandB configuration
+  wandb:
+    enabled: true
+    project: "cortex-1"
+    tags: ["crypto", "grpo", "financial-analysis"] 

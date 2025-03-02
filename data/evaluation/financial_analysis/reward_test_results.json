@@ -1,0 +1,383 @@
+[
+  {
+    "name": "High Quality Response",
+    "scores": {
+      "calculation_accuracy": 0.9,
+      "confidence_interval": 0.5,
+      "investment_insight": 0.5,
+      "citation_format": 0.0,
+      "structure": 0.2333333333333333,
+      "completeness": 0.4906666666666667,
+      "metric_citation": 0.0,
+      "historical_reference": 0.6799999999999999,
+      "composite": 0.43208205128205124
+    },
+    "expected_ranges": {
+      "calculation_accuracy": [
+        0.8,
+        1.0
+      ],
+      "confidence_interval": [
+        0.8,
+        1.0
+      ],
+      "investment_insight": [
+        0.8,
+        1.0
+      ],
+      "citation_format": [
+        0.7,
+        1.0
+      ],
+      "structure": [
+        0.8,
+        1.0
+      ],
+      "completeness": [
+        0.8,
+        1.0
+      ],
+      "metric_citation": [
+        0.8,
+        1.0
+      ],
+      "historical_reference": [
+        0.7,
+        1.0
+      ],
+      "composite": [
+        0.75,
+        1.0
+      ]
+    },
+    "component_results": {
+      "calculation_accuracy": {
+        "score": 0.9,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": true
+      },
+      "confidence_interval": {
+        "score": 0.5,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": false
+      },
+      "investment_insight": {
+        "score": 0.5,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": false
+      },
+      "citation_format": {
+        "score": 0.0,
+        "expected_range": [
+          0.7,
+          1.0
+        ],
+        "passed": false
+      },
+      "structure": {
+        "score": 0.2333333333333333,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": false
+      },
+      "completeness": {
+        "score": 0.4906666666666667,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": false
+      },
+      "metric_citation": {
+        "score": 0.0,
+        "expected_range": [
+          0.8,
+          1.0
+        ],
+        "passed": false
+      },
+      "historical_reference": {
+        "score": 0.6799999999999999,
+        "expected_range": [
+          0.7,
+          1.0
+        ],
+        "passed": false
+      },
+      "composite": {
+        "score": 0.43208205128205124,
+        "expected_range": [
+          0.75,
+          1.0
+        ],
+        "passed": false
+      }
+    },
+    "passed": false
+  },
+  {
+    "name": "Medium Quality Response",
+    "scores": {
+      "calculation_accuracy": 0.5,
+      "confidence_interval": 0.0,
+      "investment_insight": 0.31499999999999995,
+      "citation_format": 0.0,
+      "structure": 0.0,
+      "completeness": 0.1524,
+      "metric_citation": 0.0,
+      "historical_reference": 0.49199999999999994,
+      "composite": 0.19712615384615384
+    },
+    "expected_ranges": {
+      "calculation_accuracy": [
+        0.4,
+        0.7
+      ],
+      "confidence_interval": [
+        0.3,
+        0.6
+      ],
+      "investment_insight": [
+        0.4,
+        0.7
+      ],
+      "citation_format": [
+        0.3,
+        0.6
+      ],
+      "structure": [
+        0.5,
+        0.8
+      ],
+      "completeness": [
+        0.4,
+        0.7
+      ],
+      "metric_citation": [
+        0.4,
+        0.7
+      ],
+      "historical_reference": [
+        0.3,
+        0.6
+      ],
+      "composite": [
+        0.4,
+        0.7
+      ]
+    },
+    "component_results": {
+      "calculation_accuracy": {
+        "score": 0.5,
+        "expected_range": [
+          0.4,
+          0.7
+        ],
+        "passed": true
+      },
+      "confidence_interval": {
+        "score": 0.0,
+        "expected_range": [
+          0.3,
+          0.6
+        ],
+        "passed": false
+      },
+      "investment_insight": {
+        "score": 0.31499999999999995,
+        "expected_range": [
+          0.4,
+          0.7
+        ],
+        "passed": false
+      },
+      "citation_format": {
+        "score": 0.0,
+        "expected_range": [
+          0.3,
+          0.6
+        ],
+        "passed": false
+      },
+      "structure": {
+        "score": 0.0,
+        "expected_range": [
+          0.5,
+          0.8
+        ],
+        "passed": false
+      },
+      "completeness": {
+        "score": 0.1524,
+        "expected_range": [
+          0.4,
+          0.7
+        ],
+        "passed": false
+      },
+      "metric_citation": {
+        "score": 0.0,
+        "expected_range": [
+          0.4,
+          0.7
+        ],
+        "passed": false
+      },
+      "historical_reference": {
+        "score": 0.49199999999999994,
+        "expected_range": [
+          0.3,
+          0.6
+        ],
+        "passed": true
+      },
+      "composite": {
+        "score": 0.19712615384615384,
+        "expected_range": [
+          0.4,
+          0.7
+        ],
+        "passed": false
+      }
+    },
+    "passed": false
+  },
+  {
+    "name": "Low Quality Response",
+    "scores": {
+      "calculation_accuracy": 0.0,
+      "confidence_interval": 0.0,
+      "investment_insight": 0.23999999999999996,
+      "citation_format": 0.0,
+      "structure": 0.0,
+      "completeness": 0.11080000000000001,
+      "metric_citation": 0.0,
+      "historical_reference": 0.45599999999999996,
+      "composite": 0.0996676923076923
+    },
+    "expected_ranges": {
+      "calculation_accuracy": [
+        0.0,
+        0.3
+      ],
+      "confidence_interval": [
+        0.0,
+        0.2
+      ],
+      "investment_insight": [
+        0.1,
+        0.4
+      ],
+      "citation_format": [
+        0.0,
+        0.3
+      ],
+      "structure": [
+        0.1,
+        0.4
+      ],
+      "completeness": [
+        0.1,
+        0.4
+      ],
+      "metric_citation": [
+        0.0,
+        0.3
+      ],
+      "historical_reference": [
+        0.0,
+        0.2
+      ],
+      "composite": [
+        0.05,
+        0.35
+      ]
+    },
+    "component_results": {
+      "calculation_accuracy": {
+        "score": 0.0,
+        "expected_range": [
+          0.0,
+          0.3
+        ],
+        "passed": true
+      },
+      "confidence_interval": {
+        "score": 0.0,
+        "expected_range": [
+          0.0,
+          0.2
+        ],
+        "passed": true
+      },
+      "investment_insight": {
+        "score": 0.23999999999999996,
+        "expected_range": [
+          0.1,
+          0.4
+        ],
+        "passed": true
+      },
+      "citation_format": {
+        "score": 0.0,
+        "expected_range": [
+          0.0,
+          0.3
+        ],
+        "passed": true
+      },
+      "structure": {
+        "score": 0.0,
+        "expected_range": [
+          0.1,
+          0.4
+        ],
+        "passed": false
+      },
+      "completeness": {
+        "score": 0.11080000000000001,
+        "expected_range": [
+          0.1,
+          0.4
+        ],
+        "passed": true
+      },
+      "metric_citation": {
+        "score": 0.0,
+        "expected_range": [
+          0.0,
+          0.3
+        ],
+        "passed": true
+      },
+      "historical_reference": {
+        "score": 0.45599999999999996,
+        "expected_range": [
+          0.0,
+          0.2
+        ],
+        "passed": false
+      },
+      "composite": {
+        "score": 0.0996676923076923,
+        "expected_range": [
+          0.05,
+          0.35
+        ],
+        "passed": true
+      }
+    },
+    "passed": false
+  }
+]

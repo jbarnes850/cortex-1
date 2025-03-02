@@ -54,3 +54,4 @@ checkpoints/
 _build/
 _static/
 _templates/
+.cursor

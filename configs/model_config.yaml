@@ -1,9 +1,58 @@
-# Model Architecture
-architecture:
-  name: "meta-llama/Llama-3.3-70B-Instruct"
+# Model Configuration for NEAR Cortex-1
+# This file contains model configuration settings for training and inference
+
+model:
+  # Base model settings
+  name: "microsoft/phi-4"
+  tokenizer_name: "microsoft/phi-4"
   revision: "main"
+  
+  # Model size and capabilities
+  type: "causal_lm"
+  parameters: 14B  # 14 billion parameters
+  context_window: 16384  # 16K tokens context window
+  
+  # Loading settings
   trust_remote_code: true
-  use_auth_token: true  # For HuggingFace token
+  load_in_4bit: true  # Enable 4-bit quantization for memory efficiency
+  load_in_8bit: false  # Alternative 8-bit quantization (disabled by default)
+  use_flash_attention: true  # Enable FlashAttention for performance
+
+# LoRA Configuration for fine-tuning
+lora:
+  enabled: true
+  r: 16  # LoRA attention dimension
+  alpha: 32  # LoRA alpha parameter
+  dropout: 0.05  # LoRA dropout
+  target_modules:
+    - "query_key_value"
+    - "attention.self"
+    - "k_proj"
+    - "q_proj"
+    - "v_proj"
+    - "attention.wqkv"
+  bias: "none"  # Don't train bias terms
+
+# Chat format settings
+chat_format:
+  type: "phi"  # Phi-4's specific chat format
+  system_property: "system"
+  system_message: "You are an expert financial analyst specializing in cryptocurrency markets."
+  
+# Prompting configuration
+prompting:
+  max_length: 2048
+  temperature: 0.7
+  top_p: 0.9
+  top_k: 50
+  do_sample: true
+  num_beams: 1
+  
+# Deployment settings
+deployment:
+  quantization: "4bit"  # 4-bit quantization for deployment
+  device: "cuda"  # Use CUDA for GPU acceleration
+  batch_size: 2  # Batch size for inference
 
 # Tokenizer Configuration
 tokenizer:
@@ -18,15 +67,6 @@ quantization:
   bnb_4bit_compute_dtype: "bfloat16"  # Changed to bfloat16 for Llama 3.3
   bnb_4bit_quant_type: "nf4"
   bnb_4bit_use_double_quant: true
-
-# LoRA Configuration
-lora:
-  r: 16
-  alpha: 32
-  dropout: 0.05
-  target_modules: ["q_proj", "k_proj", "v_proj", "o_proj"]
-  bias: "none"
-  task_type: "CAUSAL_LM"
 
 # Inference Settings
 inference:

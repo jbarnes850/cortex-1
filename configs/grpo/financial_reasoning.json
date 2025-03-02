@@ -1,0 +1,80 @@
+{
+  "train_config": {
+    "lr": 5e-7,
+    "micro_batch_size": 1,
+    "epochs": 1,
+    "warmup_steps": 10,
+    "kl_coef": 0.1,
+    "seed": 42,
+    "adafactor": false
+  },
+  "reward_config": {
+    "name": "financial_reasoning",
+    "reward_fn": "src.rewards.get_default_financial_reward",
+    "normalize": true,
+    "component_weights": {
+      "calculation_accuracy": 0.25,
+      "confidence_interval": 0.15,
+      "investment_insight": 0.20,
+      "citation_format": 0.10,
+      "structure": 0.10,
+      "completeness": 0.10,
+      "metric_citation": 0.05,
+      "historical_reference": 0.05
+    }
+  },
+  "model_config": {
+    "model_name_or_path": "microsoft/phi-4",
+    "tokenizer_name_or_path": "microsoft/phi-4",
+    "torch_dtype": "bfloat16",
+    "load_in_8bit": true,
+    "load_in_4bit": false,
+    "trust_remote_code": true,
+    "use_flash_attention": true,
+    "max_seq_length": 8192
+  },
+  "data_config": {
+    "train_datasets": [
+      {
+        "path": "data/training/financial_analysis",
+        "type": "jsonl"
+      }
+    ],
+    "eval_datasets": [
+      {
+        "path": "data/evaluation/financial_analysis",
+        "type": "jsonl"
+      }
+    ]
+  },
+  "sampling_config": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 50,
+    "num_beams": 1,
+    "max_length": 2000,
+    "max_groups": 8,
+    "group_size": 4
+  },
+  "task_config": {
+    "prompt_template": "You are an expert financial analyst specializing in cryptocurrency markets. Analyze the following metrics and provide a detailed financial analysis with investment recommendations.\n\nMetrics:\n{metrics}\n\nYour analysis should include:\n1. Executive summary\n2. Key metrics analysis\n3. Detailed calculations with formulas and confidence intervals\n4. Market context including historical references\n5. Investment implications with clear recommendations\n\nAnalysis:",
+    "response_template": "",
+    "max_prompt_length": 2048,
+    "chat_format": "phi"
+  },
+  "logging_config": {
+    "wandb": {
+      "project": "cortex-1-grpo",
+      "name": "phi4-financial-reasoning",
+      "entity": "near-cortex",
+      "log_model": true
+    },
+    "console": {
+      "level": "INFO"
+    }
+  },
+  "distribution_config": {
+    "device_map": "auto",
+    "mixed_precision": "bf16"
+  }
+} 

@@ -1,197 +1,102 @@
 """
-Market conditions analyzer for blockchain data.
+Market conditions analyzer for determining market context.
 """
 
 import logging
-from typing import Dict, Any
-import numpy as np
+from typing import Dict, Any, List, Optional
 
-logger = logging.getLogger(__name__)
+from src.utils.logger import setup_logger
+logger = setup_logger(__name__)
 
 class MarketConditions:
-    """Analyzes market conditions from blockchain data."""
+    """
+    Analyzes market data to determine market conditions and context.
+    This provides additional context for the synthetic data generation.
+    """
     
     def __init__(self):
         """Initialize the market conditions analyzer."""
-        pass
-        
-    def analyze(self, data_point: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze market conditions from a single data point.
+        self.market_conditions = {
+            "bull": "The market is in a strong uptrend with increasing prices, volumes, and user activity.",
+            "bear": "The market is in a downtrend with decreasing prices, volumes, and user activity.",
+            "sideways": "The market is trading in a range without a clear directional trend.",
+            "volatile": "The market is experiencing high volatility with rapid price and volume changes.",
+            "recovery": "The market is showing signs of recovery after a period of decline.",
+            "correction": "The market is experiencing a temporary reversal within a larger trend.",
+            "accumulation": "The market is in a phase of accumulation with increasing holdings by long-term investors.",
+            "distribution": "The market is in a distribution phase with large holders reducing their positions."
+        }
+    
+    def analyze(self, market_data: Dict[str, Any]) -> str:
+        """
+        Analyze market data to determine market conditions.
         
         Args:
-            data_point: Dictionary containing market metrics
+            market_data: Dictionary of market metrics
             
         Returns:
-            Dictionary containing market condition analysis
+            String description of market conditions
         """
         try:
-            conditions = {
-                'market_state': self._determine_market_state(data_point),
-                'growth_metrics': self._analyze_growth(data_point),
-                'risk_metrics': self._analyze_risk(data_point),
-                'efficiency_metrics': self._analyze_efficiency(data_point)
-            }
-            return conditions
+            # Extract key metrics
+            txn_growth = market_data.get("txn_growth_pct_7d", 0)
+            user_growth = market_data.get("user_growth_pct_7d", 0)
+            volatility = market_data.get("tx_volatility_7d", 0)
+            
+            # Determine market condition based on metrics
+            if txn_growth > 15 and user_growth > 10:
+                condition = "bull"
+            elif txn_growth < -10 and user_growth < -5:
+                condition = "bear"
+            elif abs(txn_growth) < 5 and abs(user_growth) < 5:
+                condition = "sideways"
+            elif volatility > 0.3:
+                condition = "volatile"
+            elif -10 < txn_growth < 0 and user_growth > 0:
+                condition = "accumulation"
+            elif 0 < txn_growth < 10 and user_growth < 0:
+                condition = "distribution"
+            elif txn_growth > 0 and user_growth > 0 and txn_growth < 15:
+                condition = "recovery"
+            elif txn_growth < 0 and user_growth < 0 and txn_growth > -10:
+                condition = "correction"
+            else:
+                condition = "sideways"  # Default
+            
+            # Get the description
+            description = self.market_conditions.get(condition, "")
+            
+            # Add specific metrics to the description
+            custom_description = f"{description} Transaction growth is {txn_growth:.1f}% over 7 days, with user growth at {user_growth:.1f}%. Volatility measures at {volatility:.2f}."
+            
+            # Add network-specific context if available
+            network = market_data.get("network", "").upper()
+            if network:
+                custom_description += f" This analysis is specific to the {network} network."
+            
+            return custom_description
             
         except Exception as e:
             logger.error(f"Error analyzing market conditions: {str(e)}")
-            return {}
-            
-    def _determine_market_state(self, data: Dict[str, Any]) -> str:
-        """Determine the overall market state."""
-        try:
-            txn_growth = float(data.get('txn_growth_pct_7d', 0))
-            user_growth = float(data.get('user_growth_pct_7d', 0))
-            volatility = float(data.get('tx_volatility_7d', 0))
-            
-            # Simple state determination based on growth and volatility
-            if txn_growth > 10 and user_growth > 5:
-                return 'expanding'
-            elif txn_growth < -10 or user_growth < -5:
-                return 'contracting'
-            elif volatility > 2.0:
-                return 'volatile'
-            else:
-                return 'stable'
-                
-        except Exception as e:
-            logger.warning(f"Error determining market state: {str(e)}")
-            return 'unknown'
-            
-    def _analyze_growth(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze growth metrics."""
-        try:
-            txn_growth = float(data.get('txn_growth_pct_7d', 0))
-            user_growth = float(data.get('user_growth_pct_7d', 0))
-            
-            return {
-                'growth_rate': (txn_growth + user_growth) / 2,
-                'growth_stability': abs(txn_growth - user_growth) < 5,
-                'growth_trend': 'positive' if txn_growth > 0 and user_growth > 0 else 'negative'
-            }
-            
-        except Exception as e:
-            logger.warning(f"Error analyzing growth: {str(e)}")
-            return {}
-            
-    def _analyze_risk(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze risk metrics."""
-        try:
-            volatility = float(data.get('tx_volatility_7d', 0))
-            success_rate = float(data.get('success_rate', 100))
-            
-            return {
-                'risk_level': 'high' if volatility > 2.0 or success_rate < 95 else 'moderate' if volatility > 1.0 or success_rate < 98 else 'low',
-                'volatility_score': min(volatility / 2.0, 1.0),
-                'reliability_score': success_rate / 100
-            }
-            
-        except Exception as e:
-            logger.warning(f"Error analyzing risk: {str(e)}")
-            return {}
-            
-    def _analyze_efficiency(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze network efficiency metrics."""
-        try:
-            gas_used = float(data.get('gas_used', 0))
-            num_txs = float(data.get('num_txs', 1))
-            success_rate = float(data.get('success_rate', 100))
-            
-            return {
-                'gas_efficiency': gas_used / max(num_txs, 1),
-                'transaction_efficiency': success_rate / 100,
-                'network_load': 'high' if num_txs > 1000000 else 'moderate' if num_txs > 100000 else 'low'
-            }
-            
-        except Exception as e:
-            logger.warning(f"Error analyzing efficiency: {str(e)}")
-            return {}
-
-def classify_market_condition(market_data: dict) -> str:
-    """
-    Classify market condition based on comprehensive metrics analysis.
-    Returns one of: 'bullish', 'bearish', 'sideways', 'volatile'
-    """
-    # Extract key metrics
-    tx_growth = market_data.get('txn_growth_pct_7d', 0)
-    user_growth = market_data.get('user_growth_pct_7d', 0)
-    volume_growth = market_data.get('volume_growth_pct_7d', 0)
-    volatility = market_data.get('tx_volatility_7d', 0)
-    avg_tx_value_change = market_data.get('avg_tx_value_change_pct', 0)
-    smart_contract_activity = market_data.get('smart_contract_calls', 0)
-    bridge_activity = market_data.get('bridge_volume', 0)
+            return "Current market conditions are mixed with no clear directional trend."
     
-    # Define thresholds
-    GROWTH_THRESHOLD = 5.0  # 5% growth
-    HIGH_VOLATILITY = 20.0  # 20% volatility
-    SIGNIFICANT_CONTRACT_ACTIVITY = 1000  # Number of contract calls
-    SIGNIFICANT_BRIDGE_VOLUME = 10000  # Bridge volume threshold
-    
-    # Calculate composite scores
-    growth_score = (tx_growth + user_growth + volume_growth) / 3
-    activity_score = 1 if (smart_contract_activity > SIGNIFICANT_CONTRACT_ACTIVITY or 
-                          bridge_activity > SIGNIFICANT_BRIDGE_VOLUME) else 0
-    
-    # Classify market condition
-    if volatility > HIGH_VOLATILITY:
-        return 'volatile'
-    elif growth_score > GROWTH_THRESHOLD and avg_tx_value_change > 0:
-        return 'bullish'
-    elif growth_score < -GROWTH_THRESHOLD and avg_tx_value_change < 0:
-        return 'bearish'
-    else:
-        return 'sideways'
-
-def analyze_market_trends(market_data_list: list[dict]) -> dict:
-    """
-    Analyze market trends over time using multiple data points.
-    Returns trend analysis with key metrics and patterns.
-    """
-    if not market_data_list:
-        return {
-            'dominant_condition': 'unknown',
-            'trend_strength': 0,
-            'volatility_level': 'low',
-            'growth_trajectory': 'stable'
-        }
+    def get_condition_list(self) -> List[str]:
+        """
+        Get a list of possible market conditions.
         
-    conditions = [classify_market_condition(data) for data in market_data_list]
+        Returns:
+            List of market condition names
+        """
+        return list(self.market_conditions.keys())
     
-    # Calculate trend metrics
-    condition_counts = Counter(conditions)
-    dominant_condition = max(condition_counts.items(), key=lambda x: x[1])[0]
-    
-    # Calculate trend strength (0-1)
-    max_count = max(condition_counts.values())
-    trend_strength = max_count / len(conditions)
-    
-    # Analyze volatility
-    volatility_scores = [data.get('tx_volatility_7d', 0) for data in market_data_list]
-    avg_volatility = sum(volatility_scores) / len(volatility_scores) if volatility_scores else 0
-    
-    if avg_volatility > 30:
-        volatility_level = 'high'
-    elif avg_volatility > 15:
-        volatility_level = 'medium'
-    else:
-        volatility_level = 'low'
+    def get_condition_description(self, condition: str) -> Optional[str]:
+        """
+        Get the description for a specific market condition.
         
-    # Analyze growth trajectory
-    growth_rates = [data.get('txn_growth_pct_7d', 0) for data in market_data_list]
-    avg_growth = sum(growth_rates) / len(growth_rates) if growth_rates else 0
-    
-    if avg_growth > 10:
-        growth_trajectory = 'accelerating'
-    elif avg_growth > 0:
-        growth_trajectory = 'growing'
-    elif avg_growth < -10:
-        growth_trajectory = 'declining'
-    else:
-        growth_trajectory = 'stable'
-        
-    return {
-        'dominant_condition': dominant_condition,
-        'trend_strength': trend_strength,
-        'volatility_level': volatility_level,
-        'growth_trajectory': growth_trajectory
-    } 
+        Args:
+            condition: Name of the market condition
+            
+        Returns:
+            Description of the market condition
+        """
+        return self.market_conditions.get(condition) 
