@@ -12,15 +12,15 @@ model:
 # GRPO Training Parameters
 training:
   # Core GRPO parameters
-  generations_per_prompt: 8   # Can be increased to 16 for better results
+  generations_per_prompt: 16  # Maximum recommended for best GRPO results
   max_seq_length: 16384       # Maximum sequence length for Phi-4
   max_tokens_per_batch: 16384 # Maximum tokens per batch
   
   # Optimization parameters
-  learning_rate: 2e-6
+  learning_rate: 5e-6
   weight_decay: 0.01
   warmup_steps: 100
-  gradient_accumulation_steps: 8  # Increased for full precision model
+  gradient_accumulation_steps: 4  # Can be reduced from 8
   max_grad_norm: 1.0
   
   # Training duration
@@ -30,7 +30,7 @@ training:
   early_stopping_patience: 5   # Epochs without improvement before stopping
   
   # Batch sizing
-  per_device_train_batch_size: 1  # Actual batch size will be this × generations_per_prompt
+  per_device_train_batch_size: 2  # Can likely be increased to 2-4
   per_device_eval_batch_size: 1
   
   # Optimization strategy
