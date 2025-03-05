@@ -37,6 +37,15 @@ class FlipsideClient:
             "Accept": "application/json",
             "Authorization": f"Bearer {self.api_key}"
         }
+        
+        # Database mapping for different chains
+        self.db_mapping = {
+            'bitcoin': 'bitcoin',
+            'ethereum': 'ethereum',
+            'near': 'near',
+            'btc': 'bitcoin',
+            'eth': 'ethereum'
+        }
     
     def test_connection(self) -> bool:
         """Test the Flipside API connection with a simple query.
@@ -78,119 +87,200 @@ class FlipsideClient:
         """Get market data for the specified blockchain.
         
         Args:
-            blockchain: Name of the blockchain (e.g., 'ethereum', 'near')
+            blockchain: Name of the blockchain (e.g., 'bitcoin', 'ethereum', 'near')
             start_date: Start date in YYYY-MM-DD format
             end_date: End date in YYYY-MM-DD format
             
         Returns:
             DataFrame containing market metrics
         """
-        if blockchain.lower() == 'near':
-            query = f"""
-            WITH daily_metrics AS (
-                SELECT
-                    DATE_TRUNC('day', block_timestamp) as block_timestamp,
-                    COUNT(DISTINCT tx_hash) as num_txs,
-                    COUNT(DISTINCT tx_signer) as unique_senders,
-                    COUNT(DISTINCT tx_receiver) as unique_receivers,
-                    COUNT(CASE WHEN tx_succeeded = TRUE THEN 1 END)::float / NULLIF(COUNT(*), 0) as success_rate,
-                    AVG(COALESCE(transaction_fee / POW(10, 24), 0)) as avg_tx_value,
-                    AVG(gas_used / POW(10, 12)) as avg_gas_used,
-                    AVG(attached_gas / POW(10, 12)) as avg_gas_limit,
-                    AVG(attached_gas / POW(10, 12)) as avg_gas_price,
-                    COUNT(DISTINCT CASE 
-                        WHEN tx_receiver LIKE '%.near' 
-                        OR tx_receiver LIKE '%.factory.near'
-                        OR tx_receiver LIKE '%.testnet' 
-                        THEN tx_receiver 
-                    END) as smart_contract_calls,
-                    SUM(transaction_fee / POW(10, 24)) as total_volume,
-                    COUNT(DISTINCT CASE 
-                        WHEN tx_receiver LIKE '%.bridge.near' 
-                        OR tx_receiver LIKE 'bridge.%' 
-                        THEN tx_hash 
-                    END) as bridge_volume
-                FROM near.core.fact_transactions
-                WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
-                GROUP BY 1
-                ORDER BY 1 DESC
-            ),
-            weekly_metrics AS (
-                SELECT
-                    block_timestamp,
-                    num_txs,
-                    LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
-                    unique_senders,
-                    LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
-                    total_volume,
-                    LAG(total_volume, 7) OVER (ORDER BY block_timestamp) as total_volume_7d_ago,
-                    STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d,
-                    AVG(avg_tx_value) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as avg_tx_value_7d,
-                    AVG(smart_contract_calls) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as avg_contract_calls_7d
-                FROM daily_metrics
-            )
-            SELECT 
-                d.*,
-                'NEAR' as network,
-                COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
-                COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
-                COALESCE((w.total_volume - w.total_volume_7d_ago) / NULLIF(w.total_volume_7d_ago, 0) * 100, 0) as volume_growth_pct_7d,
-                w.tx_volatility_7d,
-                w.avg_tx_value_7d,
-                w.avg_contract_calls_7d,
-                CASE 
-                    WHEN w.tx_volatility_7d > w.avg_tx_value_7d * 2 THEN 'high'
-                    WHEN w.tx_volatility_7d > w.avg_tx_value_7d THEN 'medium'
-                    ELSE 'low'
-                END as volatility_level
-            FROM daily_metrics d
-            LEFT JOIN weekly_metrics w ON d.block_timestamp = w.block_timestamp
-            ORDER BY d.block_timestamp DESC
-            """
-        else:
-            query = f"""
-            WITH daily_metrics AS (
-                SELECT 
-                    DATE_TRUNC('day', block_timestamp) as block_timestamp,
-                    COUNT(DISTINCT tx_hash) as num_txs,
-                    COUNT(DISTINCT from_address) as unique_senders,
-                    COUNT(DISTINCT to_address) as unique_receivers,
-                    COUNT(CASE WHEN status = 'SUCCESS' THEN 1 END)::float / NULLIF(COUNT(*), 0) as success_rate,
-                    AVG(COALESCE(value, 0)) as avg_tx_value,
-                    AVG(gas_used) as avg_gas_used,
-                    AVG(gas_price) as avg_gas_price,
-                    COUNT(DISTINCT CASE WHEN input_data != '' AND input_data IS NOT NULL THEN tx_hash END) as smart_contract_calls,
-                    SUM(value) as total_volume
-                FROM {blockchain}.core.fact_transactions
-                WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
-                GROUP BY 1
-                ORDER BY 1 DESC
-            ),
-            weekly_metrics AS (
-                SELECT 
-                    block_timestamp,
-                    num_txs,
-                    LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
-                    unique_senders,
-                    LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
-                    total_volume,
-                    LAG(total_volume, 7) OVER (ORDER BY block_timestamp) as total_volume_7d_ago,
-                    STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d
-                FROM daily_metrics
-            )
-            SELECT 
-                d.*,
-                '{blockchain}' as network,
-                COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
-                COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
-                COALESCE((w.total_volume - w.total_volume_7d_ago) / NULLIF(w.total_volume_7d_ago, 0) * 100, 0) as volume_growth_pct_7d,
-                w.tx_volatility_7d
-            FROM daily_metrics d
-            LEFT JOIN weekly_metrics w USING (block_timestamp)
-            ORDER BY block_timestamp DESC
-            """
-            
-        return self.execute_query(query)
+        # Get the correct database name
+        db_name = self.db_mapping.get(blockchain.lower(), blockchain.lower())
+        
+        # Add retry logic
+        max_retries = 3
+        retry_delay = 2  # seconds
+        
+        for attempt in range(max_retries):
+            try:
+                if db_name == 'bitcoin':
+                    query = f"""
+                    WITH daily_metrics AS (
+                        SELECT
+                            DATE_TRUNC('day', block_timestamp) as block_timestamp,
+                            COUNT(DISTINCT tx_id) as num_txs,
+                            COUNT(DISTINCT CASE 
+                                WHEN inputs[0]:scriptSig:hex IS NOT NULL THEN inputs[0]:scriptSig:hex
+                                WHEN inputs[0]:txinwitness IS NOT NULL THEN inputs[0]:txinwitness[0]
+                                ELSE NULL
+                            END) as unique_senders,
+                            COUNT(DISTINCT CASE 
+                                WHEN outputs[0]:scriptPubKey:address IS NOT NULL THEN outputs[0]:scriptPubKey:address
+                                WHEN outputs[0]:scriptPubKey:hex IS NOT NULL THEN outputs[0]:scriptPubKey:hex
+                                ELSE NULL
+                            END) as unique_receivers,
+                            AVG(COALESCE(fee, 0)) as avg_tx_value,
+                            SUM(fee) as total_volume,
+                            COUNT(DISTINCT CASE WHEN block_number IS NULL THEN tx_id END) as mempool_size
+                        FROM bitcoin.core.fact_transactions
+                        WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
+                        GROUP BY 1
+                        ORDER BY 1 DESC
+                    ),
+                    weekly_metrics AS (
+                        SELECT
+                            block_timestamp,
+                            num_txs,
+                            LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
+                            unique_senders,
+                            LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
+                            total_volume,
+                            LAG(total_volume, 7) OVER (ORDER BY block_timestamp) as total_volume_7d_ago,
+                            STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d
+                        FROM daily_metrics
+                    )
+                    SELECT 
+                        d.*,
+                        'bitcoin' as network,
+                        COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
+                        COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
+                        COALESCE((w.total_volume - w.total_volume_7d_ago) / NULLIF(w.total_volume_7d_ago, 0) * 100, 0) as volume_growth_pct_7d,
+                        w.tx_volatility_7d
+                    FROM daily_metrics d
+                    LEFT JOIN weekly_metrics w ON d.block_timestamp = w.block_timestamp
+                    ORDER BY d.block_timestamp DESC
+                    """
+                elif db_name == 'near':
+                    query = f"""
+                    WITH daily_metrics AS (
+                        SELECT
+                            DATE_TRUNC('day', block_timestamp) as block_timestamp,
+                            COUNT(DISTINCT tx_hash) as num_txs,
+                            COUNT(DISTINCT tx_signer) as unique_senders,
+                            COUNT(DISTINCT tx_receiver) as unique_receivers,
+                            COUNT(CASE WHEN tx_succeeded = TRUE THEN 1 END)::float / NULLIF(COUNT(*), 0) as success_rate,
+                            AVG(COALESCE(transaction_fee / POW(10, 24), 0)) as avg_tx_value,
+                            AVG(gas_used / POW(10, 12)) as avg_gas_used,
+                            AVG(attached_gas / POW(10, 12)) as avg_gas_limit,
+                            AVG(attached_gas / POW(10, 12)) as avg_gas_price,
+                            COUNT(DISTINCT CASE 
+                                WHEN tx_receiver LIKE '%.near' 
+                                OR tx_receiver LIKE '%.factory.near'
+                                OR tx_receiver LIKE '%.testnet' 
+                                THEN tx_receiver 
+                            END) as smart_contract_calls,
+                            SUM(transaction_fee / POW(10, 24)) as total_volume,
+                            COUNT(DISTINCT CASE 
+                                WHEN tx_receiver LIKE '%.bridge.near' 
+                                OR tx_receiver LIKE 'bridge.%' 
+                                THEN tx_hash 
+                            END) as bridge_volume
+                        FROM near.core.fact_transactions
+                        WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
+                        GROUP BY 1
+                        ORDER BY 1 DESC
+                    ),
+                    weekly_metrics AS (
+                        SELECT
+                            block_timestamp,
+                            num_txs,
+                            LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
+                            unique_senders,
+                            LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
+                            total_volume,
+                            LAG(total_volume, 7) OVER (ORDER BY block_timestamp) as total_volume_7d_ago,
+                            STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d,
+                            AVG(avg_tx_value) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as avg_tx_value_7d,
+                            AVG(smart_contract_calls) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as avg_contract_calls_7d
+                        FROM daily_metrics
+                    )
+                    SELECT 
+                        d.*,
+                        'NEAR' as network,
+                        COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
+                        COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
+                        COALESCE((w.total_volume - w.total_volume_7d_ago) / NULLIF(w.total_volume_7d_ago, 0) * 100, 0) as volume_growth_pct_7d,
+                        w.tx_volatility_7d,
+                        w.avg_tx_value_7d,
+                        w.avg_contract_calls_7d,
+                        CASE 
+                            WHEN w.tx_volatility_7d > w.avg_tx_value_7d * 2 THEN 'high'
+                            WHEN w.tx_volatility_7d > w.avg_tx_value_7d THEN 'medium'
+                            ELSE 'low'
+                        END as volatility_level
+                    FROM daily_metrics d
+                    LEFT JOIN weekly_metrics w ON d.block_timestamp = w.block_timestamp
+                    ORDER BY d.block_timestamp DESC
+                    """
+                else:
+                    query = f"""
+                    WITH daily_metrics AS (
+                        SELECT 
+                            DATE_TRUNC('day', block_timestamp) as block_timestamp,
+                            COUNT(DISTINCT tx_hash) as num_txs,
+                            COUNT(DISTINCT from_address) as unique_senders,
+                            COUNT(DISTINCT to_address) as unique_receivers,
+                            COUNT(CASE WHEN status = 'SUCCESS' THEN 1 END)::float / NULLIF(COUNT(*), 0) as success_rate,
+                            AVG(COALESCE(value, 0)) as avg_tx_value,
+                            AVG(gas_used) as avg_gas_used,
+                            AVG(gas_price) as avg_gas_price,
+                            COUNT(DISTINCT CASE WHEN input_data != '' AND input_data IS NOT NULL THEN tx_hash END) as smart_contract_calls,
+                            SUM(value) as total_volume
+                        FROM {db_name}.core.fact_transactions
+                        WHERE block_timestamp BETWEEN '{start_date}' AND '{end_date}'
+                        GROUP BY 1
+                        ORDER BY 1 DESC
+                    ),
+                    weekly_metrics AS (
+                        SELECT 
+                            block_timestamp,
+                            num_txs,
+                            LAG(num_txs, 7) OVER (ORDER BY block_timestamp) as num_txs_7d_ago,
+                            unique_senders,
+                            LAG(unique_senders, 7) OVER (ORDER BY block_timestamp) as unique_senders_7d_ago,
+                            total_volume,
+                            LAG(total_volume, 7) OVER (ORDER BY block_timestamp) as total_volume_7d_ago,
+                            STDDEV(num_txs) OVER (ORDER BY block_timestamp ROWS BETWEEN 7 PRECEDING AND CURRENT ROW) as tx_volatility_7d
+                        FROM daily_metrics
+                    )
+                    SELECT 
+                        d.*,
+                        '{db_name}' as network,
+                        COALESCE((w.num_txs - w.num_txs_7d_ago) / NULLIF(w.num_txs_7d_ago, 0) * 100, 0) as txn_growth_pct_7d,
+                        COALESCE((w.unique_senders - w.unique_senders_7d_ago) / NULLIF(w.unique_senders_7d_ago, 0) * 100, 0) as user_growth_pct_7d,
+                        COALESCE((w.total_volume - w.total_volume_7d_ago) / NULLIF(w.total_volume_7d_ago, 0) * 100, 0) as volume_growth_pct_7d,
+                        w.tx_volatility_7d
+                    FROM daily_metrics d
+                    LEFT JOIN weekly_metrics w USING (block_timestamp)
+                    ORDER BY block_timestamp DESC
+                    """
+                
+                # Execute query with retry logic
+                try:
+                    result = self.execute_query(query)
+                    if not result.empty:
+                        logger.info(f"Successfully retrieved {len(result)} records for {blockchain}")
+                        return result
+                except Exception as e:
+                    if attempt < max_retries - 1:
+                        logger.warning(f"Attempt {attempt + 1} failed for {blockchain}: {str(e)}")
+                        time.sleep(retry_delay * (attempt + 1))  # Exponential backoff
+                        continue
+                    else:
+                        logger.error(f"All attempts failed for {blockchain}: {str(e)}")
+                        raise
+                        
+            except Exception as e:
+                if attempt < max_retries - 1:
+                    logger.warning(f"Attempt {attempt + 1} failed for {blockchain}: {str(e)}")
+                    time.sleep(retry_delay * (attempt + 1))
+                    continue
+                else:
+                    logger.error(f"All attempts failed for {blockchain}: {str(e)}")
+                    raise
+        
+        # If we get here, all retries failed
+        raise Exception(f"Failed to get market data for {blockchain} after {max_retries} attempts")
     
     def get_defi_metrics(self, protocol: str, start_date: str, end_date: str) -> pd.DataFrame:
         """Get DeFi protocol metrics.

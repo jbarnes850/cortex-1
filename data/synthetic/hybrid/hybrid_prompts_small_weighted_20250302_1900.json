@@ -1,0 +1,294 @@
+[
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2020-02-20 to 2020-02-20.\nBased on the following historical data points:\n\nDate: 2020-02-20, Price: $259.63 (Growth: -0.80%, Historical Percentile: 62.69%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2020-02-20T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 259.63,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.0777472305328697,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.007985633501452054,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.6269230769230769
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.05408958333333333,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "price_trend"
+  },
+  {
+    "prompt": "You are analyzing ETH price data across two time periods:\n- Historical Period: 2023-03-06 to 2023-05-31\n- Current Period: 2024-11-01 to 2024-12-01\n\nHistorical period summary:\n- Starting price: $1566.31\n- Ending price: $1865.88\n- Price change: 19.13%\n- Average daily volume: $0.00\n- Average volatility: 0.0418\n\nCurrent period summary:\n- Starting price: $1234.03\n- Ending price: $215.88\n- Price change: -82.51%\n- Average daily volume: $0.00\n- Average volatility: 0.0813\n\nCompare these two periods and provide insights on:\n1. Similarities and differences in price action\n2. Volume and volatility comparison\n3. Market structure comparison (supports, resistances, patterns)\n4. What historical patterns might be repeating in the current period\n5. What lessons from the historical period can be applied to the current market\n\nYour analysis should highlight meaningful connections between these two periods.",
+    "coin": "eth",
+    "question_type": "comparison",
+    "cross_temporal": true
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2024-09-21 to 2024-09-21.\nBased on the following historical data points:\n\nDate: 2024-09-21, Price: $120.10 (Growth: -5.67%, Historical Percentile: 7.09%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2024-09-21T18:16:32.616056Z",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 120.1,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.0757701915070774,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.05670750863964812,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.0708955223880597
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.025020833333333332,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "recent",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "volatility_analysis"
+  },
+  {
+    "prompt": "You are analyzing BTC market cycles by comparing:\n- Historical Period: 2023-02-26 to 2023-05-27\n- Current Period: 2024-11-01 to 2024-12-01\n\nHistorical cycle data:\n- Price range: $20244.00 to $30442.00 (amplitude: 50.38%)\n- Duration: 90 days\n- Average price: $27101.92\n- Net change: 13.55%\n\nCurrent market data:\n- Price range: $3396.00 to $62420.00 (amplitude: 1738.04%)\n- Duration so far: 30 days\n- Average price: $22012.01\n- Net change so far: 150.12%\n\nPerform a detailed market cycle analysis:\n1. Identify the current cycle phase compared to the historical reference\n2. Estimate the current position within the overall market cycle\n3. Project the potential remaining duration of the current cycle phase\n4. Identify key cycle indicators and oscillators that support your analysis\n5. Discuss similarities and differences between the two cycle periods\n\nYour analysis should consider both technical cycle analysis and fundamental factors affecting market cycles.",
+    "coin": "btc",
+    "question_type": "cycle_analysis",
+    "cross_temporal": true
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2025-02-15 to 2025-02-15.\nBased on the following historical data points:\n\nDate: 2025-02-15, Price: $1385.72 (Growth: 0.84%, Historical Percentile: 99.82%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2025-02-15T18:16:32.616056Z",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 1385.72,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.061472076631122266,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.008434427601464138,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.998220640569395
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.2886916666666667,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "current",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "pattern_recognition"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2019-09-30 to 2019-09-30.\nBased on the following historical data points:\n\nDate: 2019-09-30, Price: $8246.00 (Growth: 2.79%, Historical Percentile: 65.20%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2019-09-30T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 8246.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.08022219351504974,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.027923211169284468,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.6520376175548589
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.12161883130291141,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "pattern_recognition"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2020-07-26 to 2020-07-26.\nBased on the following historical data points:\n\nDate: 2020-07-26, Price: $9893.00 (Growth: 1.69%, Historical Percentile: 85.29%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2020-07-26T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 9893.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.04736297828335057,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.016856819817041832,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.8528784648187633
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.14591015014306363,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "pattern_recognition"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2022-12-12 to 2022-12-12.\nBased on the following historical data points:\n\nDate: 2022-12-12, Price: $17153.00 (Growth: 0.26%, Historical Percentile: 60.11%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2022-12-12T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 17153.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01818289504856669,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.002571745864749547,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.6011080332409973
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.2529866375623138,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "volatility_analysis"
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2018-06-02 to 2018-06-02.\nBased on the following historical data points:\n\nDate: 2018-06-02, Price: $591.36 (Growth: 4.73%, Historical Percentile: 28.95%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2018-06-02T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 591.36,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.06352836879432631,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.04734073641145532,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.2894736842105263
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.1232,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "pattern_recognition"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2024-07-05 to 2024-07-05.\nBased on the following historical data points:\n\nDate: 2024-07-05, Price: $8245.00 (Growth: -1.63%, Historical Percentile: 65.00%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2024-07-05T18:16:32.616056Z",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 8245.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.02945490100219995,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.016344547840610832,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.65
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.1216040824754432,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "recent",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "market_cycle"
+  }
+]

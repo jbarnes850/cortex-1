@@ -1,0 +1,119 @@
+# MLX-based GRPO Training Configuration for NEAR Cortex-1
+# Optimized for Apple Silicon using MLX
+
+# Model Configuration
+model:
+  name: deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+  path: deepseek-ai/DeepSeek-R1-Distill-Qwen-14B
+  max_length: 4096
+  dtype: bfloat16
+
+# Training Parameters
+training:
+  train_batch_size: 4
+  eval_batch_size: 4
+  num_epochs: 3
+  learning_rate: 2e-5
+  weight_decay: 0.01
+  warmup_steps: 100
+  eval_steps: 50
+  save_steps: 100
+  logging_steps: 10
+  gradient_accumulation_steps: 8
+  max_grad_norm: 1.0
+  seed: 42
+  mixed_precision: true
+  save_total_limit: 5
+
+# Sampling Configuration
+sampling_config:
+  temperature: 0.6  # DeepSeek recommended
+  top_p: 0.95      # DeepSeek evaluation setting
+  top_k: 50
+  group_size: 2
+
+# Reward Function Configuration
+reward:
+  baseline_subtract: true
+  normalize_rewards: true
+  clip_rewards: 1.0
+  
+  weights:
+    financial_insight: 0.3
+    reasoning_depth: 0.3
+    calculation_accuracy: 0.2
+    recommendation_clarity: 0.2
+    confidence_interval: 0.8
+    investment_insight: 1.0
+    citation_format: 0.7
+    structure: 0.6
+    completeness: 0.8
+    metric_citation: 0.9
+    historical_reference: 0.7
+  
+  kl_penalty: 0.05
+
+# Data Configuration
+data:
+  train_file: data/cortex_1_combined/train_large.jsonl
+  validation_file: data/cortex_1_combined/eval_large.jsonl
+  preprocessing_num_workers: 4
+  max_train_samples: null
+  max_eval_samples: null
+  streaming: false
+  shuffle_buffer: 10000
+
+# Logging & Output
+logging:
+  log_interval_steps: 5
+  eval_interval_steps: 50
+  save_interval_steps: 50
+  checkpoint_interval_hours: 1
+  log_reward_components: true
+
+# Output Configuration
+output:
+  output_dir: models/cortex-1-combined/deepseek-r1-distill
+  logging_dir: logs/cortex-1-combined/deepseek-r1-distill
+  logging_strategy: steps
+  evaluation_strategy: steps
+  save_strategy: steps
+  load_best_model_at_end: true
+  metric_for_best_model: reward_mean
+  greater_is_better: true
+
+# GRPO Configuration
+grpo:
+  enabled: true
+  num_generations: 12
+  reward_alpha: 0.8
+  reward_scale: 0.1
+  kl_coef: 0.1
+  clip_range_ratio: 0.2
+  value_clip_range: 0.2
+  num_rollouts: 128
+  chunk_size: 16
+  ppo_epochs: 4
+  target_kl: 0.1
+  init_kl_coef: 0.2
+  adaptive_kl: true
+  
+# Rewards Configuration
+rewards:
+  - name: financial_reasoning
+    weight: 0.3
+    config:
+      min_score: 0.4
+      max_score: 1.0
+  - name: citation_format
+    weight: 0.2
+    config:
+      required_citations: true
+  - name: calculation_accuracy
+    weight: 0.3
+    config:
+      tolerance: 0.05
+  - name: temporal_consistency
+    weight: 0.2
+    config:
+      alpha: 0.8  # Match dataset temporal weighting 

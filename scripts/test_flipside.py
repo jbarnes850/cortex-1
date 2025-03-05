@@ -1,8 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """Test Flipside API connection."""
 
 import os
 import sys
+from datetime import datetime, timedelta
 import logging
 from pathlib import Path
 
@@ -12,13 +13,37 @@ sys.path.insert(0, project_root)
 
 from src.data.flipside_client import FlipsideClient
 from dotenv import load_dotenv
+from src.utils.logger import setup_logger
 
 # Set up logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
-logger = logging.getLogger(__name__)
+logger = setup_logger()
+
+def test_flipside_connection():
+    """Test Flipside connection and data retrieval for all chains."""
+    
+    # Initialize client
+    client = FlipsideClient()
+    
+    # Test period (last 7 days)
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=7)
+    
+    # Format dates
+    start_str = start_date.strftime('%Y-%m-%d')
+    end_str = end_date.strftime('%Y-%m-%d')
+    
+    # Test each chain
+    for chain in ['bitcoin', 'ethereum', 'near']:
+        logger.info(f'\nTesting {chain.upper()} data:')
+        try:
+            df = client.get_market_data(chain, start_str, end_str)
+            logger.info(f'Successfully retrieved {len(df)} records')
+            if not df.empty:
+                logger.info('Sample metrics:')
+                sample = df[['network', 'num_txs', 'unique_senders', 'total_volume']].head(1)
+                logger.info(f'\n{sample.to_string()}')
+        except Exception as e:
+            logger.error(f'Error retrieving {chain} data: {str(e)}')
 
 def main():
     try:
@@ -56,6 +81,8 @@ def main():
         else:
             logger.error("❌ Connection failed!")
             
+        test_flipside_connection()
+        
     except Exception as e:
         logger.error(f"Error testing connection: {str(e)}")
         raise

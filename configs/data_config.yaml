@@ -7,6 +7,9 @@ collection:
 
 # Chains to Monitor
 chains:
+  - name: "bitcoin"
+    min_block: 0
+    include_mempool: true
   - name: "ethereum"
     min_block: 0
     include_mempool: true

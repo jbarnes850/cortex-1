@@ -8,6 +8,7 @@ model:
   max_length: 16384
   load_in_4bit: false  # Using full precision model
   use_flash_attention: true
+  max_seq_length: 16384
 
 # GRPO Training Parameters
 training:
@@ -36,6 +37,7 @@ training:
   # Optimization strategy
   optimizer: "adamw_torch"
   lr_scheduler_type: "cosine"
+  seed: 42
 
 # Reward Function Configuration
 reward:
@@ -46,7 +48,10 @@ reward:
   
   # Reward function weights
   weights:
-    calculation_accuracy: 1.0
+    financial_insight: 0.3
+    reasoning_depth: 0.3
+    calculation_accuracy: 0.2
+    recommendation_clarity: 0.2
     confidence_interval: 0.8
     investment_insight: 1.0
     citation_format: 0.7
@@ -70,8 +75,8 @@ distributed:
 # Data Configuration
 data:
   train_sizes: [500, 1000, 2000] # Different dataset sizes for experimentation
-  train_path: "data/synthetic/training/reasoning_training_{size}.jsonl"
-  eval_path: "data/synthetic/eval/reasoning_eval_{size}.jsonl"
+  train_path: "data/splits/financial_analysis/train_{size}_20250302_0749.jsonl"
+  eval_path: "data/splits/financial_analysis/eval_{size}_20250302_0749.jsonl"
   verify_quality: true          # Whether to verify the quality of examples
 
 # Logging & Evaluation
@@ -85,4 +90,6 @@ logging:
   wandb:
     enabled: true
     project: "cortex-1"
-    tags: ["crypto", "grpo", "financial-analysis"] 
+    entity: "jbarnes850-near-protocol"
+    tags: ["crypto", "grpo", "financial-analysis"]
+    log_model: true 

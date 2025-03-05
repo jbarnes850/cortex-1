@@ -1,0 +1,274 @@
+[
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-07-09 to 2025-01-17.\nBased on the following historical data points:\n\nDate: 2018-07-09, Price: $6697.00 (Growth: -0.74%, Historical Percentile: 13.68%)\nDate: 2018-10-06, Price: $6562.00 (Growth: 0.17%, Historical Percentile: 22.58%)\nDate: 2019-05-18, Price: $7293.00 (Growth: 2.30%, Historical Percentile: 66.40%)\nDate: 2024-10-09, Price: $9517.00 (Growth: 0.05%, Historical Percentile: 83.83%)\nDate: 2025-01-17, Price: $15799.00 (Growth: 2.64%, Historical Percentile: 99.71%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2018-10-06T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6562.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01712014674411495,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0016791329568004885,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.22580645161290322
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09678180584643521,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-07-09 to 2025-01-17.\nBased on the following historical data points:\n\nDate: 2018-07-09, Price: $6697.00 (Growth: -0.74%, Historical Percentile: 13.68%)\nDate: 2018-10-06, Price: $6562.00 (Growth: 0.17%, Historical Percentile: 22.58%)\nDate: 2019-05-18, Price: $7293.00 (Growth: 2.30%, Historical Percentile: 66.40%)\nDate: 2024-10-09, Price: $9517.00 (Growth: 0.05%, Historical Percentile: 83.83%)\nDate: 2025-01-17, Price: $15799.00 (Growth: 2.64%, Historical Percentile: 99.71%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2018-10-06T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6562.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01712014674411495,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0016791329568004885,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.22580645161290322
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09678180584643521,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-07-09 to 2025-01-17.\nBased on the following historical data points:\n\nDate: 2018-07-09, Price: $6697.00 (Growth: -0.74%, Historical Percentile: 13.68%)\nDate: 2018-10-06, Price: $6562.00 (Growth: 0.17%, Historical Percentile: 22.58%)\nDate: 2019-05-18, Price: $7293.00 (Growth: 2.30%, Historical Percentile: 66.40%)\nDate: 2024-10-09, Price: $9517.00 (Growth: 0.05%, Historical Percentile: 83.83%)\nDate: 2025-01-17, Price: $15799.00 (Growth: 2.64%, Historical Percentile: 99.71%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2018-10-06T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6562.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01712014674411495,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0016791329568004885,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.22580645161290322
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09678180584643521,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-07-09 to 2025-01-17.\nBased on the following historical data points:\n\nDate: 2018-07-09, Price: $6697.00 (Growth: -0.74%, Historical Percentile: 13.68%)\nDate: 2018-10-06, Price: $6562.00 (Growth: 0.17%, Historical Percentile: 22.58%)\nDate: 2019-05-18, Price: $7293.00 (Growth: 2.30%, Historical Percentile: 66.40%)\nDate: 2024-10-09, Price: $9517.00 (Growth: 0.05%, Historical Percentile: 83.83%)\nDate: 2025-01-17, Price: $15799.00 (Growth: 2.64%, Historical Percentile: 99.71%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2018-10-06T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6562.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01712014674411495,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0016791329568004885,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.22580645161290322
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09678180584643521,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2020-10-13 to 2025-01-06.\nBased on the following historical data points:\n\nDate: 2020-10-13, Price: $380.19 (Growth: -1.91%, Historical Percentile: 75.39%)\nDate: 2021-07-27, Price: $2242.77 (Growth: -0.67%, Historical Percentile: 94.93%)\nDate: 2023-01-26, Price: $1602.99 (Growth: -1.31%, Historical Percentile: 71.62%)\nDate: 2024-08-14, Price: $186.36 (Growth: 3.10%, Historical Percentile: 35.57%)\nDate: 2025-01-06, Price: $629.38 (Growth: 6.85%, Historical Percentile: 90.55%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2021-07-27T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2242.77,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.07636238706742064,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.006722912376270439,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9493087557603687
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.46724375,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2020-10-13 to 2025-01-06.\nBased on the following historical data points:\n\nDate: 2020-10-13, Price: $380.19 (Growth: -1.91%, Historical Percentile: 75.39%)\nDate: 2021-07-27, Price: $2242.77 (Growth: -0.67%, Historical Percentile: 94.93%)\nDate: 2023-01-26, Price: $1602.99 (Growth: -1.31%, Historical Percentile: 71.62%)\nDate: 2024-08-14, Price: $186.36 (Growth: 3.10%, Historical Percentile: 35.57%)\nDate: 2025-01-06, Price: $629.38 (Growth: 6.85%, Historical Percentile: 90.55%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2021-07-27T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2242.77,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.07636238706742064,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.006722912376270439,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9493087557603687
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.46724375,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2020-10-13 to 2025-01-06.\nBased on the following historical data points:\n\nDate: 2020-10-13, Price: $380.19 (Growth: -1.91%, Historical Percentile: 75.39%)\nDate: 2021-07-27, Price: $2242.77 (Growth: -0.67%, Historical Percentile: 94.93%)\nDate: 2023-01-26, Price: $1602.99 (Growth: -1.31%, Historical Percentile: 71.62%)\nDate: 2024-08-14, Price: $186.36 (Growth: 3.10%, Historical Percentile: 35.57%)\nDate: 2025-01-06, Price: $629.38 (Growth: 6.85%, Historical Percentile: 90.55%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2021-07-27T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2242.77,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.07636238706742064,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.006722912376270439,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9493087557603687
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.46724375,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2020-10-13 to 2025-01-06.\nBased on the following historical data points:\n\nDate: 2020-10-13, Price: $380.19 (Growth: -1.91%, Historical Percentile: 75.39%)\nDate: 2021-07-27, Price: $2242.77 (Growth: -0.67%, Historical Percentile: 94.93%)\nDate: 2023-01-26, Price: $1602.99 (Growth: -1.31%, Historical Percentile: 71.62%)\nDate: 2024-08-14, Price: $186.36 (Growth: 3.10%, Historical Percentile: 35.57%)\nDate: 2025-01-06, Price: $629.38 (Growth: 6.85%, Historical Percentile: 90.55%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2021-07-27T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2242.77,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.07636238706742064,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.006722912376270439,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9493087557603687
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.46724375,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  }
+]

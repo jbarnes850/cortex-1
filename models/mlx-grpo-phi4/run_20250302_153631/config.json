@@ -1,0 +1,78 @@
+{
+  "model": {
+    "name_or_path": "microsoft/phi-4",
+    "tokenizer_name": "microsoft/phi-4",
+    "max_seq_length": 16384,
+    "model_dtype": "float16",
+    "use_lora": false,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "lora_target_modules": [
+      "attention.wq",
+      "attention.wk",
+      "attention.wv",
+      "attention.wo",
+      "feed_forward.w1",
+      "feed_forward.w2",
+      "feed_forward.w3"
+    ]
+  },
+  "training": {
+    "generations_per_prompt": 8,
+    "max_seq_length": 16384,
+    "learning_rate": 5e-06,
+    "weight_decay": 0.01,
+    "warmup_steps": 50,
+    "gradient_accumulation_steps": 4,
+    "max_grad_norm": 1.0,
+    "min_training_steps": 100,
+    "early_stopping_patience": 5,
+    "per_device_train_batch_size": 1,
+    "per_device_eval_batch_size": 1,
+    "optimizer": "adamw",
+    "lr_scheduler_type": "cosine",
+    "seed": 42
+  },
+  "sampling_config": {
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 50,
+    "group_size": 2
+  },
+  "reward": {
+    "baseline_subtract": true,
+    "normalize_rewards": true,
+    "clip_rewards": 1.0,
+    "weights": {
+      "financial_insight": 0.3,
+      "reasoning_depth": 0.3,
+      "calculation_accuracy": 0.2,
+      "recommendation_clarity": 0.2,
+      "confidence_interval": 0.8,
+      "investment_insight": 1.0,
+      "citation_format": 0.7,
+      "structure": 0.6,
+      "completeness": 0.8,
+      "metric_citation": 0.9,
+      "historical_reference": 0.7
+    },
+    "kl_penalty": 0.05
+  },
+  "data": {
+    "train_path": "data/splits/financial_analysis/train_small_20250302_0749.jsonl",
+    "eval_path": "data/splits/financial_analysis/eval_small_20250302_0749.jsonl",
+    "verify_quality": true
+  },
+  "logging": {
+    "log_interval_steps": 5,
+    "eval_interval_steps": 50,
+    "save_interval_steps": 50,
+    "checkpoint_interval_hours": 1,
+    "log_reward_components": true
+  },
+  "output": {
+    "output_dir": "models/mlx-grpo-phi4",
+    "save_format": "safetensors"
+  }
+}

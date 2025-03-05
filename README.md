@@ -1,15 +1,15 @@
 # NEAR Cortex-1: Advanced Crypto Market Reasoning AI
 
-A specialized AI model that combines chain-of-thought reasoning with cross-chain data analysis to understand and predict crypto market dynamics. Built on Microsoft's Phi-4 (14B) and enhanced through GRPO (Group Policy Optimization), Cortex-1 aims to reason about market dynamics the way experienced traders do, but at a massive scale and with perfect recall of historical patterns.
+A specialized AI model that combines chain-of-thought reasoning with cross-chain data analysis to understand and predict crypto market dynamics. Built on DeepSeek-R1-Distill-Qwen-14B and enhanced through GRPO (Group Policy Optimization), Cortex-1 aims to reason about market dynamics the way experienced traders do, but at a massive scale and with perfect recall of historical patterns spanning from 2018 to present day.
 
 ## 💡 Open Source Commitment
 
 We believe in the power of open collaboration and are committed to making Cortex-1 fully accessible to the developer community:
 
-- **Open Source Dataset**: Our synthetic training dataset will be publicly available, providing developers with high-quality, labeled examples of crypto market reasoning
+- **Open Source Dataset**: Our [hybrid dataset](https://huggingface.co/datasets/Jarrodbarnes/cortex-1-market-analysis) combining historical (2018-2023) and real-time data is publicly available, providing developers with high-quality, labeled examples of crypto market reasoning
 - **Open Model Weights**: Once trained, the complete model weights will be open-sourced for the community
 - **Transparent Development**: All training code, reward functions, and benchmarking tools are open source
-- **Developer-First**: Built as a tool for developers to integrate advanced market reasoning into their applications
+- **Developer-First**: Built as a tool for developers to integrate advanced market reasoning into their applications, with the 14B model size specifically chosen to enable local execution on consumer hardware
 
 Our goal is to create a foundation for the community to build upon, whether you're developing trading strategies, market analysis tools, or educational platforms.
 
@@ -20,48 +20,19 @@ Our goal is to create a foundation for the community to build upon, whether you'
 - **Quantitative Predictions**: Data-driven forecasting with confidence intervals
 - **Risk Assessment**: Comprehensive evaluation of technical, market, and systemic risks
 - **Opportunity Detection**: Identification of market inefficiencies and arbitrage opportunities
+- **Historical Context**: Leverages data from 2018-2023 plus real-time information for comprehensive analysis
 
 ## 🏗 Architecture
 
-```mermaid
-graph TB
-    subgraph Data Collection
-        FC[Flipside Client] --> |Raw Data| DP[Data Processing]
-        MC[Market Conditions] --> DP
-        PC[Protocol Collection] --> DP
-    end
-
-    subgraph Synthetic Generation
-        DP --> |Processed Data| SG[Synthetic Generator]
-        DR1[DeepSeek R1] --> |Reasoning| SG
-        SG --> |Examples| DS[Dataset]
-        RF[Reward Functions] --> |Quality Metrics| SG
-    end
-
-    subgraph Model Training
-        DS --> |Training Data| MT[Model Training]
-        PHI4[Phi-4 14B] --> |Base Model| MT
-        MT --> |Fine-tuned Model| MD[Model Deployment]
-    end
-
-    subgraph Testing & Evaluation
-        TRF[Test Reward Functions] --> |Validation Results| RF
-        MT --> |Checkpoints| EV[Evaluation Pipeline]
-        EV --> |Metrics| MT
-    end
-
-    style Data Collection fill:#f9f,stroke:#333,stroke-width:2px
-    style Synthetic Generation fill:#bbf,stroke:#333,stroke-width:2px
-    style Model Training fill:#bfb,stroke:#333,stroke-width:2px
-    style Testing & Evaluation fill:#fbb,stroke:#333,stroke-width:2px
-```
+![NEAR Cortex-1 Architecture](https://www.mermaidchart.com/raw/358d1e49-cf54-4a17-a19f-2873c107677a?theme=light&version=v0.1&format=svg)
 
 ### Component Details
 
 1. **Data Collection Layer**
    - Flipside Client: Fetches raw blockchain data
    - Market Conditions: Analyzes and labels market states
-   - Protocol Collection: Gathers DeFi protocol metrics
+   - Historical Data: Incorporates data from 2018-2023
+   - Real-time Data: Integrates current market information
 
 2. **Synthetic Generation Layer**
    - DeepSeek R1 Integration: Uses R1's reasoning capabilities to generate high-quality examples
@@ -76,10 +47,10 @@ graph TB
    - Composite Framework: Weighted combination of individual rewards
 
 4. **Model Training Layer**
-   - Phi-4 Base Model: 14B parameters, 16K context window, strong reasoning capabilities
+   - DeepSeek-R1-Distill-Qwen-14B: 14.8B parameters, strong reasoning capabilities
    - GRPO (Group Policy Optimization): Optimizes for reward maximization
-   - 4-bit Quantization: Enables deployment on consumer hardware
-   - Local Training Capability: Can be fine-tuned on consumer GPUs (16GB+ VRAM)
+   - MLX Optimization: Leverages Apple Silicon for efficient training
+   - Local Training Capability: Can be fine-tuned on consumer hardware
 
 ### Data Pipeline
 
@@ -346,3 +317,23 @@ For detailed documentation, visit our [Wiki](https://github.com/near/cortex-1/wi
 ## 📧 Contact
 
 For questions or support, please open an issue or contact the NEAR Foundation team.
+
+## DeepSeek-R1 Fine-tuning for Apple Silicon
+
+This repository now includes an implementation for fine-tuning the DeepSeek-R1-Distill-Llama-8B model on Apple Silicon (M1/M2/M3 Macs) for financial and crypto market analysis. This approach is specifically optimized for Macs with Apple Silicon and uses parameter-efficient fine-tuning techniques.
+
+### Key Features
+
+- Fine-tunes DeepSeek-R1-Distill-Llama-8B, a model with strong reasoning capabilities
+- Optimized for Apple Silicon using Metal Performance Shaders (MPS)
+- Uses Low-Rank Adaptation (LoRA) for memory-efficient training
+- Includes comprehensive processing of financial analysis datasets
+
+### Getting Started with DeepSeek
+
+```bash
+cd deepseek-mlx
+./setup_and_train.sh
+```
+
+For more details, see the [DeepSeek-MLX-README.md](deepseek-mlx/DEEPSEEK-MLX-README.md).

@@ -1,0 +1,294 @@
+[
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2024-09-12 to 2024-09-12.\nBased on the following historical data points:\n\nDate: 2024-09-12, Price: $8917.00 (Growth: -0.99%, Historical Percentile: 71.92%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2024-09-12T18:16:32.616056Z",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 8917.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.04620347966355571,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.009882300688429936,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.7191780821917808
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.13151529453408453,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "recent",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "market_cycle"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2023-05-13 to 2023-05-13.\nBased on the following historical data points:\n\nDate: 2023-05-13, Price: $26998.00 (Growth: 2.07%, Historical Percentile: 70.19%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2023-05-13T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 26998.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.023855430796567236,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.02067974745756304,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.7019427402862985
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.398188843986903,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "volatility_analysis"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2020-08-24 to 2020-08-24.\nBased on the following historical data points:\n\nDate: 2020-08-24, Price: $11743.00 (Growth: 0.59%, Historical Percentile: 96.38%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2020-08-24T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 11743.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01920923421483332,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.005910570498543773,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9638055842812823
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.17319548095926374,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "volatility_analysis"
+  },
+  {
+    "prompt": "You are analyzing BTC market cycles by comparing:\n- Historical Period: 2023-02-26 to 2023-05-27\n- Current Period: 2024-11-01 to 2024-12-01\n\nHistorical cycle data:\n- Price range: $20244.00 to $30442.00 (amplitude: 50.38%)\n- Duration: 90 days\n- Average price: $27101.92\n- Net change: 13.55%\n\nCurrent market data:\n- Price range: $3396.00 to $62420.00 (amplitude: 1738.04%)\n- Duration so far: 30 days\n- Average price: $22012.01\n- Net change so far: 150.12%\n\nPerform a detailed market cycle analysis:\n1. Identify the current cycle phase compared to the historical reference\n2. Estimate the current position within the overall market cycle\n3. Project the potential remaining duration of the current cycle phase\n4. Identify key cycle indicators and oscillators that support your analysis\n5. Discuss similarities and differences between the two cycle periods\n\nYour analysis should consider both technical cycle analysis and fundamental factors affecting market cycles.",
+    "coin": "btc",
+    "question_type": "cycle_analysis",
+    "cross_temporal": true
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2024-06-01 to 2024-06-01.\nBased on the following historical data points:\n\nDate: 2024-06-01, Price: $31275.00 (Growth: -10.44%, Historical Percentile: 98.39%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2024-06-01T18:16:32.616056Z",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 31275.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.14867302241690286,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.10435579483948566,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9838854073410922
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.46126957906846405,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "recent",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "price_trend"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2025-02-27 to 2025-02-27.\nBased on the following historical data points:\n\nDate: 2025-02-27, Price: $8900.00 (Growth: -2.68%, Historical Percentile: 71.52%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2025-02-27T18:16:32.616056Z",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 8900.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.03786342123056119,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.026790595954073265,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.7151819322459222
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.13126456446712487,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "current",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "price_trend"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2021-10-23 to 2021-10-23.\nBased on the following historical data points:\n\nDate: 2021-10-23, Price: $61087.00 (Growth: 0.59%, Historical Percentile: 99.35%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2021-10-23T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 61087.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.0326618030921625,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.005911605849031748,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9935344827586207
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.9009616235509277,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "price_trend"
+  },
+  {
+    "prompt": "You are analyzing BTC price data to predict future movements:\n- Historical Reference Period: 2023-02-26 to 2023-05-27\n- Current Period: 2024-11-01 to 2024-12-01\n\nHistorical reference data:\n- Starting price: $23565.00\n- Ending price: $26759.00\n- Price change: 13.55%\n- Price range: $20244.00 to $30442.00\n- Average volatility: 0.0366\n\nCurrent market data:\n- Starting price: $3396.00\n- Current price: $8494.00\n- Price change so far: 150.12%\n- Price range: $3396.00 to $62420.00\n- Average volatility: 0.0591\n\nBased on similarities between these periods, predict:\n1. The likely short-term price direction (next 7-14 days)\n2. Key price levels to watch (support, resistance, targets)\n3. Expected volatility changes\n4. Potential catalysts that could change the projected path\n5. The confidence level of your prediction and why\n\nYour prediction should explain which historical patterns inform your forecast and how the current context might differ.",
+    "coin": "btc",
+    "question_type": "prediction",
+    "cross_temporal": true
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2025-01-18 to 2025-01-18.\nBased on the following historical data points:\n\nDate: 2025-01-18, Price: $19026.00 (Growth: -1.13%, Historical Percentile: 61.90%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2025-01-18T18:16:32.616056Z",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 19026.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.020224481152054215,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": -0.011276827937431793,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.6190476190476191
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.2806111914102829,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "current",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "market_cycle"
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2021-02-03 to 2021-02-03.\nBased on the following historical data points:\n\nDate: 2021-02-03, Price: $37284.00 (Growth: 4.41%, Historical Percentile: 99.56%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2021-02-03T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 37284.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.05573252896569222,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.044077289274712966,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.995575221238938
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.5498952833249756,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    },
+    "analysis_type": "market_cycle"
+  }
+]

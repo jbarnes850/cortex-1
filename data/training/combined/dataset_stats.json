@@ -1,0 +1,13 @@
+{
+  "total_examples": 532,
+  "train_examples": 478,
+  "eval_examples": 54,
+  "historical_ratio": 0.9398496240601504,
+  "realtime_ratio": 0.06015037593984962,
+  "temporal_weight_alpha": 0.8,
+  "generation_timestamp": "2025-03-03T06:04:25.969276",
+  "data_sources": {
+    "historical": "data/deepseek_ready",
+    "realtime": "data/synthetic/hybrid/training/financial_analysis/synthetic_large_3_chains_20250302_2148.jsonl"
+  }
+}

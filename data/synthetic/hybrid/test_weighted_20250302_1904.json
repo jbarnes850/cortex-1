@@ -1,0 +1,312 @@
+[
+  {
+    "timestamp": "2018-10-06T00:00:00",
+    "chain": "btc",
+    "market_data": {
+      "price_usd": 6562.0,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.01712014674411495,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.0016791329568004885,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.22580645161290322
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.09678180584643521,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2021-07-27T00:00:00",
+    "chain": "eth",
+    "market_data": {
+      "price_usd": 2242.77,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.07636238706742064,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": -0.006722912376270439,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.9493087557603687
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.46724375,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2024-08-14T18:16:32.616056Z",
+    "chain": "eth",
+    "market_data": {
+      "price_usd": 186.36,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.04655287076036359,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.03098030537729599,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.3556547619047619
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.038825000000000005,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "recent",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2023-01-26T00:00:00",
+    "chain": "eth",
+    "market_data": {
+      "price_usd": 1602.99,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.03745887117185511,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": -0.013058736608792042,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.7162162162162162
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.33395625,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2025-01-17T18:16:32.616056Z",
+    "chain": "btc",
+    "market_data": {
+      "price_usd": 15799.0,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.04354933629765252,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.0263756252842201,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.997131931166348
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.23301672517034897,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "current",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2019-05-18T00:00:00",
+    "chain": "btc",
+    "market_data": {
+      "price_usd": 7293.0,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.050778510310001405,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.02300462898022163,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.6640159045725647
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.1075631987257013,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2025-01-06T18:16:32.616056Z",
+    "chain": "eth",
+    "market_data": {
+      "price_usd": 629.38,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.087944969905417,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.0685024531857461,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.9054680259499537
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.13112083333333333,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "current",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2020-10-13T00:00:00",
+    "chain": "eth",
+    "market_data": {
+      "price_usd": 380.19,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.05489725113424071,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": -0.019117647058823593,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.7539370078740157
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.07920625,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2018-07-09T00:00:00",
+    "chain": "btc",
+    "market_data": {
+      "price_usd": 6697.0,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.011988610819721265,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": -0.007410701052319549,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.1368421052631579
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.09877289755464441,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "historical",
+      "confidence_level": 0.9
+    }
+  },
+  {
+    "timestamp": "2024-10-09T18:16:32.616056Z",
+    "chain": "btc",
+    "market_data": {
+      "price_usd": 9517.0,
+      "daily_volume": 0.0,
+      "market_cap": 0.0,
+      "volatility": 0.06367821131082858,
+      "transaction_count": 0,
+      "unique_addresses": 0,
+      "average_transaction_value": 0.0,
+      "gas_price": 0.0,
+      "source": "kaggle_price_analysis",
+      "confidence": 0.9
+    },
+    "derived_metrics": {
+      "growth_rate": 0.0005256518082422204,
+      "relative_volume": 0.0,
+      "historical_percentile": 0.8382608695652174
+    },
+    "temporal_context": {
+      "period_type": "unknown",
+      "relative_to_ath": 0.1403645910150143,
+      "days_since_major_event": 0
+    },
+    "metadata": {
+      "data_source": "kaggle_price_analysis",
+      "time_period": "recent",
+      "confidence_level": 0.9
+    }
+  }
+]

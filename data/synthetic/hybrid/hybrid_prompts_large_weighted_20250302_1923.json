@@ -1,0 +1,274 @@
+[
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-03-26 to 2025-03-01.\nBased on the following historical data points:\n\nDate: 2018-03-26, Price: $7885.00 (Growth: -8.55%, Historical Percentile: 3.53%)\nDate: 2018-05-20, Price: $8555.00 (Growth: 3.50%, Historical Percentile: 35.00%)\nDate: 2018-06-15, Price: $6498.00 (Growth: -2.37%, Historical Percentile: 1.20%)\nDate: 2018-08-02, Price: $7556.00 (Growth: 0.98%, Historical Percentile: 32.71%)\nDate: 2018-09-30, Price: $6562.00 (Growth: -0.29%, Historical Percentile: 20.88%)\nDate: 2018-10-12, Price: $6241.00 (Growth: 0.21%, Historical Percentile: 5.26%)\nDate: 2018-12-09, Price: $3567.00 (Growth: 7.96%, Historical Percentile: 0.87%)\nDate: 2019-01-05, Price: $3880.00 (Growth: 0.05%, Historical Percentile: 7.30%)\nDate: 2019-01-07, Price: $4040.00 (Growth: -0.79%, Historical Percentile: 10.22%)\nDate: 2019-01-22, Price: $3595.00 (Growth: 1.64%, Historical Percentile: 4.39%)\nDate: 2019-02-21, Price: $3935.00 (Growth: -0.40%, Historical Percentile: 17.75%)\nDate: 2019-07-13, Price: $10908.00 (Growth: -8.34%, Historical Percentile: 91.23%)\nDate: 2019-10-04, Price: $8177.00 (Growth: 0.25%, Historical Percentile: 63.40%)\nDate: 2019-12-06, Price: $7484.00 (Growth: 1.27%, Historical Percentile: 51.06%)\nDate: 2020-01-07, Price: $8020.00 (Growth: 5.82%, Historical Percentile: 60.11%)\nDate: 2020-04-06, Price: $7298.00 (Growth: 7.93%, Historical Percentile: 46.67%)\nDate: 2020-06-12, Price: $9457.00 (Growth: 1.22%, Historical Percentile: 78.30%)\nDate: 2020-07-05, Price: $9022.00 (Growth: -1.19%, Historical Percentile: 70.45%)\nDate: 2020-08-07, Price: $11581.00 (Growth: -2.30%, Historical Percentile: 96.42%)\nDate: 2020-09-23, Price: $10216.00 (Growth: -2.90%, Historical Percentile: 83.55%)\nDate: 2021-02-12, Price: $47853.00 (Growth: 1.94%, Historical Percentile: 100.00%)\nDate: 2021-04-29, Price: $53006.00 (Growth: -2.66%, Historical Percentile: 95.88%)\nDate: 2021-05-04, Price: $54842.00 (Growth: -3.48%, Historical Percentile: 96.15%)\nDate: 2021-05-07, Price: $57699.00 (Growth: 3.06%, Historical Percentile: 97.96%)\nDate: 2021-06-04, Price: $37071.00 (Growth: -4.19%, Historical Percentile: 90.41%)\nDate: 2021-07-14, Price: $32811.00 (Growth: 0.90%, Historical Percentile: 86.21%)\nDate: 2021-07-22, Price: $32257.00 (Growth: 1.23%, Historical Percentile: 85.68%)\nDate: 2021-09-22, Price: $43445.00 (Growth: 6.04%, Historical Percentile: 89.42%)\nDate: 2021-10-06, Price: $54903.00 (Growth: 6.86%, Historical Percentile: 96.15%)\nDate: 2021-11-18, Price: $57583.00 (Growth: -4.19%, Historical Percentile: 95.56%)\nDate: 2022-02-12, Price: $41910.00 (Growth: -1.53%, Historical Percentile: 82.56%)\nDate: 2022-03-25, Price: $44564.00 (Growth: 1.48%, Historical Percentile: 84.83%)\nDate: 2022-04-29, Price: $38559.00 (Growth: -3.43%, Historical Percentile: 77.00%)\nDate: 2022-06-03, Price: $29652.00 (Growth: -1.95%, Historical Percentile: 68.88%)\nDate: 2022-07-15, Price: $20925.00 (Growth: 1.28%, Historical Percentile: 66.65%)\nDate: 2022-09-05, Price: $19743.00 (Growth: -0.78%, Historical Percentile: 63.85%)\nDate: 2022-10-01, Price: $19250.00 (Growth: -0.90%, Historical Percentile: 62.90%)\nDate: 2023-01-04, Price: $16820.00 (Growth: 0.92%, Historical Percentile: 59.22%)\nDate: 2023-01-16, Price: $21129.00 (Growth: 1.11%, Historical Percentile: 67.65%)\nDate: 2023-04-05, Price: $28185.00 (Growth: -0.29%, Historical Percentile: 72.26%)\nDate: 2024-04-22, Price: $7311.00 (Growth: 9.73%, Historical Percentile: 26.77%)\nDate: 2024-04-25, Price: $20964.00 (Growth: -5.42%, Historical Percentile: 66.39%)\nDate: 2024-05-07, Price: $9097.00 (Growth: 0.11%, Historical Percentile: 71.37%)\nDate: 2024-08-10, Price: $19431.00 (Growth: 1.21%, Historical Percentile: 99.91%)\nDate: 2024-08-24, Price: $9484.00 (Growth: 1.07%, Historical Percentile: 78.48%)\nDate: 2024-08-30, Price: $47013.00 (Growth: 0.58%, Historical Percentile: 86.90%)\nDate: 2024-09-30, Price: $10713.00 (Growth: 2.94%, Historical Percentile: 88.54%)\nDate: 2024-10-18, Price: $9384.00 (Growth: -0.26%, Historical Percentile: 77.01%)\nDate: 2024-10-28, Price: $14921.00 (Growth: -0.90%, Historical Percentile: 75.00%)\nDate: 2024-11-10, Price: $3599.00 (Growth: -0.14%, Historical Percentile: 8.27%)\nDate: 2024-12-20, Price: $39479.00 (Growth: 1.25%, Historical Percentile: 80.47%)\nDate: 2025-01-03, Price: $49016.00 (Growth: 1.14%, Historical Percentile: 94.03%)\nDate: 2025-01-03, Price: $8524.00 (Growth: -6.80%, Historical Percentile: 3.03%)\nDate: 2025-01-05, Price: $11413.00 (Growth: -6.16%, Historical Percentile: 95.60%)\nDate: 2025-01-14, Price: $3403.00 (Growth: -1.10%, Historical Percentile: 0.87%)\nDate: 2025-01-23, Price: $20444.00 (Growth: -0.28%, Historical Percentile: 66.38%)\nDate: 2025-02-04, Price: $48745.00 (Growth: -9.14%, Historical Percentile: 89.54%)\nDate: 2025-02-07, Price: $6602.00 (Growth: -2.18%, Historical Percentile: 1.04%)\nDate: 2025-02-08, Price: $23005.00 (Growth: -0.40%, Historical Percentile: 69.37%)\nDate: 2025-03-01, Price: $3963.00 (Growth: 0.63%, Historical Percentile: 7.71%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2018-10-12T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6241.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01986323673070661,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0020873474630700066,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.05263157894736842
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09204743222913778,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-03-26 to 2025-03-01.\nBased on the following historical data points:\n\nDate: 2018-03-26, Price: $7885.00 (Growth: -8.55%, Historical Percentile: 3.53%)\nDate: 2018-05-20, Price: $8555.00 (Growth: 3.50%, Historical Percentile: 35.00%)\nDate: 2018-06-15, Price: $6498.00 (Growth: -2.37%, Historical Percentile: 1.20%)\nDate: 2018-08-02, Price: $7556.00 (Growth: 0.98%, Historical Percentile: 32.71%)\nDate: 2018-09-30, Price: $6562.00 (Growth: -0.29%, Historical Percentile: 20.88%)\nDate: 2018-10-12, Price: $6241.00 (Growth: 0.21%, Historical Percentile: 5.26%)\nDate: 2018-12-09, Price: $3567.00 (Growth: 7.96%, Historical Percentile: 0.87%)\nDate: 2019-01-05, Price: $3880.00 (Growth: 0.05%, Historical Percentile: 7.30%)\nDate: 2019-01-07, Price: $4040.00 (Growth: -0.79%, Historical Percentile: 10.22%)\nDate: 2019-01-22, Price: $3595.00 (Growth: 1.64%, Historical Percentile: 4.39%)\nDate: 2019-02-21, Price: $3935.00 (Growth: -0.40%, Historical Percentile: 17.75%)\nDate: 2019-07-13, Price: $10908.00 (Growth: -8.34%, Historical Percentile: 91.23%)\nDate: 2019-10-04, Price: $8177.00 (Growth: 0.25%, Historical Percentile: 63.40%)\nDate: 2019-12-06, Price: $7484.00 (Growth: 1.27%, Historical Percentile: 51.06%)\nDate: 2020-01-07, Price: $8020.00 (Growth: 5.82%, Historical Percentile: 60.11%)\nDate: 2020-04-06, Price: $7298.00 (Growth: 7.93%, Historical Percentile: 46.67%)\nDate: 2020-06-12, Price: $9457.00 (Growth: 1.22%, Historical Percentile: 78.30%)\nDate: 2020-07-05, Price: $9022.00 (Growth: -1.19%, Historical Percentile: 70.45%)\nDate: 2020-08-07, Price: $11581.00 (Growth: -2.30%, Historical Percentile: 96.42%)\nDate: 2020-09-23, Price: $10216.00 (Growth: -2.90%, Historical Percentile: 83.55%)\nDate: 2021-02-12, Price: $47853.00 (Growth: 1.94%, Historical Percentile: 100.00%)\nDate: 2021-04-29, Price: $53006.00 (Growth: -2.66%, Historical Percentile: 95.88%)\nDate: 2021-05-04, Price: $54842.00 (Growth: -3.48%, Historical Percentile: 96.15%)\nDate: 2021-05-07, Price: $57699.00 (Growth: 3.06%, Historical Percentile: 97.96%)\nDate: 2021-06-04, Price: $37071.00 (Growth: -4.19%, Historical Percentile: 90.41%)\nDate: 2021-07-14, Price: $32811.00 (Growth: 0.90%, Historical Percentile: 86.21%)\nDate: 2021-07-22, Price: $32257.00 (Growth: 1.23%, Historical Percentile: 85.68%)\nDate: 2021-09-22, Price: $43445.00 (Growth: 6.04%, Historical Percentile: 89.42%)\nDate: 2021-10-06, Price: $54903.00 (Growth: 6.86%, Historical Percentile: 96.15%)\nDate: 2021-11-18, Price: $57583.00 (Growth: -4.19%, Historical Percentile: 95.56%)\nDate: 2022-02-12, Price: $41910.00 (Growth: -1.53%, Historical Percentile: 82.56%)\nDate: 2022-03-25, Price: $44564.00 (Growth: 1.48%, Historical Percentile: 84.83%)\nDate: 2022-04-29, Price: $38559.00 (Growth: -3.43%, Historical Percentile: 77.00%)\nDate: 2022-06-03, Price: $29652.00 (Growth: -1.95%, Historical Percentile: 68.88%)\nDate: 2022-07-15, Price: $20925.00 (Growth: 1.28%, Historical Percentile: 66.65%)\nDate: 2022-09-05, Price: $19743.00 (Growth: -0.78%, Historical Percentile: 63.85%)\nDate: 2022-10-01, Price: $19250.00 (Growth: -0.90%, Historical Percentile: 62.90%)\nDate: 2023-01-04, Price: $16820.00 (Growth: 0.92%, Historical Percentile: 59.22%)\nDate: 2023-01-16, Price: $21129.00 (Growth: 1.11%, Historical Percentile: 67.65%)\nDate: 2023-04-05, Price: $28185.00 (Growth: -0.29%, Historical Percentile: 72.26%)\nDate: 2024-04-22, Price: $7311.00 (Growth: 9.73%, Historical Percentile: 26.77%)\nDate: 2024-04-25, Price: $20964.00 (Growth: -5.42%, Historical Percentile: 66.39%)\nDate: 2024-05-07, Price: $9097.00 (Growth: 0.11%, Historical Percentile: 71.37%)\nDate: 2024-08-10, Price: $19431.00 (Growth: 1.21%, Historical Percentile: 99.91%)\nDate: 2024-08-24, Price: $9484.00 (Growth: 1.07%, Historical Percentile: 78.48%)\nDate: 2024-08-30, Price: $47013.00 (Growth: 0.58%, Historical Percentile: 86.90%)\nDate: 2024-09-30, Price: $10713.00 (Growth: 2.94%, Historical Percentile: 88.54%)\nDate: 2024-10-18, Price: $9384.00 (Growth: -0.26%, Historical Percentile: 77.01%)\nDate: 2024-10-28, Price: $14921.00 (Growth: -0.90%, Historical Percentile: 75.00%)\nDate: 2024-11-10, Price: $3599.00 (Growth: -0.14%, Historical Percentile: 8.27%)\nDate: 2024-12-20, Price: $39479.00 (Growth: 1.25%, Historical Percentile: 80.47%)\nDate: 2025-01-03, Price: $49016.00 (Growth: 1.14%, Historical Percentile: 94.03%)\nDate: 2025-01-03, Price: $8524.00 (Growth: -6.80%, Historical Percentile: 3.03%)\nDate: 2025-01-05, Price: $11413.00 (Growth: -6.16%, Historical Percentile: 95.60%)\nDate: 2025-01-14, Price: $3403.00 (Growth: -1.10%, Historical Percentile: 0.87%)\nDate: 2025-01-23, Price: $20444.00 (Growth: -0.28%, Historical Percentile: 66.38%)\nDate: 2025-02-04, Price: $48745.00 (Growth: -9.14%, Historical Percentile: 89.54%)\nDate: 2025-02-07, Price: $6602.00 (Growth: -2.18%, Historical Percentile: 1.04%)\nDate: 2025-02-08, Price: $23005.00 (Growth: -0.40%, Historical Percentile: 69.37%)\nDate: 2025-03-01, Price: $3963.00 (Growth: 0.63%, Historical Percentile: 7.71%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2018-10-12T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6241.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01986323673070661,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0020873474630700066,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.05263157894736842
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09204743222913778,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-03-26 to 2025-03-01.\nBased on the following historical data points:\n\nDate: 2018-03-26, Price: $7885.00 (Growth: -8.55%, Historical Percentile: 3.53%)\nDate: 2018-05-20, Price: $8555.00 (Growth: 3.50%, Historical Percentile: 35.00%)\nDate: 2018-06-15, Price: $6498.00 (Growth: -2.37%, Historical Percentile: 1.20%)\nDate: 2018-08-02, Price: $7556.00 (Growth: 0.98%, Historical Percentile: 32.71%)\nDate: 2018-09-30, Price: $6562.00 (Growth: -0.29%, Historical Percentile: 20.88%)\nDate: 2018-10-12, Price: $6241.00 (Growth: 0.21%, Historical Percentile: 5.26%)\nDate: 2018-12-09, Price: $3567.00 (Growth: 7.96%, Historical Percentile: 0.87%)\nDate: 2019-01-05, Price: $3880.00 (Growth: 0.05%, Historical Percentile: 7.30%)\nDate: 2019-01-07, Price: $4040.00 (Growth: -0.79%, Historical Percentile: 10.22%)\nDate: 2019-01-22, Price: $3595.00 (Growth: 1.64%, Historical Percentile: 4.39%)\nDate: 2019-02-21, Price: $3935.00 (Growth: -0.40%, Historical Percentile: 17.75%)\nDate: 2019-07-13, Price: $10908.00 (Growth: -8.34%, Historical Percentile: 91.23%)\nDate: 2019-10-04, Price: $8177.00 (Growth: 0.25%, Historical Percentile: 63.40%)\nDate: 2019-12-06, Price: $7484.00 (Growth: 1.27%, Historical Percentile: 51.06%)\nDate: 2020-01-07, Price: $8020.00 (Growth: 5.82%, Historical Percentile: 60.11%)\nDate: 2020-04-06, Price: $7298.00 (Growth: 7.93%, Historical Percentile: 46.67%)\nDate: 2020-06-12, Price: $9457.00 (Growth: 1.22%, Historical Percentile: 78.30%)\nDate: 2020-07-05, Price: $9022.00 (Growth: -1.19%, Historical Percentile: 70.45%)\nDate: 2020-08-07, Price: $11581.00 (Growth: -2.30%, Historical Percentile: 96.42%)\nDate: 2020-09-23, Price: $10216.00 (Growth: -2.90%, Historical Percentile: 83.55%)\nDate: 2021-02-12, Price: $47853.00 (Growth: 1.94%, Historical Percentile: 100.00%)\nDate: 2021-04-29, Price: $53006.00 (Growth: -2.66%, Historical Percentile: 95.88%)\nDate: 2021-05-04, Price: $54842.00 (Growth: -3.48%, Historical Percentile: 96.15%)\nDate: 2021-05-07, Price: $57699.00 (Growth: 3.06%, Historical Percentile: 97.96%)\nDate: 2021-06-04, Price: $37071.00 (Growth: -4.19%, Historical Percentile: 90.41%)\nDate: 2021-07-14, Price: $32811.00 (Growth: 0.90%, Historical Percentile: 86.21%)\nDate: 2021-07-22, Price: $32257.00 (Growth: 1.23%, Historical Percentile: 85.68%)\nDate: 2021-09-22, Price: $43445.00 (Growth: 6.04%, Historical Percentile: 89.42%)\nDate: 2021-10-06, Price: $54903.00 (Growth: 6.86%, Historical Percentile: 96.15%)\nDate: 2021-11-18, Price: $57583.00 (Growth: -4.19%, Historical Percentile: 95.56%)\nDate: 2022-02-12, Price: $41910.00 (Growth: -1.53%, Historical Percentile: 82.56%)\nDate: 2022-03-25, Price: $44564.00 (Growth: 1.48%, Historical Percentile: 84.83%)\nDate: 2022-04-29, Price: $38559.00 (Growth: -3.43%, Historical Percentile: 77.00%)\nDate: 2022-06-03, Price: $29652.00 (Growth: -1.95%, Historical Percentile: 68.88%)\nDate: 2022-07-15, Price: $20925.00 (Growth: 1.28%, Historical Percentile: 66.65%)\nDate: 2022-09-05, Price: $19743.00 (Growth: -0.78%, Historical Percentile: 63.85%)\nDate: 2022-10-01, Price: $19250.00 (Growth: -0.90%, Historical Percentile: 62.90%)\nDate: 2023-01-04, Price: $16820.00 (Growth: 0.92%, Historical Percentile: 59.22%)\nDate: 2023-01-16, Price: $21129.00 (Growth: 1.11%, Historical Percentile: 67.65%)\nDate: 2023-04-05, Price: $28185.00 (Growth: -0.29%, Historical Percentile: 72.26%)\nDate: 2024-04-22, Price: $7311.00 (Growth: 9.73%, Historical Percentile: 26.77%)\nDate: 2024-04-25, Price: $20964.00 (Growth: -5.42%, Historical Percentile: 66.39%)\nDate: 2024-05-07, Price: $9097.00 (Growth: 0.11%, Historical Percentile: 71.37%)\nDate: 2024-08-10, Price: $19431.00 (Growth: 1.21%, Historical Percentile: 99.91%)\nDate: 2024-08-24, Price: $9484.00 (Growth: 1.07%, Historical Percentile: 78.48%)\nDate: 2024-08-30, Price: $47013.00 (Growth: 0.58%, Historical Percentile: 86.90%)\nDate: 2024-09-30, Price: $10713.00 (Growth: 2.94%, Historical Percentile: 88.54%)\nDate: 2024-10-18, Price: $9384.00 (Growth: -0.26%, Historical Percentile: 77.01%)\nDate: 2024-10-28, Price: $14921.00 (Growth: -0.90%, Historical Percentile: 75.00%)\nDate: 2024-11-10, Price: $3599.00 (Growth: -0.14%, Historical Percentile: 8.27%)\nDate: 2024-12-20, Price: $39479.00 (Growth: 1.25%, Historical Percentile: 80.47%)\nDate: 2025-01-03, Price: $49016.00 (Growth: 1.14%, Historical Percentile: 94.03%)\nDate: 2025-01-03, Price: $8524.00 (Growth: -6.80%, Historical Percentile: 3.03%)\nDate: 2025-01-05, Price: $11413.00 (Growth: -6.16%, Historical Percentile: 95.60%)\nDate: 2025-01-14, Price: $3403.00 (Growth: -1.10%, Historical Percentile: 0.87%)\nDate: 2025-01-23, Price: $20444.00 (Growth: -0.28%, Historical Percentile: 66.38%)\nDate: 2025-02-04, Price: $48745.00 (Growth: -9.14%, Historical Percentile: 89.54%)\nDate: 2025-02-07, Price: $6602.00 (Growth: -2.18%, Historical Percentile: 1.04%)\nDate: 2025-02-08, Price: $23005.00 (Growth: -0.40%, Historical Percentile: 69.37%)\nDate: 2025-03-01, Price: $3963.00 (Growth: 0.63%, Historical Percentile: 7.71%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2018-10-12T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6241.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01986323673070661,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0020873474630700066,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.05263157894736842
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09204743222913778,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for BTC from 2018-03-26 to 2025-03-01.\nBased on the following historical data points:\n\nDate: 2018-03-26, Price: $7885.00 (Growth: -8.55%, Historical Percentile: 3.53%)\nDate: 2018-05-20, Price: $8555.00 (Growth: 3.50%, Historical Percentile: 35.00%)\nDate: 2018-06-15, Price: $6498.00 (Growth: -2.37%, Historical Percentile: 1.20%)\nDate: 2018-08-02, Price: $7556.00 (Growth: 0.98%, Historical Percentile: 32.71%)\nDate: 2018-09-30, Price: $6562.00 (Growth: -0.29%, Historical Percentile: 20.88%)\nDate: 2018-10-12, Price: $6241.00 (Growth: 0.21%, Historical Percentile: 5.26%)\nDate: 2018-12-09, Price: $3567.00 (Growth: 7.96%, Historical Percentile: 0.87%)\nDate: 2019-01-05, Price: $3880.00 (Growth: 0.05%, Historical Percentile: 7.30%)\nDate: 2019-01-07, Price: $4040.00 (Growth: -0.79%, Historical Percentile: 10.22%)\nDate: 2019-01-22, Price: $3595.00 (Growth: 1.64%, Historical Percentile: 4.39%)\nDate: 2019-02-21, Price: $3935.00 (Growth: -0.40%, Historical Percentile: 17.75%)\nDate: 2019-07-13, Price: $10908.00 (Growth: -8.34%, Historical Percentile: 91.23%)\nDate: 2019-10-04, Price: $8177.00 (Growth: 0.25%, Historical Percentile: 63.40%)\nDate: 2019-12-06, Price: $7484.00 (Growth: 1.27%, Historical Percentile: 51.06%)\nDate: 2020-01-07, Price: $8020.00 (Growth: 5.82%, Historical Percentile: 60.11%)\nDate: 2020-04-06, Price: $7298.00 (Growth: 7.93%, Historical Percentile: 46.67%)\nDate: 2020-06-12, Price: $9457.00 (Growth: 1.22%, Historical Percentile: 78.30%)\nDate: 2020-07-05, Price: $9022.00 (Growth: -1.19%, Historical Percentile: 70.45%)\nDate: 2020-08-07, Price: $11581.00 (Growth: -2.30%, Historical Percentile: 96.42%)\nDate: 2020-09-23, Price: $10216.00 (Growth: -2.90%, Historical Percentile: 83.55%)\nDate: 2021-02-12, Price: $47853.00 (Growth: 1.94%, Historical Percentile: 100.00%)\nDate: 2021-04-29, Price: $53006.00 (Growth: -2.66%, Historical Percentile: 95.88%)\nDate: 2021-05-04, Price: $54842.00 (Growth: -3.48%, Historical Percentile: 96.15%)\nDate: 2021-05-07, Price: $57699.00 (Growth: 3.06%, Historical Percentile: 97.96%)\nDate: 2021-06-04, Price: $37071.00 (Growth: -4.19%, Historical Percentile: 90.41%)\nDate: 2021-07-14, Price: $32811.00 (Growth: 0.90%, Historical Percentile: 86.21%)\nDate: 2021-07-22, Price: $32257.00 (Growth: 1.23%, Historical Percentile: 85.68%)\nDate: 2021-09-22, Price: $43445.00 (Growth: 6.04%, Historical Percentile: 89.42%)\nDate: 2021-10-06, Price: $54903.00 (Growth: 6.86%, Historical Percentile: 96.15%)\nDate: 2021-11-18, Price: $57583.00 (Growth: -4.19%, Historical Percentile: 95.56%)\nDate: 2022-02-12, Price: $41910.00 (Growth: -1.53%, Historical Percentile: 82.56%)\nDate: 2022-03-25, Price: $44564.00 (Growth: 1.48%, Historical Percentile: 84.83%)\nDate: 2022-04-29, Price: $38559.00 (Growth: -3.43%, Historical Percentile: 77.00%)\nDate: 2022-06-03, Price: $29652.00 (Growth: -1.95%, Historical Percentile: 68.88%)\nDate: 2022-07-15, Price: $20925.00 (Growth: 1.28%, Historical Percentile: 66.65%)\nDate: 2022-09-05, Price: $19743.00 (Growth: -0.78%, Historical Percentile: 63.85%)\nDate: 2022-10-01, Price: $19250.00 (Growth: -0.90%, Historical Percentile: 62.90%)\nDate: 2023-01-04, Price: $16820.00 (Growth: 0.92%, Historical Percentile: 59.22%)\nDate: 2023-01-16, Price: $21129.00 (Growth: 1.11%, Historical Percentile: 67.65%)\nDate: 2023-04-05, Price: $28185.00 (Growth: -0.29%, Historical Percentile: 72.26%)\nDate: 2024-04-22, Price: $7311.00 (Growth: 9.73%, Historical Percentile: 26.77%)\nDate: 2024-04-25, Price: $20964.00 (Growth: -5.42%, Historical Percentile: 66.39%)\nDate: 2024-05-07, Price: $9097.00 (Growth: 0.11%, Historical Percentile: 71.37%)\nDate: 2024-08-10, Price: $19431.00 (Growth: 1.21%, Historical Percentile: 99.91%)\nDate: 2024-08-24, Price: $9484.00 (Growth: 1.07%, Historical Percentile: 78.48%)\nDate: 2024-08-30, Price: $47013.00 (Growth: 0.58%, Historical Percentile: 86.90%)\nDate: 2024-09-30, Price: $10713.00 (Growth: 2.94%, Historical Percentile: 88.54%)\nDate: 2024-10-18, Price: $9384.00 (Growth: -0.26%, Historical Percentile: 77.01%)\nDate: 2024-10-28, Price: $14921.00 (Growth: -0.90%, Historical Percentile: 75.00%)\nDate: 2024-11-10, Price: $3599.00 (Growth: -0.14%, Historical Percentile: 8.27%)\nDate: 2024-12-20, Price: $39479.00 (Growth: 1.25%, Historical Percentile: 80.47%)\nDate: 2025-01-03, Price: $49016.00 (Growth: 1.14%, Historical Percentile: 94.03%)\nDate: 2025-01-03, Price: $8524.00 (Growth: -6.80%, Historical Percentile: 3.03%)\nDate: 2025-01-05, Price: $11413.00 (Growth: -6.16%, Historical Percentile: 95.60%)\nDate: 2025-01-14, Price: $3403.00 (Growth: -1.10%, Historical Percentile: 0.87%)\nDate: 2025-01-23, Price: $20444.00 (Growth: -0.28%, Historical Percentile: 66.38%)\nDate: 2025-02-04, Price: $48745.00 (Growth: -9.14%, Historical Percentile: 89.54%)\nDate: 2025-02-07, Price: $6602.00 (Growth: -2.18%, Historical Percentile: 1.04%)\nDate: 2025-02-08, Price: $23005.00 (Growth: -0.40%, Historical Percentile: 69.37%)\nDate: 2025-03-01, Price: $3963.00 (Growth: 0.63%, Historical Percentile: 7.71%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2018-10-12T00:00:00",
+      "chain": "btc",
+      "market_data": {
+        "price_usd": 6241.0,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.01986323673070661,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.0020873474630700066,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.05263157894736842
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.09204743222913778,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2018-03-19 to 2025-02-19.\nBased on the following historical data points:\n\nDate: 2018-03-19, Price: $554.96 (Growth: 3.54%, Historical Percentile: 3.90%)\nDate: 2018-04-03, Price: $415.84 (Growth: 8.15%, Historical Percentile: 6.52%)\nDate: 2019-01-06, Price: $155.77 (Growth: -0.72%, Historical Percentile: 12.97%)\nDate: 2019-02-21, Price: $143.44 (Growth: -1.16%, Historical Percentile: 20.43%)\nDate: 2019-04-16, Price: $165.69 (Growth: 3.49%, Historical Percentile: 30.43%)\nDate: 2019-05-18, Price: $236.34 (Growth: 1.22%, Historical Percentile: 49.80%)\nDate: 2019-06-05, Price: $243.86 (Growth: 1.81%, Historical Percentile: 49.23%)\nDate: 2019-07-05, Price: $286.62 (Growth: -2.18%, Historical Percentile: 55.09%)\nDate: 2019-07-06, Price: $292.37 (Growth: 1.92%, Historical Percentile: 56.62%)\nDate: 2019-09-19, Price: $219.80 (Growth: 4.02%, Historical Percentile: 46.01%)\nDate: 2019-10-17, Price: $176.32 (Growth: 1.11%, Historical Percentile: 29.66%)\nDate: 2020-01-31, Price: $180.64 (Growth: -2.34%, Historical Percentile: 38.82%)\nDate: 2020-02-11, Price: $237.20 (Growth: 6.57%, Historical Percentile: 60.05%)\nDate: 2020-04-03, Price: $140.69 (Growth: 0.07%, Historical Percentile: 19.44%)\nDate: 2020-05-11, Price: $186.65 (Growth: -1.03%, Historical Percentile: 42.86%)\nDate: 2020-05-22, Price: $208.24 (Growth: 4.69%, Historical Percentile: 52.75%)\nDate: 2020-05-24, Price: $206.41 (Growth: -0.75%, Historical Percentile: 51.14%)\nDate: 2020-10-04, Price: $351.55 (Growth: 0.71%, Historical Percentile: 72.69%)\nDate: 2020-11-12, Price: $462.55 (Growth: -0.85%, Historical Percentile: 82.89%)\nDate: 2020-12-19, Price: $666.95 (Growth: 2.42%, Historical Percentile: 91.22%)\nDate: 2021-01-09, Price: $1292.24 (Growth: 8.74%, Historical Percentile: 99.82%)\nDate: 2021-01-14, Price: $1189.00 (Growth: 5.35%, Historical Percentile: 99.01%)\nDate: 2021-02-27, Price: $1507.11 (Growth: 5.42%, Historical Percentile: 97.92%)\nDate: 2021-03-09, Price: $1825.00 (Growth: 1.88%, Historical Percentile: 99.40%)\nDate: 2021-04-01, Price: $1969.99 (Growth: 1.53%, Historical Percentile: 100.00%)\nDate: 2021-06-12, Price: $2403.58 (Growth: 0.84%, Historical Percentile: 96.34%)\nDate: 2021-06-23, Price: $1931.56 (Growth: 0.06%, Historical Percentile: 93.22%)\nDate: 2021-07-23, Price: $2039.45 (Growth: 1.14%, Historical Percentile: 92.84%)\nDate: 2021-08-09, Price: $3071.56 (Growth: 2.59%, Historical Percentile: 98.71%)\nDate: 2021-09-15, Price: $3551.43 (Growth: 5.18%, Historical Percentile: 98.96%)\nDate: 2021-12-22, Price: $4015.75 (Growth: -0.26%, Historical Percentile: 96.14%)\nDate: 2021-12-26, Price: $4087.98 (Growth: -0.81%, Historical Percentile: 96.70%)\nDate: 2022-02-19, Price: $2742.00 (Growth: -1.40%, Historical Percentile: 86.28%)\nDate: 2022-02-20, Price: $2599.40 (Growth: -5.20%, Historical Percentile: 85.10%)\nDate: 2022-09-04, Price: $1571.36 (Growth: 1.24%, Historical Percentile: 69.70%)\nDate: 2022-10-09, Price: $1320.90 (Growth: -0.32%, Historical Percentile: 66.28%)\nDate: 2022-11-26, Price: $1209.93 (Growth: 0.91%, Historical Percentile: 63.61%)\nDate: 2023-01-09, Price: $1317.74 (Growth: 3.78%, Historical Percentile: 66.83%)\nDate: 2023-05-09, Price: $1848.64 (Growth: 0.38%, Historical Percentile: 76.14%)\nDate: 2023-05-15, Price: $1826.27 (Growth: 1.51%, Historical Percentile: 75.60%)\nDate: 2024-03-16, Price: $286.37 (Growth: 4.77%, Historical Percentile: 72.94%)\nDate: 2024-03-23, Price: $1174.95 (Growth: -11.19%, Historical Percentile: 98.39%)\nDate: 2024-04-05, Price: $4505.48 (Growth: 4.45%, Historical Percentile: 100.00%)\nDate: 2024-05-01, Price: $4257.24 (Growth: -2.21%, Historical Percentile: 98.24%)\nDate: 2024-06-08, Price: $3239.14 (Growth: -0.80%, Historical Percentile: 98.43%)\nDate: 2024-06-12, Price: $196.86 (Growth: 1.47%, Historical Percentile: 47.75%)\nDate: 2024-07-12, Price: $220.75 (Growth: -1.98%, Historical Percentile: 41.67%)\nDate: 2024-07-21, Price: $2219.55 (Growth: 6.25%, Historical Percentile: 94.84%)\nDate: 2024-09-25, Price: $1736.07 (Growth: -3.43%, Historical Percentile: 74.70%)\nDate: 2024-10-19, Price: $181.95 (Growth: 0.03%, Historical Percentile: 0.79%)\nDate: 2024-12-08, Price: $804.36 (Growth: -4.28%, Historical Percentile: 9.62%)\nDate: 2024-12-09, Price: $345.66 (Growth: 7.38%, Historical Percentile: 72.92%)\nDate: 2024-12-10, Price: $235.71 (Growth: -0.27%, Historical Percentile: 62.26%)\nDate: 2024-12-22, Price: $940.98 (Growth: 1.29%, Historical Percentile: 36.96%)\nDate: 2025-01-15, Price: $189.53 (Growth: -1.76%, Historical Percentile: 31.17%)\nDate: 2025-01-17, Price: $379.69 (Growth: -2.54%, Historical Percentile: 75.54%)\nDate: 2025-01-22, Price: $1126.30 (Growth: 4.73%, Historical Percentile: 98.64%)\nDate: 2025-02-05, Price: $1809.74 (Growth: 1.95%, Historical Percentile: 72.76%)\nDate: 2025-02-11, Price: $2974.94 (Growth: -3.78%, Historical Percentile: 95.31%)\nDate: 2025-02-19, Price: $197.24 (Growth: 0.40%, Historical Percentile: 3.95%)\n\nProvide a detailed analysis of the price trends, including:\n1. Overall price movement direction and magnitude\n2. Key support and resistance levels\n3. Significant price reversal points\n4. Correlation with market events\n5. Volume analysis and its relationship to price changes\n\nYour analysis should focus on identifying patterns and explaining why they occurred.",
+    "record": {
+      "timestamp": "2021-07-23T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2039.45,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.047220011313179815,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.011446311936797392,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9283513097072419
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.4248854166666667,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2018-03-19 to 2025-02-19.\nBased on the following historical data points:\n\nDate: 2018-03-19, Price: $554.96 (Growth: 3.54%, Historical Percentile: 3.90%)\nDate: 2018-04-03, Price: $415.84 (Growth: 8.15%, Historical Percentile: 6.52%)\nDate: 2019-01-06, Price: $155.77 (Growth: -0.72%, Historical Percentile: 12.97%)\nDate: 2019-02-21, Price: $143.44 (Growth: -1.16%, Historical Percentile: 20.43%)\nDate: 2019-04-16, Price: $165.69 (Growth: 3.49%, Historical Percentile: 30.43%)\nDate: 2019-05-18, Price: $236.34 (Growth: 1.22%, Historical Percentile: 49.80%)\nDate: 2019-06-05, Price: $243.86 (Growth: 1.81%, Historical Percentile: 49.23%)\nDate: 2019-07-05, Price: $286.62 (Growth: -2.18%, Historical Percentile: 55.09%)\nDate: 2019-07-06, Price: $292.37 (Growth: 1.92%, Historical Percentile: 56.62%)\nDate: 2019-09-19, Price: $219.80 (Growth: 4.02%, Historical Percentile: 46.01%)\nDate: 2019-10-17, Price: $176.32 (Growth: 1.11%, Historical Percentile: 29.66%)\nDate: 2020-01-31, Price: $180.64 (Growth: -2.34%, Historical Percentile: 38.82%)\nDate: 2020-02-11, Price: $237.20 (Growth: 6.57%, Historical Percentile: 60.05%)\nDate: 2020-04-03, Price: $140.69 (Growth: 0.07%, Historical Percentile: 19.44%)\nDate: 2020-05-11, Price: $186.65 (Growth: -1.03%, Historical Percentile: 42.86%)\nDate: 2020-05-22, Price: $208.24 (Growth: 4.69%, Historical Percentile: 52.75%)\nDate: 2020-05-24, Price: $206.41 (Growth: -0.75%, Historical Percentile: 51.14%)\nDate: 2020-10-04, Price: $351.55 (Growth: 0.71%, Historical Percentile: 72.69%)\nDate: 2020-11-12, Price: $462.55 (Growth: -0.85%, Historical Percentile: 82.89%)\nDate: 2020-12-19, Price: $666.95 (Growth: 2.42%, Historical Percentile: 91.22%)\nDate: 2021-01-09, Price: $1292.24 (Growth: 8.74%, Historical Percentile: 99.82%)\nDate: 2021-01-14, Price: $1189.00 (Growth: 5.35%, Historical Percentile: 99.01%)\nDate: 2021-02-27, Price: $1507.11 (Growth: 5.42%, Historical Percentile: 97.92%)\nDate: 2021-03-09, Price: $1825.00 (Growth: 1.88%, Historical Percentile: 99.40%)\nDate: 2021-04-01, Price: $1969.99 (Growth: 1.53%, Historical Percentile: 100.00%)\nDate: 2021-06-12, Price: $2403.58 (Growth: 0.84%, Historical Percentile: 96.34%)\nDate: 2021-06-23, Price: $1931.56 (Growth: 0.06%, Historical Percentile: 93.22%)\nDate: 2021-07-23, Price: $2039.45 (Growth: 1.14%, Historical Percentile: 92.84%)\nDate: 2021-08-09, Price: $3071.56 (Growth: 2.59%, Historical Percentile: 98.71%)\nDate: 2021-09-15, Price: $3551.43 (Growth: 5.18%, Historical Percentile: 98.96%)\nDate: 2021-12-22, Price: $4015.75 (Growth: -0.26%, Historical Percentile: 96.14%)\nDate: 2021-12-26, Price: $4087.98 (Growth: -0.81%, Historical Percentile: 96.70%)\nDate: 2022-02-19, Price: $2742.00 (Growth: -1.40%, Historical Percentile: 86.28%)\nDate: 2022-02-20, Price: $2599.40 (Growth: -5.20%, Historical Percentile: 85.10%)\nDate: 2022-09-04, Price: $1571.36 (Growth: 1.24%, Historical Percentile: 69.70%)\nDate: 2022-10-09, Price: $1320.90 (Growth: -0.32%, Historical Percentile: 66.28%)\nDate: 2022-11-26, Price: $1209.93 (Growth: 0.91%, Historical Percentile: 63.61%)\nDate: 2023-01-09, Price: $1317.74 (Growth: 3.78%, Historical Percentile: 66.83%)\nDate: 2023-05-09, Price: $1848.64 (Growth: 0.38%, Historical Percentile: 76.14%)\nDate: 2023-05-15, Price: $1826.27 (Growth: 1.51%, Historical Percentile: 75.60%)\nDate: 2024-03-16, Price: $286.37 (Growth: 4.77%, Historical Percentile: 72.94%)\nDate: 2024-03-23, Price: $1174.95 (Growth: -11.19%, Historical Percentile: 98.39%)\nDate: 2024-04-05, Price: $4505.48 (Growth: 4.45%, Historical Percentile: 100.00%)\nDate: 2024-05-01, Price: $4257.24 (Growth: -2.21%, Historical Percentile: 98.24%)\nDate: 2024-06-08, Price: $3239.14 (Growth: -0.80%, Historical Percentile: 98.43%)\nDate: 2024-06-12, Price: $196.86 (Growth: 1.47%, Historical Percentile: 47.75%)\nDate: 2024-07-12, Price: $220.75 (Growth: -1.98%, Historical Percentile: 41.67%)\nDate: 2024-07-21, Price: $2219.55 (Growth: 6.25%, Historical Percentile: 94.84%)\nDate: 2024-09-25, Price: $1736.07 (Growth: -3.43%, Historical Percentile: 74.70%)\nDate: 2024-10-19, Price: $181.95 (Growth: 0.03%, Historical Percentile: 0.79%)\nDate: 2024-12-08, Price: $804.36 (Growth: -4.28%, Historical Percentile: 9.62%)\nDate: 2024-12-09, Price: $345.66 (Growth: 7.38%, Historical Percentile: 72.92%)\nDate: 2024-12-10, Price: $235.71 (Growth: -0.27%, Historical Percentile: 62.26%)\nDate: 2024-12-22, Price: $940.98 (Growth: 1.29%, Historical Percentile: 36.96%)\nDate: 2025-01-15, Price: $189.53 (Growth: -1.76%, Historical Percentile: 31.17%)\nDate: 2025-01-17, Price: $379.69 (Growth: -2.54%, Historical Percentile: 75.54%)\nDate: 2025-01-22, Price: $1126.30 (Growth: 4.73%, Historical Percentile: 98.64%)\nDate: 2025-02-05, Price: $1809.74 (Growth: 1.95%, Historical Percentile: 72.76%)\nDate: 2025-02-11, Price: $2974.94 (Growth: -3.78%, Historical Percentile: 95.31%)\nDate: 2025-02-19, Price: $197.24 (Growth: 0.40%, Historical Percentile: 3.95%)\n\nIdentify and explain the following price patterns if present:\n1. Head and shoulders\n2. Double tops/bottoms\n3. Cup and handle\n4. Flags and pennants\n5. Triangles (ascending, descending, symmetrical)\n6. Support/resistance breakouts\n7. Fibonacci retracement levels\n\nFor each pattern identified, explain its formation, significance, and potential future implications.",
+    "record": {
+      "timestamp": "2021-07-23T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2039.45,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.047220011313179815,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.011446311936797392,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9283513097072419
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.4248854166666667,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2018-03-19 to 2025-02-19.\nBased on the following historical data points:\n\nDate: 2018-03-19, Price: $554.96 (Growth: 3.54%, Historical Percentile: 3.90%)\nDate: 2018-04-03, Price: $415.84 (Growth: 8.15%, Historical Percentile: 6.52%)\nDate: 2019-01-06, Price: $155.77 (Growth: -0.72%, Historical Percentile: 12.97%)\nDate: 2019-02-21, Price: $143.44 (Growth: -1.16%, Historical Percentile: 20.43%)\nDate: 2019-04-16, Price: $165.69 (Growth: 3.49%, Historical Percentile: 30.43%)\nDate: 2019-05-18, Price: $236.34 (Growth: 1.22%, Historical Percentile: 49.80%)\nDate: 2019-06-05, Price: $243.86 (Growth: 1.81%, Historical Percentile: 49.23%)\nDate: 2019-07-05, Price: $286.62 (Growth: -2.18%, Historical Percentile: 55.09%)\nDate: 2019-07-06, Price: $292.37 (Growth: 1.92%, Historical Percentile: 56.62%)\nDate: 2019-09-19, Price: $219.80 (Growth: 4.02%, Historical Percentile: 46.01%)\nDate: 2019-10-17, Price: $176.32 (Growth: 1.11%, Historical Percentile: 29.66%)\nDate: 2020-01-31, Price: $180.64 (Growth: -2.34%, Historical Percentile: 38.82%)\nDate: 2020-02-11, Price: $237.20 (Growth: 6.57%, Historical Percentile: 60.05%)\nDate: 2020-04-03, Price: $140.69 (Growth: 0.07%, Historical Percentile: 19.44%)\nDate: 2020-05-11, Price: $186.65 (Growth: -1.03%, Historical Percentile: 42.86%)\nDate: 2020-05-22, Price: $208.24 (Growth: 4.69%, Historical Percentile: 52.75%)\nDate: 2020-05-24, Price: $206.41 (Growth: -0.75%, Historical Percentile: 51.14%)\nDate: 2020-10-04, Price: $351.55 (Growth: 0.71%, Historical Percentile: 72.69%)\nDate: 2020-11-12, Price: $462.55 (Growth: -0.85%, Historical Percentile: 82.89%)\nDate: 2020-12-19, Price: $666.95 (Growth: 2.42%, Historical Percentile: 91.22%)\nDate: 2021-01-09, Price: $1292.24 (Growth: 8.74%, Historical Percentile: 99.82%)\nDate: 2021-01-14, Price: $1189.00 (Growth: 5.35%, Historical Percentile: 99.01%)\nDate: 2021-02-27, Price: $1507.11 (Growth: 5.42%, Historical Percentile: 97.92%)\nDate: 2021-03-09, Price: $1825.00 (Growth: 1.88%, Historical Percentile: 99.40%)\nDate: 2021-04-01, Price: $1969.99 (Growth: 1.53%, Historical Percentile: 100.00%)\nDate: 2021-06-12, Price: $2403.58 (Growth: 0.84%, Historical Percentile: 96.34%)\nDate: 2021-06-23, Price: $1931.56 (Growth: 0.06%, Historical Percentile: 93.22%)\nDate: 2021-07-23, Price: $2039.45 (Growth: 1.14%, Historical Percentile: 92.84%)\nDate: 2021-08-09, Price: $3071.56 (Growth: 2.59%, Historical Percentile: 98.71%)\nDate: 2021-09-15, Price: $3551.43 (Growth: 5.18%, Historical Percentile: 98.96%)\nDate: 2021-12-22, Price: $4015.75 (Growth: -0.26%, Historical Percentile: 96.14%)\nDate: 2021-12-26, Price: $4087.98 (Growth: -0.81%, Historical Percentile: 96.70%)\nDate: 2022-02-19, Price: $2742.00 (Growth: -1.40%, Historical Percentile: 86.28%)\nDate: 2022-02-20, Price: $2599.40 (Growth: -5.20%, Historical Percentile: 85.10%)\nDate: 2022-09-04, Price: $1571.36 (Growth: 1.24%, Historical Percentile: 69.70%)\nDate: 2022-10-09, Price: $1320.90 (Growth: -0.32%, Historical Percentile: 66.28%)\nDate: 2022-11-26, Price: $1209.93 (Growth: 0.91%, Historical Percentile: 63.61%)\nDate: 2023-01-09, Price: $1317.74 (Growth: 3.78%, Historical Percentile: 66.83%)\nDate: 2023-05-09, Price: $1848.64 (Growth: 0.38%, Historical Percentile: 76.14%)\nDate: 2023-05-15, Price: $1826.27 (Growth: 1.51%, Historical Percentile: 75.60%)\nDate: 2024-03-16, Price: $286.37 (Growth: 4.77%, Historical Percentile: 72.94%)\nDate: 2024-03-23, Price: $1174.95 (Growth: -11.19%, Historical Percentile: 98.39%)\nDate: 2024-04-05, Price: $4505.48 (Growth: 4.45%, Historical Percentile: 100.00%)\nDate: 2024-05-01, Price: $4257.24 (Growth: -2.21%, Historical Percentile: 98.24%)\nDate: 2024-06-08, Price: $3239.14 (Growth: -0.80%, Historical Percentile: 98.43%)\nDate: 2024-06-12, Price: $196.86 (Growth: 1.47%, Historical Percentile: 47.75%)\nDate: 2024-07-12, Price: $220.75 (Growth: -1.98%, Historical Percentile: 41.67%)\nDate: 2024-07-21, Price: $2219.55 (Growth: 6.25%, Historical Percentile: 94.84%)\nDate: 2024-09-25, Price: $1736.07 (Growth: -3.43%, Historical Percentile: 74.70%)\nDate: 2024-10-19, Price: $181.95 (Growth: 0.03%, Historical Percentile: 0.79%)\nDate: 2024-12-08, Price: $804.36 (Growth: -4.28%, Historical Percentile: 9.62%)\nDate: 2024-12-09, Price: $345.66 (Growth: 7.38%, Historical Percentile: 72.92%)\nDate: 2024-12-10, Price: $235.71 (Growth: -0.27%, Historical Percentile: 62.26%)\nDate: 2024-12-22, Price: $940.98 (Growth: 1.29%, Historical Percentile: 36.96%)\nDate: 2025-01-15, Price: $189.53 (Growth: -1.76%, Historical Percentile: 31.17%)\nDate: 2025-01-17, Price: $379.69 (Growth: -2.54%, Historical Percentile: 75.54%)\nDate: 2025-01-22, Price: $1126.30 (Growth: 4.73%, Historical Percentile: 98.64%)\nDate: 2025-02-05, Price: $1809.74 (Growth: 1.95%, Historical Percentile: 72.76%)\nDate: 2025-02-11, Price: $2974.94 (Growth: -3.78%, Historical Percentile: 95.31%)\nDate: 2025-02-19, Price: $197.24 (Growth: 0.40%, Historical Percentile: 3.95%)\n\nProvide a detailed volatility analysis, including:\n1. Periods of high vs. low volatility\n2. Volatility clustering\n3. Relationship between volatility and price direction\n4. Comparison to historical volatility norms\n5. Impact of market events on volatility\n\nYour analysis should identify patterns in volatility and explain potential causes and effects.",
+    "record": {
+      "timestamp": "2021-07-23T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2039.45,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.047220011313179815,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.011446311936797392,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9283513097072419
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.4248854166666667,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  },
+  {
+    "prompt": "You are analyzing historical price data for ETH from 2018-03-19 to 2025-02-19.\nBased on the following historical data points:\n\nDate: 2018-03-19, Price: $554.96 (Growth: 3.54%, Historical Percentile: 3.90%)\nDate: 2018-04-03, Price: $415.84 (Growth: 8.15%, Historical Percentile: 6.52%)\nDate: 2019-01-06, Price: $155.77 (Growth: -0.72%, Historical Percentile: 12.97%)\nDate: 2019-02-21, Price: $143.44 (Growth: -1.16%, Historical Percentile: 20.43%)\nDate: 2019-04-16, Price: $165.69 (Growth: 3.49%, Historical Percentile: 30.43%)\nDate: 2019-05-18, Price: $236.34 (Growth: 1.22%, Historical Percentile: 49.80%)\nDate: 2019-06-05, Price: $243.86 (Growth: 1.81%, Historical Percentile: 49.23%)\nDate: 2019-07-05, Price: $286.62 (Growth: -2.18%, Historical Percentile: 55.09%)\nDate: 2019-07-06, Price: $292.37 (Growth: 1.92%, Historical Percentile: 56.62%)\nDate: 2019-09-19, Price: $219.80 (Growth: 4.02%, Historical Percentile: 46.01%)\nDate: 2019-10-17, Price: $176.32 (Growth: 1.11%, Historical Percentile: 29.66%)\nDate: 2020-01-31, Price: $180.64 (Growth: -2.34%, Historical Percentile: 38.82%)\nDate: 2020-02-11, Price: $237.20 (Growth: 6.57%, Historical Percentile: 60.05%)\nDate: 2020-04-03, Price: $140.69 (Growth: 0.07%, Historical Percentile: 19.44%)\nDate: 2020-05-11, Price: $186.65 (Growth: -1.03%, Historical Percentile: 42.86%)\nDate: 2020-05-22, Price: $208.24 (Growth: 4.69%, Historical Percentile: 52.75%)\nDate: 2020-05-24, Price: $206.41 (Growth: -0.75%, Historical Percentile: 51.14%)\nDate: 2020-10-04, Price: $351.55 (Growth: 0.71%, Historical Percentile: 72.69%)\nDate: 2020-11-12, Price: $462.55 (Growth: -0.85%, Historical Percentile: 82.89%)\nDate: 2020-12-19, Price: $666.95 (Growth: 2.42%, Historical Percentile: 91.22%)\nDate: 2021-01-09, Price: $1292.24 (Growth: 8.74%, Historical Percentile: 99.82%)\nDate: 2021-01-14, Price: $1189.00 (Growth: 5.35%, Historical Percentile: 99.01%)\nDate: 2021-02-27, Price: $1507.11 (Growth: 5.42%, Historical Percentile: 97.92%)\nDate: 2021-03-09, Price: $1825.00 (Growth: 1.88%, Historical Percentile: 99.40%)\nDate: 2021-04-01, Price: $1969.99 (Growth: 1.53%, Historical Percentile: 100.00%)\nDate: 2021-06-12, Price: $2403.58 (Growth: 0.84%, Historical Percentile: 96.34%)\nDate: 2021-06-23, Price: $1931.56 (Growth: 0.06%, Historical Percentile: 93.22%)\nDate: 2021-07-23, Price: $2039.45 (Growth: 1.14%, Historical Percentile: 92.84%)\nDate: 2021-08-09, Price: $3071.56 (Growth: 2.59%, Historical Percentile: 98.71%)\nDate: 2021-09-15, Price: $3551.43 (Growth: 5.18%, Historical Percentile: 98.96%)\nDate: 2021-12-22, Price: $4015.75 (Growth: -0.26%, Historical Percentile: 96.14%)\nDate: 2021-12-26, Price: $4087.98 (Growth: -0.81%, Historical Percentile: 96.70%)\nDate: 2022-02-19, Price: $2742.00 (Growth: -1.40%, Historical Percentile: 86.28%)\nDate: 2022-02-20, Price: $2599.40 (Growth: -5.20%, Historical Percentile: 85.10%)\nDate: 2022-09-04, Price: $1571.36 (Growth: 1.24%, Historical Percentile: 69.70%)\nDate: 2022-10-09, Price: $1320.90 (Growth: -0.32%, Historical Percentile: 66.28%)\nDate: 2022-11-26, Price: $1209.93 (Growth: 0.91%, Historical Percentile: 63.61%)\nDate: 2023-01-09, Price: $1317.74 (Growth: 3.78%, Historical Percentile: 66.83%)\nDate: 2023-05-09, Price: $1848.64 (Growth: 0.38%, Historical Percentile: 76.14%)\nDate: 2023-05-15, Price: $1826.27 (Growth: 1.51%, Historical Percentile: 75.60%)\nDate: 2024-03-16, Price: $286.37 (Growth: 4.77%, Historical Percentile: 72.94%)\nDate: 2024-03-23, Price: $1174.95 (Growth: -11.19%, Historical Percentile: 98.39%)\nDate: 2024-04-05, Price: $4505.48 (Growth: 4.45%, Historical Percentile: 100.00%)\nDate: 2024-05-01, Price: $4257.24 (Growth: -2.21%, Historical Percentile: 98.24%)\nDate: 2024-06-08, Price: $3239.14 (Growth: -0.80%, Historical Percentile: 98.43%)\nDate: 2024-06-12, Price: $196.86 (Growth: 1.47%, Historical Percentile: 47.75%)\nDate: 2024-07-12, Price: $220.75 (Growth: -1.98%, Historical Percentile: 41.67%)\nDate: 2024-07-21, Price: $2219.55 (Growth: 6.25%, Historical Percentile: 94.84%)\nDate: 2024-09-25, Price: $1736.07 (Growth: -3.43%, Historical Percentile: 74.70%)\nDate: 2024-10-19, Price: $181.95 (Growth: 0.03%, Historical Percentile: 0.79%)\nDate: 2024-12-08, Price: $804.36 (Growth: -4.28%, Historical Percentile: 9.62%)\nDate: 2024-12-09, Price: $345.66 (Growth: 7.38%, Historical Percentile: 72.92%)\nDate: 2024-12-10, Price: $235.71 (Growth: -0.27%, Historical Percentile: 62.26%)\nDate: 2024-12-22, Price: $940.98 (Growth: 1.29%, Historical Percentile: 36.96%)\nDate: 2025-01-15, Price: $189.53 (Growth: -1.76%, Historical Percentile: 31.17%)\nDate: 2025-01-17, Price: $379.69 (Growth: -2.54%, Historical Percentile: 75.54%)\nDate: 2025-01-22, Price: $1126.30 (Growth: 4.73%, Historical Percentile: 98.64%)\nDate: 2025-02-05, Price: $1809.74 (Growth: 1.95%, Historical Percentile: 72.76%)\nDate: 2025-02-11, Price: $2974.94 (Growth: -3.78%, Historical Percentile: 95.31%)\nDate: 2025-02-19, Price: $197.24 (Growth: 0.40%, Historical Percentile: 3.95%)\n\nAnalyze the market cycle phase, including:\n1. Identification of current market phase (accumulation, uptrend, distribution, downtrend)\n2. Key indicators supporting your phase identification\n3. Estimated progress within the identified phase\n4. Comparison to previous market cycles\n5. Potential upcoming phase transitions\n\nYour analysis should consider both technical indicators and market sentiment in identifying cycle phases.",
+    "record": {
+      "timestamp": "2021-07-23T00:00:00",
+      "chain": "eth",
+      "market_data": {
+        "price_usd": 2039.45,
+        "daily_volume": 0.0,
+        "market_cap": 0.0,
+        "volatility": 0.047220011313179815,
+        "transaction_count": 0,
+        "unique_addresses": 0,
+        "average_transaction_value": 0.0,
+        "gas_price": 0.0,
+        "source": "kaggle_price_analysis",
+        "confidence": 0.9
+      },
+      "derived_metrics": {
+        "growth_rate": 0.011446311936797392,
+        "relative_volume": 0.0,
+        "historical_percentile": 0.9283513097072419
+      },
+      "temporal_context": {
+        "period_type": "unknown",
+        "relative_to_ath": 0.4248854166666667,
+        "days_since_major_event": 0
+      },
+      "metadata": {
+        "data_source": "kaggle_price_analysis",
+        "time_period": "historical",
+        "confidence_level": 0.9
+      }
+    }
+  }
+]
